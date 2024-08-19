@@ -78,7 +78,7 @@ const resetForm = () => {
         <VTextField
           v-model="slug"
           label="Slug"
-          placeholder="Category Slug (optional)"
+          placeholder="Category Slug"
         />
       </VCol>
 
