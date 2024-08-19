@@ -1,0 +1,13 @@
+{
+    "name": "GrammarGames",
+    "alias": "grammargames",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GrammarGames\\Providers\\GrammarGamesServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
