@@ -12,10 +12,15 @@ const description = ref('');
 const image = ref(null);
 const parent_id = ref(null);
 const order = ref(0);
-const is_active = ref(true);
+const is_active = ref(1);
 
 const router = useRouter();
 
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+
+  image.value = file;
+};
 const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
 
@@ -58,7 +63,7 @@ const resetForm = () => {
   image.value = null;
   parent_id.value = null;
   order.value = 0;
-  is_active.value = true;
+  is_active.value = 1;
 };
 </script>
 
@@ -96,6 +101,7 @@ const resetForm = () => {
           label="Image"
           placeholder="Select an image"
           accept="image/*"
+          @change="handleImageUpload"
         />
       </VCol>
 
@@ -122,8 +128,8 @@ const resetForm = () => {
         <VCheckbox
           v-model="is_active"
           label="Is Active?"
-          :true-value="true"
-          :false-value="false"
+          :true-value="1"
+          :false-value="0"
         />
       </VCol>
 
