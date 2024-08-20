@@ -36,4 +36,10 @@ class CategoryController extends Controller
 
         return response()->json(['message' => 'Category created successfully', 'category' => $category], 201);
     }
+
+    public function count()
+    {
+        $count = Category::count();
+        return response()->json(['count' => $count]);
+    }
 }

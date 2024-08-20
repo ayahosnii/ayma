@@ -9,6 +9,7 @@ import { onMounted, ref } from 'vue';
 
 const storiesCount = ref();
 const levelsCount = ref();
+const categoriesCount = ref();
 
 const fetchCounts = async () => {
   try {
@@ -29,6 +30,14 @@ const fetchCounts = async () => {
       },
     });
     levelsCount.value = levelsResponse.data.countLevels;
+
+    // Fetch categories count
+    const categoriesResponse = await axios.get(`${BASE_URL}/count-categories`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    categoriesCount.value = categoriesResponse.data.count;
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
@@ -159,8 +168,8 @@ onMounted(() => {
       title: 'Categories',
       icon: 'ri-function-fill',
       href: '/categories/list',
-      // badgeContent: 'New',
-      // badgeClass: 'bg-light-primary text-primary',
+      badgeContent: categoriesCount,
+      badgeClass: 'bg-warning',
     }"
   />
   <VerticalNavLink

@@ -37,6 +37,7 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     Route::resource('/categories', CategoryController::class);
+    Route::get('/count-categories', [CategoryController::class, 'count']); //Levels Count
 
     Route::resource('/levels', LevelsController::class);
     Route::get('/count-levels', [LevelsController::class, 'countLevels']); //Levels Count
