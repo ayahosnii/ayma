@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         // Optionally, include filtering or sorting
-        $categories = Category::with('children')->paginate(3);
+        $categories = Category::with('children')->get();
         return response()->json($categories, 200);
     }
 

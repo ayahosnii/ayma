@@ -10,8 +10,8 @@ const name = ref('');
 const slug = ref('');
 const description = ref('');
 const image = ref(null);
-const parent_id = ref(null); // Initially null
-const categories = ref([]); // Store categories here
+const parent_id = ref(); // Initially null
+const categories2 = ref([]);
 const order = ref(0);
 const is_active = ref(1);
 
@@ -32,7 +32,8 @@ onMounted(async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    categories.value = response.data.data; // Assuming the categories are returned in a `data` property
+    categories2.value = response.data;
+    console.log(categories2.value)
   } catch (error) {
     $toast.error('Error fetching categories: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching categories:', error);
@@ -50,7 +51,7 @@ const handleSubmit = async () => {
     if (image.value) {
       formData.append('image', image.value);
     }
-    formData.append('parent_id', parent_id.value ? parent_id.value.id : null);
+    formData.append('parent_id', parent_id.value);
     formData.append('order', order.value);
     formData.append('is_active', is_active.value);
 
@@ -126,13 +127,12 @@ const resetForm = () => {
       <VCol cols="12">
         <VSelect
           v-model="parent_id"
-          :items="categories"
-          item-text="name"
+          label="Choose Category"
+          :items="categories2"
+          item-title="name"
           item-value="id"
-          label="Parent Category"
-          placeholder="Select Parent Category (optional)"
-          return-object
-          :menu-props="{ maxHeight: '400px' }"
+          density="compact"
+          class="me-3"
         />
       </VCol>
 
