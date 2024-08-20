@@ -1,6 +1,6 @@
 <script setup>
 import axios from 'axios';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 
@@ -10,7 +10,8 @@ const name = ref('');
 const slug = ref('');
 const description = ref('');
 const image = ref(null);
-const parent_id = ref(null);
+const parent_id = ref(null); // Initially null
+const categories = ref([]); // Store categories here
 const order = ref(0);
 const is_active = ref(1);
 
@@ -18,9 +19,26 @@ const router = useRouter();
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
-
   image.value = file;
 };
+
+// Fetch categories when the component mounts
+onMounted(async () => {
+  const token = localStorage.getItem('authToken');
+
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/categories', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    categories.value = response.data.data; // Assuming the categories are returned in a `data` property
+  } catch (error) {
+    $toast.error('Error fetching categories: ' + (error.response?.data?.message || error.message));
+    console.error('Error fetching categories:', error);
+  }
+});
+
 const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
 
@@ -32,7 +50,7 @@ const handleSubmit = async () => {
     if (image.value) {
       formData.append('image', image.value);
     }
-    formData.append('parent_id', parent_id.value);
+    formData.append('parent_id', parent_id.value ? parent_id.value.id : null);
     formData.append('order', order.value);
     formData.append('is_active', is_active.value);
 
@@ -47,7 +65,7 @@ const handleSubmit = async () => {
     console.log('Category added successfully:', response.data);
 
     // Optionally, reset the form or redirect
-    // resetForm();
+    resetForm();
     // router.push('/categories');
   } catch (error) {
     $toast.error('Error adding category: ' + (error.response?.data?.message || error.message));
@@ -106,11 +124,15 @@ const resetForm = () => {
       </VCol>
 
       <VCol cols="12">
-        <VTextField
+        <VSelect
           v-model="parent_id"
-          label="Parent Category ID"
-          placeholder="Parent Category ID (optional)"
-          type="number"
+          :items="categories"
+          item-text="name"
+          item-value="id"
+          label="Parent Category"
+          placeholder="Select Parent Category (optional)"
+          return-object
+          :menu-props="{ maxHeight: '400px' }"
         />
       </VCol>
 
