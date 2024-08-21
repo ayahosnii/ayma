@@ -151,6 +151,7 @@ const getImageUrl = (path) => {
   return path ? `http://127.0.0.1:8000/storage/${path}` : 'placeholder_image_url'; // Placeholder if no image
 };
 
+
 const openEditModal = (item) => {
   editCategory.value = { ...item };
   editModal.value = true;
