@@ -147,7 +147,7 @@ const fetchCategories = async (page = 1) => {
 };
 
 const getImageUrl = (path) => {
-  return path ? `${BASE_URL}/storage/${path}` : 'placeholder_image_url'; // Placeholder if no image
+  return path ? `http://127.0.0.1:8000/storage/${path}` : 'placeholder_image_url'; // Placeholder if no image
 };
 
 const openEditModal = (item) => {
