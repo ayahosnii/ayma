@@ -136,8 +136,8 @@ const fetchCategories = async (page = 1) => {
       });
 
       categories.value = response.data;
-      totalPages.value = response.data.meta.last_page;
-      currentPage.value = response.data.meta.current_page;
+      totalPages.value = response.data.last_page;
+      currentPage.value = response.data.current_page;
     } else {
       console.error('No auth token found');
     }
@@ -147,7 +147,7 @@ const fetchCategories = async (page = 1) => {
 };
 
 const getImageUrl = (path) => {
-  return path ? `${BASE_URL}/storage/${path}` : 'placeholder_image_url'; // Placeholder if no image
+  return path ? `http://127.0.0.1:8000/storage/${path}` : 'placeholder_image_url'; // Placeholder if no image
 };
 
 const openEditModal = (item) => {
