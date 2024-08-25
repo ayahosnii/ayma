@@ -27,6 +27,8 @@ class CategoryController extends Controller
     {
         $data = $request->validated();
 
+        $data['parent_id'] = $data['parent_id'] ?? null;
+
         if ($request->hasFile('image')) {
             // Store the image in a directory and get the path
             $data['image'] = $request->file('image')->store('category_images', 'public');
