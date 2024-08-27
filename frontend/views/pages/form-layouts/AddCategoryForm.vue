@@ -1,13 +1,14 @@
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
 
+// Toast notification
 const $toast = useToast();
 
+// Form fields
 const name = ref('');
-const slug = ref('');
 const description = ref('');
 const image = ref(null);
 const parent_id = ref(); // Initially null
@@ -15,8 +16,18 @@ const categories2 = ref([]);
 const order = ref(0);
 const is_active = ref(1);
 
+// Router instance
 const router = useRouter();
 
+// Generate slug automatically based on name
+const slug = computed(() => {
+  return name.value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric characters with hyphens
+    .replace(/(^-|-$)/g, ''); // Remove leading and trailing hyphens
+});
+
+// Handle image upload
 const handleImageUpload = (event) => {
   const file = event.target.files[0];
   image.value = file;
@@ -40,6 +51,7 @@ onMounted(async () => {
   }
 });
 
+// Handle form submission
 const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
 
@@ -77,7 +89,6 @@ const handleSubmit = async () => {
 // Optional: Function to reset the form
 const resetForm = () => {
   name.value = '';
-  slug.value = '';
   description.value = '';
   image.value = null;
   parent_id.value = null;
@@ -101,8 +112,10 @@ const resetForm = () => {
       <VCol cols="12">
         <VTextField
           v-model="slug"
+          :value="slug"
           label="Slug"
           placeholder="Category Slug"
+          readonly
         />
       </VCol>
 
