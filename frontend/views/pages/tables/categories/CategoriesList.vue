@@ -2,11 +2,12 @@
   <div>
     <VTable>
       <thead>
-        <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" href="/categories/add"><i class="ri-add-circle-line"></i> Add Category</VBtn>
+        <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" href="/categories/add">
+          <i class="ri-add-circle-line"></i> Add Category
+        </VBtn>
         <tr>
           <th class="text-uppercase text-center">Name</th>
           <th class="text-uppercase text-center">Slug</th>
-          <th class="text-uppercase text-center">Description</th>
           <th class="text-uppercase text-center">Parent Category</th>
           <th class="text-uppercase text-center">Image</th>
           <th class="text-uppercase text-center">Actions</th>
@@ -17,14 +18,20 @@
         <tr v-for="item in categories" :key="item.id">
           <td class="text-center">{{ item.name }}</td>
           <td class="text-center">{{ item.slug }}</td>
-          <td class="text-center">{{ item.description }}</td>
           <td class="text-center">{{ item.parent ? item.parent.name : '-' }}</td>
           <td class="text-center">
             <img :src="getImageUrl(item.image)" alt="Category Image" class="slide-image mt-1" />
           </td>
           <td class="text-center">
-            <VBtn size="small" title="Edit" color="warning" @click="openEditModal(item)"><i class="ri-edit-fill"></i></VBtn>&nbsp;
-            <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(item)"><i class="ri-delete-bin-line"></i></VBtn>
+            <VBtn size="small" title="Info" color="info" @click="openInfoModal(item)">
+              <i class="ri-information-line"></i>
+            </VBtn>&nbsp;
+            <VBtn size="small" title="Edit" color="warning" @click="openEditModal(item)">
+              <i class="ri-edit-fill"></i>
+            </VBtn>&nbsp;
+            <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(item)">
+              <i class="ri-delete-bin-line"></i>
+            </VBtn>
           </td>
         </tr>
       </tbody>
@@ -43,79 +50,79 @@
         <VCardText>
           <VForm ref="editForm">
             <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-model="editCategory.name"
-              label="Name"
-              placeholder="Category Name"
-              required
-            />
-          </VCol>
-        </VRow>
-          <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-model="editCategory.slug"
-              label="Slug"
-              placeholder="Category Slug"
-            />
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-model="editCategory.description"
-              label="Description"
-              placeholder="Category Description (optional)"
-            />
-          </VCol>
-        </VRow>
-        <VRow>
-          <VCol cols="12">
-            <VFileInput
-              v-model="editCategory.image"
-              label="Image"
-              placeholder="Select an image"
-              accept="image/*"
-              @change="handleEditImageUpload"
-            />
-          </VCol>
-          </VRow>
-          <VRow>
-          <VCol cols="12">
-            <VSelect
-              v-model="editCategory.parent_id"
-              label="Choose Parent Category"
-              :items="categories2"
-              item-title="name"
-              item-value="id"
-              density="compact"
-              class="me-3"
-            />
-          </VCol>
-          </VRow>
-          <VRow>
-          <VCol cols="12">
-            <VTextField
-              v-model="editCategory.order"
-              label="Order"
-              placeholder="Display Order"
-              type="number"
-              min="0"
-            />
-          </VCol>
-          </VRow>
-          <VRow>
-          <VCol cols="12">
-            <VCheckbox
-              v-model="editCategory.is_active"
-              label="Is Active?"
-              :true-value="1"
-              :false-value="0"
-            />
-          </VCol>
-        </VRow>
-        </VForm>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.name"
+                  label="Name"
+                  placeholder="Category Name"
+                  required
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.slug"
+                  label="Slug"
+                  placeholder="Category Slug"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.description"
+                  label="Description"
+                  placeholder="Category Description (optional)"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VFileInput
+                  v-model="editCategory.image"
+                  label="Image"
+                  placeholder="Select an image"
+                  accept="image/*"
+                  @change="handleEditImageUpload"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VSelect
+                  v-model="editCategory.parent_id"
+                  label="Choose Parent Category"
+                  :items="categories2"
+                  item-title="name"
+                  item-value="id"
+                  density="compact"
+                  class="me-3"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.order"
+                  label="Order"
+                  placeholder="Display Order"
+                  type="number"
+                  min="0"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="editCategory.is_active"
+                  label="Is Active?"
+                  :true-value="1"
+                  :false-value="0"
+                />
+              </VCol>
+            </VRow>
+          </VForm>
         </VCardText>
         <VCardActions>
           <VCol cols="12" class="d-flex gap-4">
@@ -143,6 +150,53 @@
         </VCardActions>
       </VCard>
     </VDialog>
+
+    <!-- Info Modal -->
+    <VDialog v-model="infoModal" max-width="600px">
+      <VCard>
+        <VCardTitle>Category Details</VCardTitle>
+        <VRow>
+          <VCol cols="12">
+            
+              <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+                <!-- <div class="ma-auto pa-5"> -->
+                  <VImg :src="getImageUrl(infoCategory.image)" width="200" height="200" alt="Category Image" />
+                <!-- </div> -->
+
+                <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                <div>
+                  <VCardItem>
+                    <VCardTitle>{{ infoCategory.name }}</VCardTitle>
+                  </VCardItem>
+
+                  <VCardText>
+                    <span class="font-weight-medium">Description:</span> <span>{{ infoCategory.description || 'No description available.'}}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Slug:</span> <span>{{ infoCategory.slug }}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Parent Category:</span> <span>{{ infoCategory.parent ? infoCategory.parent.name : 'None' }}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Status:</span> <span >{{ infoCategory.is_active ? 'Active' : 'Inactive' }}</span>
+                  </VCardText>
+                </div>
+              </div>
+            
+          </VCol>
+        </VRow>
+        <VCardActions>
+          <VCol cols="12" class="d-flex justify-end">
+            <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
+          </VCol>
+        </VCardActions>
+      </VCard>
+    </VDialog>
   </div>
 </template>
 
@@ -160,10 +214,12 @@ const totalPages = ref(1);
 
 const editModal = ref(false);
 const deleteModal = ref(false);
+const infoModal = ref(false); // New modal for category info
 
 const editCategory = ref({ id: '', name: '', slug: '', description: '', image: '', parent_id: null, order: 0, is_active: 1 });
 const originalSlug = ref(''); // Keep track of the original slug when editing
 const deleteCategoryId = ref(null);
+const infoCategory = ref({ id: '', name: '', slug: '', description: '', image: '', parent: null, order: 0, is_active: 1 }); // Store the selected category info
 const categories2 = ref([]); // For parent category options
 
 const fetchCategories = async (page = 1) => {
@@ -312,6 +368,15 @@ const deleteCategory = async () => {
   }
 };
 
+const openInfoModal = (item) => {
+  infoCategory.value = { ...item };
+  infoModal.value = true;
+};
+
+const closeInfoModal = () => {
+  infoModal.value = false;
+};
+
 const onPageChange = (page) => {
   currentPage.value = page;
 };
@@ -331,7 +396,6 @@ watch(() => editCategory.value.name, (newName) => {
 });
 </script>
 
-
 <style scoped>
 .slide-image {
   block-size: 100px;
@@ -339,5 +403,3 @@ watch(() => editCategory.value.name, (newName) => {
   object-fit: cover;
 }
 </style>
-
-

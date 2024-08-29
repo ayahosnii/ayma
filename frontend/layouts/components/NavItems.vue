@@ -37,7 +37,16 @@ const fetchCounts = async () => {
         Authorization: `Bearer ${token}`,
       },
     });
+
     categoriesCount.value = categoriesResponse.data.count;
+    // Fetch categories count
+    const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    productsCount.value = productsResponse.data.count;
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
@@ -177,7 +186,7 @@ onMounted(() => {
       title: 'Products',
       icon:'ri-apple-fill',
       href: '/products/list',
-      badgeContent: categoriesCount,
+      badgeContent: productsCount,
       badgeClass: 'bg-warning',
     }"
   />
