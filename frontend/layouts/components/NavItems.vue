@@ -174,6 +174,15 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Products',
+      icon:'ri-apple-fill',
+      href: '/products/list',
+      badgeContent: categoriesCount,
+      badgeClass: 'bg-warning',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Levels',
       badgeContent: levelsCount,
       badgeClass: 'bg-warning',
