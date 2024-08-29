@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\GrammarOptionController;
 use App\Http\Controllers\Api\GrammarQuestionController;
 use App\Http\Controllers\Api\LevelsController;
 use App\Http\Controllers\Api\OpenAIController;
 use App\Http\Controllers\Api\SpeakingController;
 use App\Http\Controllers\Api\StoriesController;
+use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\GrammarGamesController;
 use App\Http\Controllers\Api\ListeningController;
 use App\Http\Controllers\Api\ListeningQuestionController;
@@ -37,7 +39,13 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     Route::resource('/categories', CategoryController::class);
-    Route::get('/count-categories', [CategoryController::class, 'count']); //Levels Count
+    Route::get('/count-categories', [CategoryController::class, 'count']); //Categories Count
+
+    Route::resource('/products', ProductController::class);
+    Route::get('/count-products', [ProductController::class, 'count']); //Product Count
+
+    Route::resource('/colors', ColorController::class); //Products Colors
+    Route::resource('/sizes', SizeController::class); //Products Sizes
 
     Route::resource('/levels', LevelsController::class);
     Route::get('/count-levels', [LevelsController::class, 'countLevels']); //Levels Count
