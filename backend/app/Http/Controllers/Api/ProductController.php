@@ -114,4 +114,10 @@ class ProductController extends Controller
     {
         //
     }
+
+    public function count()
+    {
+        $count = Product::count();
+        return response()->json(['count' => $count]);
+    }
 }
