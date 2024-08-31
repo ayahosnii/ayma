@@ -43,7 +43,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/count-categories', [CategoryController::class, 'count']); //Categories Count
 
     Route::resource('/products', ProductController::class);
-    Route::get('/count-products', [ProductController::class, 'count']); //Product Count
+    Route::get('/count-products', [ProductController::class, 'countProducts']); //Product Count
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes
