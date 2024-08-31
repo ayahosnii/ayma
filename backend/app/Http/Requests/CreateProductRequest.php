@@ -36,7 +36,8 @@ class CreateProductRequest extends FormRequest
             'is_featured' => 'nullable|boolean',
             'color_id' => 'required|exists:colors,id',
             'size_id' => 'required|exists:sizes,id',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'category_id' => 'required|exists:categories,id', // Added validation for category_id
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif',
         ];
     }
 }

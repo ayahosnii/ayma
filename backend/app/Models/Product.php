@@ -11,7 +11,8 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'sku', 'slug', 'description', 'short_description', 'price',
-        'discount_price', 'stock', 'low_stock_threshold', 'is_featured', 'color_id', 'size_id',
+        'discount_price', 'stock', 'low_stock_threshold', 'is_featured',
+        'color_id', 'size_id', 'category_id',
     ];
 
     // Relationships
@@ -33,5 +34,10 @@ class Product extends Model
     public function primaryImage()
     {
         return $this->hasOne(ProductImage::class)->where('is_primary', true);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\OpenAIController;
 use App\Http\Controllers\Api\SpeakingController;
 use App\Http\Controllers\Api\StoriesController;
 use App\Http\Controllers\Api\SizeController;
+use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\GrammarGamesController;
 use App\Http\Controllers\Api\ListeningController;
 use App\Http\Controllers\Api\ListeningQuestionController;
