@@ -20,6 +20,24 @@
         />
       </VCol>
 
+      <!-- Row for Slug and Is Featured -->
+      <VCol cols="12" md="6">
+        <VTextField
+          v-model="slug"
+          label="Slug"
+          placeholder="Product Slug"
+          required
+        />
+      </VCol>
+
+      <VCol cols="12" md="6">
+        <VSwitch
+          v-model="is_featured"
+          label="Featured"
+          inset
+        />
+      </VCol>
+
       <!-- Row for Price and Discount Price -->
       <VCol cols="12" md="6">
         <VTextField
@@ -61,6 +79,19 @@
           placeholder="Low Stock Threshold (optional)"
           type="number"
           min="0"
+        />
+      </VCol>
+
+      <!-- Row for Category -->
+      <VCol cols="12" md="6">
+        <VSelect
+          v-model="category_id"
+          label="Category"
+          :items="categories"
+          item-title="name"
+          item-value="id"
+          density="compact"
+          required
         />
       </VCol>
 
@@ -107,7 +138,7 @@
       </VCol>
 
       <!-- Row for Images -->
-      <VCol cols="12">
+      <VCol cols="12" md="6">
         <VFileInput
           v-model="images"
           label="Images"
@@ -133,7 +164,7 @@
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 // Toast notification
@@ -142,24 +173,40 @@ const $toast = useToast();
 // Form fields
 const name = ref('');
 const sku = ref('');
+const is_featured = ref(false);
 const price = ref('');
 const discount_price = ref('');
 const stock = ref('');
 const low_stock_threshold = ref('');
+const category_id = ref(null); // New field for category_id
 const color_id = ref(null);
 const size_id = ref(null);
-const images = ref([]); // Updated to handle multiple images
+const images = ref([]);
+const categories = ref([]); // New ref for categories
 const colors = ref([]);
 const sizes = ref([]);
 const description = ref('');
 const short_description = ref('');
 
-// Fetch colors and sizes when the component mounts
+// Generate slug automatically based on name
+const slug = computed(() => {
+  return name.value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') // Replace non-alphanumeric characters with hyphens
+    .replace(/(^-|-$)/g, ''); // Remove leading and trailing hyphens
+});
+
+// Fetch categories, colors, and sizes when the component mounts
 onMounted(async () => {
   const token = localStorage.getItem('authToken');
 
   try {
-    const [colorsResponse, sizesResponse] = await Promise.all([
+    const [categoriesResponse, colorsResponse, sizesResponse] = await Promise.all([
+      axios.get('http://127.0.0.1:8000/api/categories', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
       axios.get('http://127.0.0.1:8000/api/colors', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,11 +219,12 @@ onMounted(async () => {
       }),
     ]);
 
+    categories.value = categoriesResponse.data; // Set fetched categories
     colors.value = colorsResponse.data;
     sizes.value = sizesResponse.data;
   } catch (error) {
-    $toast.error('Error fetching colors or sizes: ' + (error.response?.data?.message || error.message));
-    console.error('Error fetching colors or sizes:', error);
+    $toast.error('Error fetching data: ' + (error.response?.data?.message || error.message));
+    console.error('Error fetching data:', error);
   }
 });
 
@@ -193,10 +241,13 @@ const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('name', name.value);
     formData.append('sku', sku.value);
+    formData.append('slug', slug.value); // Added slug to form data
+    formData.append('is_featured', is_featured.value ? '1' : '0'); // Added is_featured to form data
     formData.append('price', price.value);
     formData.append('discount_price', discount_price.value || '');
     formData.append('stock', stock.value);
     formData.append('low_stock_threshold', low_stock_threshold.value || '');
+    formData.append('category_id', category_id.value || ''); // Added category_id to form data
     formData.append('color_id', color_id.value || '');
     formData.append('size_id', size_id.value || '');
     formData.append('description', description.value || '');
@@ -230,10 +281,13 @@ const handleSubmit = async () => {
 const resetForm = () => {
   name.value = '';
   sku.value = '';
+  slug.value = ''; // Reset slug
+  is_featured.value = false; // Reset is_featured
   price.value = '';
   discount_price.value = '';
   stock.value = '';
   low_stock_threshold.value = '';
+  category_id.value = null; // Reset category_id
   color_id.value = null;
   size_id.value = null;
   images.value = []; // Reset images array
