@@ -18,17 +18,9 @@
         <tr>
           <th class="text-uppercase text-center">Name</th>
           <th class="text-uppercase text-center">SKU</th>
-          <th class="text-uppercase text-center">Slug</th>
           <th class="text-uppercase text-center">Price</th>
-          <th class="text-uppercase text-center">Discount Price</th>
           <th class="text-uppercase text-center">Stock</th>
           <th class="text-uppercase text-center">Category</th>
-          <th class="text-uppercase text-center">Color</th>
-          <th class="text-uppercase text-center">Size</th>
-          <th class="text-uppercase text-center">Featured</th>
-          <th class="text-uppercase text-center">Image</th>
-          <th class="text-uppercase text-center">Description</th>
-          <th class="text-uppercase text-center">Short Description</th>
           <th class="text-uppercase text-center">Actions</th>
         </tr>
       </thead>
@@ -37,23 +29,16 @@
         <tr v-for="item in products" :key="item.id">
           <td class="text-center">{{ item.name }}</td>
           <td class="text-center">{{ item.sku }}</td>
-          <td class="text-center">{{ item.slug }}</td>
-          <td class="text-center">{{ item.price }}</td>
-          <td class="text-center">{{ item.discount_price || '-' }}</td>
+          <td class="text-center">${{ item.price }}</td>
           <td class="text-center">{{ item.stock }}</td>
           <td class="text-center">{{ item.category ? item.category.name : '-' }}</td>
-          <td class="text-center">{{ item.color ? item.color.name : '-' }}</td>
-          <td class="text-center">{{ item.size ? item.size.name : '-' }}</td>
-          <td class="text-center">{{ item.is_featured ? 'Yes' : 'No' }}</td>
           <td class="text-center">
-            <img :src="getImageUrl(item.primaryImage?.image_path)" alt="Product Image" class="slide-image mt-1" />
-          </td>
-          <td class="text-center">{{ item.description || '-' }}</td>
-          <td class="text-center">{{ item.short_description || '-' }}</td>
-          <td class="text-center">
+            <VBtn size="small" title="Info" color="info" @click="openInfoModal(item)">
+              <i class="ri-information-line"></i>
+            </VBtn>&nbsp;
             <VBtn size="small" title="Edit" color="warning" @click="openEditModal(item)">
               <i class="ri-edit-fill"></i>
-            </VBtn>
+            </VBtn>&nbsp;
             <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(item)">
               <i class="ri-delete-bin-line"></i>
             </VBtn>
@@ -130,6 +115,102 @@
         </VCardActions>
       </VCard>
     </VDialog>
+
+     <!-- Product Details Modal -->
+<VDialog v-model="infoModal" max-width="800px">
+  <VCard>
+    <VCardTitle>Product Details</VCardTitle>
+    <VCardText>
+      <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+        <div class="image-gallery">
+          <VImg 
+            v-for="(image, index) in infoProduct.images" 
+            :key="index" 
+            :src="getImageUrl(image.image_path)" 
+            width="150" 
+            height="150" 
+            alt="Product Image" 
+            class="m-2"
+          />
+        </div>
+
+        <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+        <div class="ml-4">
+          <VRow>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Name:</span> <span>{{ infoProduct.name }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">SKU:</span> <span>{{ infoProduct.sku }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Slug:</span> <span>{{ infoProduct.slug }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Price:</span> <span>{{ infoProduct.price }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Discount Price:</span> <span>{{ infoProduct.discount_price || '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Stock:</span> <span>{{ infoProduct.stock }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Category:</span> <span>{{ infoProduct.category ? infoProduct.category.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Color:</span> <span>{{ infoProduct.color ? infoProduct.color.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Size:</span> <span>{{ infoProduct.size ? infoProduct.size.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Featured:</span> <span>{{ infoProduct.is_featured ? 'Yes' : 'No' }}</span>
+              </VCardText>
+            </VCol>
+          </VRow>
+
+          <VCardText class="text-subtitle-1 mt-3">
+            <span class="font-weight-medium">Description:</span> <span>{{ infoProduct.description || 'No description available.' }}</span>
+          </VCardText>
+          <VCardText class="text-subtitle-1 mt-3">
+            <span class="font-weight-medium">Short Description:</span> <span>{{ infoProduct.short_description || 'No short description available.' }}</span>
+          </VCardText>
+        </div>
+      </div>
+    </VCardText>
+    <VCardActions>
+      <VCol cols="12" class="d-flex justify-end">
+        <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
+      </VCol>
+    </VCardActions>
+  </VCard>
+</VDialog>
+
+
 
     <!-- Delete Modal -->
     <VDialog v-model="deleteModal" max-width="500px">
@@ -235,6 +316,19 @@ const closeEditModal = () => {
   editModal.value = false;
 };
 
+const openInfoModal = (item) => {
+  infoProduct.value = {
+    ...item,
+    images: item.images || [] // Ensure that the images array is present
+  };
+  infoModal.value = true;
+};
+
+
+const closeInfoModal = () => {
+  infoModal.value = false;
+};
+
 const handleEditImageUpload = (event) => {
   const file = event.target.files[0];
   editProduct.value.image = file;
@@ -325,15 +419,6 @@ const deleteProduct = async () => {
     console.error('Failed to delete product:', error);
     $toast.error('Error deleting product: ' + (error.response?.data?.message || error.message));
   }
-};
-
-const openInfoModal = (item) => {
-  infoProduct.value = { ...item };
-  infoModal.value = true;
-};
-
-const closeInfoModal = () => {
-  infoModal.value = false;
 };
 
 const onPageChange = (page) => {

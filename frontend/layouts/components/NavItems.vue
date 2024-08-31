@@ -10,6 +10,7 @@ import { onMounted, ref } from 'vue';
 const storiesCount = ref();
 const levelsCount = ref();
 const categoriesCount = ref();
+const productsCount = ref();
 
 const fetchCounts = async () => {
   try {
@@ -39,14 +40,15 @@ const fetchCounts = async () => {
     });
 
     categoriesCount.value = categoriesResponse.data.count;
-    // Fetch categories count
+
+    // Fetch products count
     const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    productsCount.value = productsResponse.data.count;
+    productsCount.value = productsResponse.data.countProducts;
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
