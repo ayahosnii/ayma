@@ -33,6 +33,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/get-products', [ProductController::class, "getProducts"]);
+
+
 Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
