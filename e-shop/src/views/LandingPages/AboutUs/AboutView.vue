@@ -452,8 +452,8 @@ onUnmounted(() => {
               >
                 <h6 class="text-truncate mb-3">{{ item.name }}</h6>
                 <div class="d-flex justify-content-center">
-                  <h6>${{ item.price }}</h6>
-                  <h6 class="text-muted ml-2"><del>$123.00</del></h6>
+                  <h6>${{ item.discount_price }}</h6>
+                  <h6 class="text-muted ml-2"><del>${{ item.price }}</del></h6>
                 </div>
               </div>
               <div
