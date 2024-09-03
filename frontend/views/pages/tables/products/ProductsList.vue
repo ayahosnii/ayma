@@ -156,12 +156,12 @@
 
             <VCol cols="4">
               <VCardText class="text-subtitle-1">
-                <span class="font-weight-medium">Price:</span> <span>{{ infoProduct.price }}</span>
+                <span class="font-weight-medium">Price:</span> <span>${{ infoProduct.price }}</span>
               </VCardText>
             </VCol>
             <VCol cols="4">
               <VCardText class="text-subtitle-1">
-                <span class="font-weight-medium">Discount Price:</span> <span>{{ infoProduct.discount_price || '-' }}</span>
+                <span class="font-weight-medium">Discount Price:</span> <span>${{ infoProduct.discount_price || '-' }}</span>
               </VCardText>
             </VCol>
             <VCol cols="4">

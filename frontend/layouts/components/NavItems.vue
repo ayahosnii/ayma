@@ -194,6 +194,17 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Orders',
+      badgeContent: levelsCount,
+      badgeClass: 'bg-success',
+      icon:' ri-truck-fill',
+      href: '/orders/list',
+      // badgeContent: 'New',
+      // badgeClass: 'bg-light-primary text-primary',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Levels',
       badgeContent: levelsCount,
       badgeClass: 'bg-warning',

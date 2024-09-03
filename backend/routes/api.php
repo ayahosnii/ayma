@@ -7,6 +7,8 @@ use App\Http\Controllers\Api\GrammarOptionController;
 use App\Http\Controllers\Api\GrammarQuestionController;
 use App\Http\Controllers\Api\LevelsController;
 use App\Http\Controllers\Api\OpenAIController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\SpeakingController;
 use App\Http\Controllers\Api\StoriesController;
 use App\Http\Controllers\Api\SizeController;
@@ -50,6 +52,10 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes
+
+    Route::resource('/orders', OrderController::class); //Orders
+    Route::resource('/order_items', OrderItemController::class); //Order items
+
 
     Route::resource('/levels', LevelsController::class);
     Route::get('/count-levels', [LevelsController::class, 'countLevels']); //Levels Count
