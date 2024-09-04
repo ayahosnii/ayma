@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -21,6 +23,25 @@ class OrderController extends Controller
     {
         // Create a new order with validated data
         $order = Order::create($request->validated());
+
+        // Retrieve the product based on product_id
+        $product = Product::find($request->product_id);
+
+        // Check if product exists
+        if (!$product) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        // Create an order item with the product details
+        OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $request->product_id,
+            'quantity' => 1,
+            'price' => $product->price,
+            'total' => $product->price,
+            'product_name' => $product->product_name ?? '', // Ensure this is not null
+            'product_image' => $product->product_image ?? '',
+        ]);
 
         return response()->json($order, 201);
     }
