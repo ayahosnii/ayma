@@ -39,8 +39,8 @@ class OrderController extends Controller
             'quantity' => 1,
             'price' => $product->price,
             'total' => $product->price,
-            'product_name' => $product->product_name ?? '', // Ensure this is not null
-            'product_image' => $product->product_image ?? '',
+            'product_name' => $product->name ?? '', // Ensure this is not null
+            'product_description' => $product->description ?? '',
         ]);
 
         return response()->json($order, 201);
