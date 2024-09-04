@@ -64,6 +64,16 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('/grammar-games', GrammarGamesController::class); // Grammar Games
 
-
     Route::get('/customers', [CustomerController::class, 'index']); //Stories Count
+
+    Route::resource('/stories', StoriesController::class);
+    Route::get('/count-stories', [StoriesController::class, 'count']); //Stories Count
+    Route::get('/stories/{id}/sounds', [StoriesController::class, 'getStorySounds']);     // Sounds table for each story
+    Route::delete('stories/{storyId}/sounds/{soundId}', [StoriesController::class, 'destroySound']); // Delete Sound
+    Route::post('stories/{story}/sounds', [StoriesController::class, 'addSound']); // Add Sound
+    Route::get('/stories/{id}/slides', [StoriesController::class, 'getStorySlides']); // Slides
+    Route::post('stories/{storyId}/slides', [StoriesController::class, 'addSlide']); // Add Slide
+
+
+
 });
