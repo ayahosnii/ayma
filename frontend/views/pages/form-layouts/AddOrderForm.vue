@@ -62,12 +62,13 @@ const fetchUsers = async () => {
   const token = localStorage.getItem('authToken');
   
   try {
-    const userResponse = await axios.get('http://127.0.0.1:8000/api/users', {
+    const userResponse = await axios.get('http://127.0.0.1:8000/api/customers', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     users.value = userResponse.data;
+    console.log(userResponse)
   } catch (error) {
     $toast.error('Error fetching users: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching users:', error);
