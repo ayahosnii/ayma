@@ -11,6 +11,7 @@ const storiesCount = ref();
 const levelsCount = ref();
 const categoriesCount = ref();
 const productsCount = ref();
+const ordersCount = ref();
 
 const fetchCounts = async () => {
   try {
@@ -49,6 +50,15 @@ const fetchCounts = async () => {
     });
 
     productsCount.value = productsResponse.data.countProducts;
+
+    
+    const ordersResponse = await axios.get(`${BASE_URL}/count-orders`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    ordersCount.value = ordersResponse.data.countOrders;
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
@@ -195,8 +205,8 @@ onMounted(() => {
   <VerticalNavLink
     :item="{
       title: 'Orders',
-      badgeContent: levelsCount,
-      badgeClass: 'bg-success',
+      badgeContent: ordersCount,
+      badgeClass: 'bg-error',
       icon:' ri-truck-fill',
       href: '/orders/list',
       // badgeContent: 'New',
