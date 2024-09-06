@@ -56,6 +56,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('/orders', OrderController::class); //Orders
     Route::resource('/order_items', OrderItemController::class); //Order items
+    Route::get('/count-orders', [OrderController::class, 'countOrders']); //Order Count
 
 
     Route::resource('/levels', LevelsController::class);

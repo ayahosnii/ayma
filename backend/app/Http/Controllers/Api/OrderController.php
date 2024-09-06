@@ -14,7 +14,7 @@ class OrderController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-        $orders = Order::all(); // Retrieve all orders
+        $orders = Order::with('orderItems')->get(); // Retrieve all orders
         return response()->json($orders);
     }
 
@@ -67,5 +67,11 @@ class OrderController extends Controller
         $order->delete();
 
         return response()->json(null, 204);
+    }
+
+    public function countOrders()
+    {
+        $countOrders = Order::count();
+        return response()->json(['countOrders' => $countOrders]);
     }
 }
