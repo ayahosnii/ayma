@@ -9,10 +9,9 @@ const $toast = useToast();
 
 // Form fields
 const customer_name = ref('');
-const product_id = ref(null);
-const quantity = ref(1);
+const products = ref([{ product_id: null, quantity: 1 }]); // Array of products with quantity
 const status = ref('pending');
-const products = ref([]);
+const availableProducts = ref([]);
 const users = ref([]);
 
 // Additional fields
@@ -27,7 +26,7 @@ const shipping_postal_code = ref('');
 const shipping_country = ref('');
 const shipping_phone = ref('');
 const payment_status = ref('');
-const payment_method = ref('');
+const payment_method = ref(''); // Payment method select
 const transaction_id = ref('');
 const order_date = ref('');
 
@@ -45,7 +44,7 @@ onMounted(async () => {
         Authorization: `Bearer ${token}`,
       },
     });
-    products.value = productResponse.data;
+    availableProducts.value = productResponse.data;
 
     // Fetch users (only if the select dropdown is needed)
     if (useSelectForUserId.value) {
@@ -68,7 +67,7 @@ const fetchUsers = async () => {
       },
     });
     users.value = userResponse.data;
-    console.log(userResponse)
+    console.log(userResponse);
   } catch (error) {
     $toast.error('Error fetching users: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching users:', error);
@@ -82,6 +81,16 @@ watch(useSelectForUserId, (newValue) => {
   }
 });
 
+// Add a new product to the array
+const addProduct = () => {
+  products.value.push({ product_id: null, quantity: 1 });
+};
+
+// Remove a product from the array
+const removeProduct = (index) => {
+  products.value.splice(index, 1);
+};
+
 // Handle form submission
 const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
@@ -89,8 +98,7 @@ const handleSubmit = async () => {
   try {
     const orderData = {
       customer_name: customer_name.value,
-      product_id: product_id.value,
-      quantity: quantity.value,
+      products: products.value, // Send the array of products with quantity
       status: status.value,
       user_id: user_id.value, // Add user ID
       order_number: order_number.value,
@@ -102,7 +110,7 @@ const handleSubmit = async () => {
       shipping_country: shipping_country.value,
       shipping_phone: shipping_phone.value,
       payment_status: payment_status.value,
-      payment_method: payment_method.value,
+      payment_method: payment_method.value, // Selected payment method
       transaction_id: transaction_id.value,
       order_date: order_date.value,
     };
@@ -129,8 +137,7 @@ const handleSubmit = async () => {
 // Optional: Function to reset the form
 const resetForm = () => {
   customer_name.value = '';
-  product_id.value = null;
-  quantity.value = 1;
+  products.value = [{ product_id: null, quantity: 1 }];
   status.value = 'pending';
   user_id.value = '';
   useSelectForUserId.value = false;
@@ -192,29 +199,44 @@ const resetForm = () => {
         </template>
       </VCol>
 
-      <!-- Product -->
-      <VCol cols="12" md="4">
-        <VSelect
-          v-model="product_id"
-          label="Choose Product"
-          :items="products"
-          item-title="name"
-          item-value="id"
-          density="compact"
-          required
-        />
-      </VCol>
+      <!-- Products -->
+      <VCol cols="12">
+        <h4>Products</h4>
+        <VRow v-for="(product, index) in products" :key="index" class="mb-4">
+          <!-- Product Select -->
+          <VCol cols="6">
+            <VSelect
+              v-model="product.product_id"
+              label="Choose Product"
+              :items="availableProducts"
+              item-title="name"
+              item-value="id"
+              required
+            />
+          </VCol>
 
-      <!-- Quantity -->
-      <VCol cols="12" md="4">
-        <VTextField
-          v-model="quantity"
-          label="Quantity"
-          placeholder="Enter quantity"
-          type="number"
-          min="1"
-          required
-        />
+          <!-- Quantity -->
+          <VCol cols="4">
+            <VTextField
+              v-model="product.quantity"
+              label="Quantity"
+              type="number"
+              min="1"
+              required
+            />
+          </VCol>
+
+          <!-- Remove product button -->
+          <VCol cols="2" class="d-flex align-center">
+            <VBtn @click="removeProduct(index)" icon="ri-close-fill" class="mx-2" color="error" />
+          </VCol>
+        </VRow>
+
+        <!-- Add Product Button -->
+        <VCol cols="12">
+          <VBtn @click="addProduct" icon="ri-add-fill" color="warning">
+          </VBtn>
+        </VCol>
       </VCol>
 
       <!-- Order Status -->
@@ -313,7 +335,7 @@ const resetForm = () => {
         <VSelect
           v-model="payment_status"
           label="Payment Status"
-          :items="['pending', 'completed', 'failed']"
+          :items="['pending', 'paid', 'failed']"
           required
         />
       </VCol>
@@ -343,13 +365,12 @@ const resetForm = () => {
         <VTextField
           v-model="order_date"
           label="Order Date"
-          placeholder="Enter order date"
           type="date"
           required
         />
       </VCol>
 
-      <!-- Buttons -->
+      <!-- Submit and Reset Buttons -->
       <VCol cols="12" class="d-flex gap-4">
         <VBtn type="submit">
           Add Order

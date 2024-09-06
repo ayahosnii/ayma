@@ -21,42 +21,47 @@ class OrderController extends Controller
     // Store a newly created resource in storage.
     public function store(CreateOrderRequest $request)
     {
-        // Create a new order with validated data
-        $order = Order::create($request->validated());
+        // Create a new order with validated data, excluding products
+        $order = Order::create($request->except('products'));
 
-        // Retrieve the product based on product_id
-        $product = Product::find($request->product_id);
+        // Loop through the products and create order items for each
+        foreach ($request->products as $productData) {
+            // Retrieve the product based on product_id
+            $product = Product::find($productData['product_id']);
 
-        // Check if product exists
-        if (!$product) {
-            return response()->json(['error' => 'Product not found'], 404);
+            // Check if the product exists
+            if (!$product) {
+                return response()->json(['error' => 'Product not found'], 404);
+            }
+
+            // Create an order item with the product details
+            OrderItem::create([
+                'order_id' => $order->id,
+                'product_id' => $product->id,
+                'quantity' => $productData['quantity'],
+                'price' => $product->price,
+                'total' => $product->price * $productData['quantity'], // Calculate total based on quantity
+                'product_name' => $product->name ?? '', // Ensure this is not null
+                'product_description' => $product->description ?? '',
+            ]);
         }
 
-        // Create an order item with the product details
-        OrderItem::create([
-            'order_id' => $order->id,
-            'product_id' => $request->product_id,
-            'quantity' => 1,
-            'price' => $product->price,
-            'total' => $product->price,
-            'product_name' => $product->name ?? '', // Ensure this is not null
-            'product_description' => $product->description ?? '',
-        ]);
-
-        return response()->json($order, 201);
+        return response()->json($order->load('orderItems'), 201); // Return order with items
     }
 
     // Display the specified resource.
     public function show(Order $order)
     {
-        return response()->json($order);
+        return response()->json($order->load('orderItems')); // Include order items in response
     }
 
     // Update the specified resource in storage.
     public function update(CreateOrderRequest $request, Order $order)
     {
         // Update the order with validated data
-        $order->update($request->validated());
+        $order->update($request->except('products'));
+
+        // Optionally, you can update the associated order items here
 
         return response()->json($order);
     }
