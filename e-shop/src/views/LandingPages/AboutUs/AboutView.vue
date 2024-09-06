@@ -3,6 +3,16 @@ import { onMounted, onUnmounted, ref } from "vue";
 import axios from "axios";
 
 const items = ref([]);
+const query = `
+  query {
+    products(limit: 5) {
+      id
+      name
+      price
+      discount_price
+    }
+  }
+`;
 
 //example components
 import DefaultNavbar from "../../../examples/navbars/NavbarDefault.vue";
@@ -40,8 +50,18 @@ onMounted(async () => {
   }
 
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/get-products");
-    items.value = response.data;
+    const response = await axios.post(
+      "http://127.0.0.1:8000/graphql",
+      { query },
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log(response)
+    items.value = response.data.data.products;
     console.log(items.value);
   } catch (error) {
     console.error("Error fetching data:", error);
