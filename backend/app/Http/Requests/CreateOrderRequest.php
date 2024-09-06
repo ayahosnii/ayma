@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CreateOrderRequest extends FormRequest
 {
@@ -25,9 +26,12 @@ class CreateOrderRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'user_id' => 'required|exists:users,id',
-            'order_number' => 'required|unique:orders',
+            'order_number' => [
+                'required',
+                Rule::unique('orders')->ignore($this->route('order'))
+            ],
             'total_amount' => 'required|numeric',
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
             'shipping_address' => 'required|string',
@@ -41,5 +45,21 @@ class CreateOrderRequest extends FormRequest
             'transaction_id' => 'nullable|string',
             'order_date' => 'required|date',
         ];
+
+        // Add or modify rules based on whether the request is for updating an existing record
+        if ($this->isMethod('post')) {
+            // Post request - Creating a new order
+            $rules['order_number'][] = 'unique:orders';
+        } elseif ($this->isMethod('put') || $this->isMethod('patch')) {
+            // Put/Patch request - Updating an existing order
+            // Assuming the route has an 'order' parameter with the order ID
+            $orderId = $this->route('order');
+            $rules['order_number'] = [
+                'required',
+                Rule::unique('orders')->ignore($orderId),
+            ];
+        }
+
+        return $rules;
     }
 }
