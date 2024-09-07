@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ab9b0906e7095d999c5b9e9b539e8fd",
+    "content-hash": "a80c6f02790f88bebe4628e9606fbc12",
     "packages": [
         {
             "name": "brick/math",
@@ -1600,6 +1600,38 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "kwn/php-rdkafka-stubs",
+            "version": "0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kwn/php-rdkafka-stubs.git",
+                "reference": "7a9a12598b251919b719d2029bf405cd7fdcda2a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kwn/php-rdkafka-stubs/zipball/7a9a12598b251919b719d2029bf405cd7fdcda2a",
+                "reference": "7a9a12598b251919b719d2029bf405cd7fdcda2a",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Karol Wnuk",
+                    "email": "k.wnuk@ascetic.pl"
+                }
+            ],
+            "description": "Rdkafka extenstion stubs for your IDE",
+            "support": {
+                "issues": "https://github.com/kwn/php-rdkafka-stubs/issues",
+                "source": "https://github.com/kwn/php-rdkafka-stubs/tree/0.0.1"
+            },
+            "time": "2016-04-12T21:13:32+00:00"
         },
         {
             "name": "laragraph/utils",
