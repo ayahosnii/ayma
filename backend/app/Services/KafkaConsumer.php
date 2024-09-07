@@ -10,12 +10,12 @@ class KafkaConsumer
 {
     protected $consumer;
 
-    public function __construct()
-    {
-        $this->consumer = new \RdKafka\Consumer();
-        $this->consumer->addBrokers(config('kafka.brokers'));
-        $this->consumer->setGroupId(config('kafka.group_id'));
-    }
+//    public function __construct()
+//    {
+//        $this->consumer = new \RdKafka\Consumer();
+//        $this->consumer->addBrokers(config('kafka.brokers'));
+//        $this->consumer->setGroupId(config('kafka.group_id'));
+//    }
 
     public function consume($topicName)
     {

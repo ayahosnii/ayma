@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Junges\Kafka\Facades\Kafka;
 
 class OrderController extends Controller
 {
@@ -44,10 +45,15 @@ class OrderController extends Controller
             return $order;  // In case any handler returns an error response
         }
 
+        // Kafka Producer: Send order data to Kafka topic
+//        Kafka::publishOn('orders-topic')
+//            ->withHeaders(['event' => 'order.created'])
+//            ->withBodyKey('order_id', $order->id)
+//            ->withBodyKey('total_amount', $order->total_amount)
+//            ->send();
+
         return response()->json($order->load('orderItems'), 201);
-
     }
-
     // Display the specified resource.
     public function show(Order $order)
     {
