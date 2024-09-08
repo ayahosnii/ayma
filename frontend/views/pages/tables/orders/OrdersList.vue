@@ -6,7 +6,7 @@
           <i class="ri-add-circle-line"></i> Add Order
         </VBtn>
         <tr>
-          <th class="text-uppercase text-center">Order ID</th>
+          <th class="text-uppercase text-center">Order Number</th>
           <th class="text-uppercase text-center">Customer</th>
           <th class="text-uppercase text-center">Total Amount</th>
           <th class="text-uppercase text-center">Status</th>
@@ -16,7 +16,7 @@
 
       <tbody>
         <tr v-for="order in orders" :key="order.id">
-          <td class="text-center">{{ order.id }}</td>
+          <td class="text-center">{{ order.order_number }}</td>
           <td class="text-center">{{ order.customer_name }}</td>
           <td class="text-center">{{ order.total }}</td>
           <td class="text-center">{{ order.status }}</td>

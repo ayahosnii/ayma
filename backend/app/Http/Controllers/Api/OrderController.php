@@ -14,7 +14,7 @@ class OrderController extends Controller
     // Display a listing of the resource.
     public function index()
     {
-        $orders = Order::with('orderItems')->get(); // Retrieve all orders
+        $orders = Order::with('orderItems', 'user')->get(); // Retrieve all orders
         return response()->json($orders);
     }
 
