@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\ChainOfResponsibility\orders\CalculateTotalHandler;
+use App\ChainOfResponsibility\orders\CreateOrderHandler;
+use App\ChainOfResponsibility\orders\ProcessOrderItemsHandler;
+use App\ChainOfResponsibility\Refund\FullRefundHandler;
+use App\ChainOfResponsibility\Refund\PartialRefundHandler;
+use App\ChainOfResponsibility\Refund\ProductIssueRefundHandler;
+use App\ChainOfResponsibility\Refund\ReturnEligibilityHandler;
+use App\ChainOfResponsibility\Refund\UnjustifiedRefundHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
-use App\Models\OrderItem;
-use App\Models\Product;
 use Illuminate\Http\Request;
+use Junges\Kafka\Facades\Kafka;
 
 class OrderController extends Controller
 {
@@ -21,34 +28,32 @@ class OrderController extends Controller
     // Store a newly created resource in storage.
     public function store(CreateOrderRequest $request)
     {
-        // Create a new order with validated data, excluding products
-        $order = Order::create($request->except('products'));
+        // Create the handlers
+        $createOrder = new CreateOrderHandler();
+        $processItems = new ProcessOrderItemsHandler();
+        $calculateTotal = new CalculateTotalHandler();
 
-        // Loop through the products and create order items for each
-        foreach ($request->products as $productData) {
-            // Retrieve the product based on product_id
-            $product = Product::find($productData['product_id']);
+        // Chain the handlers together: Create Order -> Process Items -> Calculate Total
+        $createOrder->setNext($processItems)
+            ->setNext($calculateTotal);
 
-            // Check if the product exists
-            if (!$product) {
-                return response()->json(['error' => 'Product not found'], 404);
-            }
+        // Start the chain
+        $order = $createOrder->handle($request);
 
-            // Create an order item with the product details
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $product->id,
-                'quantity' => $productData['quantity'],
-                'price' => $product->price,
-                'total' => $product->price * $productData['quantity'], // Calculate total based on quantity
-                'product_name' => $product->name ?? '', // Ensure this is not null
-                'product_description' => $product->description ?? '',
-            ]);
+        // Return the order with items
+        if ($order instanceof \Illuminate\Http\JsonResponse) {
+            return $order;  // In case any handler returns an error response
         }
 
-        return response()->json($order->load('orderItems'), 201); // Return order with items
-    }
+        // Kafka Producer: Send order data to Kafka topic
+//        Kafka::publishOn('orders-topic')
+//            ->withHeaders(['event' => 'order.created'])
+//            ->withBodyKey('order_id', $order->id)
+//            ->withBodyKey('total_amount', $order->total_amount)
+//            ->send();
 
+        return response()->json($order->load('orderItems'), 201);
+    }
     // Display the specified resource.
     public function show(Order $order)
     {
@@ -78,5 +83,25 @@ class OrderController extends Controller
     {
         $countOrders = Order::count();
         return response()->json(['countOrders' => $countOrders]);
+    }
+
+    public function processRefund(Request $request) {
+        // Create handlers for processing the refund request
+        $returnEligibilityHandler = new ReturnEligibilityHandler();
+        $fullRefundHandler = new FullRefundHandler();
+        $partialRefundHandler = new PartialRefundHandler();
+        $productIssueRefundHandler = new ProductIssueRefundHandler();
+        $unjustifiedRefundHandler = new UnjustifiedRefundHandler();
+
+        // Chain the handlers together: Return Eligibility -> Full Refund -> Partial Refund -> Product Issue Refund -> Unjustified Refund
+        $returnEligibilityHandler->setNext($fullRefundHandler)
+            ->setNext($partialRefundHandler)
+            ->setNext($productIssueRefundHandler)
+            ->setNext($unjustifiedRefundHandler);
+
+        // Start processing the refund request
+        $response = $returnEligibilityHandler->handle($request->all());
+
+        return $response;
     }
 }
