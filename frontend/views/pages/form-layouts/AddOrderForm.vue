@@ -112,26 +112,7 @@ const handleSubmit = async () => {
   let createdUserId = user_id.value;
 
   try {
-    if (isNewUser.value) {
-      // Create a new user if needed
-      const newUser = {
-        name: newUserName.value,
-        email: newUserEmail.value,
-        password: newUserPassword.value,
-      };
-
-      const userResponse = await axios.post('http://127.0.0.1:8000/api/users', newUser, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      createdUserId = userResponse.data.id;
-      $toast.success('User created successfully!');
-    }
-
-    // Proceed to create the order
+    // Prepare orderData with user info conditionally
     const orderData = {
       customer_name: customer_name.value,
       products: products.value,
@@ -151,6 +132,16 @@ const handleSubmit = async () => {
       order_date: order_date.value,
     };
 
+    if (isNewUser.value) {
+      // Add new user details to orderData if needed
+      Object.assign(orderData, {
+        name: newUserName.value,
+        email: newUserEmail.value,
+        password: newUserPassword.value,
+      });
+    }
+
+    // Submit the order
     await axios.post('http://127.0.0.1:8000/api/orders', orderData, {
       headers: {
         Authorization: `Bearer ${token}`,

@@ -27,7 +27,6 @@ class CreateOrderRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'user_id' => 'required|exists:users,id',
             'order_number' => [
                 'required',
                 Rule::unique('orders')->ignore($this->route('order'))
