@@ -17,8 +17,8 @@
       <tbody>
         <tr v-for="order in orders" :key="order.id">
           <td class="text-center">{{ order.order_number }}</td>
-          <td class="text-center">{{ order.customer_name }}</td>
-          <td class="text-center">{{ order.total }}</td>
+          <td class="text-center">{{ order.user.name }}</td>
+          <td class="text-center">${{ order.total_amount }}</td>
           <td class="text-center">{{ order.status }}</td>
           <td class="text-center">
             <VBtn size="small" title="Edit" color="warning" @click="openEditModal(order)">

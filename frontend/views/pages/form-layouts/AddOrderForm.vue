@@ -9,14 +9,14 @@ const $toast = useToast();
 
 // Form fields
 const customer_name = ref('');
-const products = ref([{ product_id: null, quantity: 1 }]); // Array of products with quantity
+const products = ref([{ product_id: null, quantity: 1 }]);
 const status = ref('pending');
 const availableProducts = ref([]);
 const users = ref([]);
+const user_id = ref('');
+const useSelectForUserId = ref(false);
 
 // Additional fields
-const user_id = ref('');
-const useSelectForUserId = ref(false); // Checkbox toggle
 const order_number = ref('');
 const total_amount = ref(0);
 const shipping_address = ref('');
@@ -26,9 +26,15 @@ const shipping_postal_code = ref('');
 const shipping_country = ref('');
 const shipping_phone = ref('');
 const payment_status = ref('');
-const payment_method = ref(''); // Payment method select
+const payment_method = ref('');
 const transaction_id = ref('');
 const order_date = ref('');
+
+// New User Inputs
+const newUserEmail = ref('');
+const newUserName = ref('');
+const newUserPassword = ref('');
+const isNewUser = ref(false);
 
 // Router instance
 const router = useRouter();
@@ -46,7 +52,7 @@ onMounted(async () => {
     });
     availableProducts.value = productResponse.data;
 
-    // Fetch users (only if the select dropdown is needed)
+    // Fetch users if the select dropdown is needed
     if (useSelectForUserId.value) {
       await fetchUsers();
     }
@@ -61,13 +67,12 @@ const fetchUsers = async () => {
   const token = localStorage.getItem('authToken');
   
   try {
-    const userResponse = await axios.get('http://127.0.0.1:8000/api/customers', {
+    const userResponse = await axios.get('http://127.0.0.1:8000/api/users', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     users.value = userResponse.data;
-    console.log(userResponse);
   } catch (error) {
     $toast.error('Error fetching users: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching users:', error);
@@ -91,16 +96,47 @@ const removeProduct = (index) => {
   products.value.splice(index, 1);
 };
 
+// Function to generate a random password
+const generateRandomPassword = () => {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let password = '';
+  for (let i = 0; i < 8; i++) {
+    password += charset[Math.floor(Math.random() * charset.length)];
+  }
+  newUserPassword.value = password;
+};
+
 // Handle form submission
 const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
+  let createdUserId = user_id.value;
 
   try {
+    if (isNewUser.value) {
+      // Create a new user if needed
+      const newUser = {
+        name: newUserName.value,
+        email: newUserEmail.value,
+        password: newUserPassword.value,
+      };
+
+      const userResponse = await axios.post('http://127.0.0.1:8000/api/users', newUser, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      createdUserId = userResponse.data.id;
+      $toast.success('User created successfully!');
+    }
+
+    // Proceed to create the order
     const orderData = {
       customer_name: customer_name.value,
-      products: products.value, // Send the array of products with quantity
+      products: products.value,
       status: status.value,
-      user_id: user_id.value, // Add user ID
+      user_id: createdUserId,
       order_number: order_number.value,
       total_amount: total_amount.value,
       shipping_address: shipping_address.value,
@@ -110,12 +146,12 @@ const handleSubmit = async () => {
       shipping_country: shipping_country.value,
       shipping_phone: shipping_phone.value,
       payment_status: payment_status.value,
-      payment_method: payment_method.value, // Selected payment method
+      payment_method: payment_method.value,
       transaction_id: transaction_id.value,
       order_date: order_date.value,
     };
 
-    const response = await axios.post('http://127.0.0.1:8000/api/orders', orderData, {
+    await axios.post('http://127.0.0.1:8000/api/orders', orderData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -123,10 +159,8 @@ const handleSubmit = async () => {
     });
 
     $toast.success('Order added successfully!');
-    console.log('Order added successfully:', response.data);
-
-    // Optionally, reset the form or redirect
     resetForm();
+    // Optionally redirect after successful submission
     // router.push('/orders');
   } catch (error) {
     $toast.error('Error adding order: ' + (error.response?.data?.message || error.message));
@@ -153,33 +187,41 @@ const resetForm = () => {
   payment_method.value = '';
   transaction_id.value = '';
   order_date.value = '';
+  newUserEmail.value = '';
+  newUserName.value = '';
+  newUserPassword.value = '';
+  isNewUser.value = false;
 };
 </script>
 
 <template>
   <VForm @submit.prevent="handleSubmit">
     <VRow>
-      <!-- Customer Name -->
+      <!-- New User Checkbox -->
       <VCol cols="12" md="4">
-        <VTextField
-          v-model="customer_name"
-          label="Customer Name"
-          placeholder="Enter customer name"
-          required
-        />
+        <VCheckbox v-model="isNewUser" label="New User?" />
       </VCol>
 
-      <!-- User ID (toggle between select and input) -->
-      <VCol cols="12" md="4">
-        <VCheckbox
-          v-model="useSelectForUserId"
-          label="Select User ID"
-        />
-      </VCol>
-      
-      <!-- Conditionally render based on the checkbox -->
-      <VCol cols="12" md="4">
-        <template v-if="useSelectForUserId">
+      <!-- Conditionally render based on isNewUser flag -->
+      <template v-if="isNewUser">
+        <!-- New User Email -->
+        <VCol cols="12" md="4">
+          <VTextField v-model="newUserEmail" label="Email" placeholder="Enter email" required />
+        </VCol>
+        <!-- New User Name -->
+        <VCol cols="12" md="4">
+          <VTextField v-model="newUserName" label="Name" placeholder="Enter name" required />
+        </VCol>
+        <!-- Random Password -->
+        <VCol cols="12" md="4">
+          <VTextField v-model="newUserPassword" label="Password" :readonly="true" placeholder="Generated password" />
+          <VBtn @click="generateRandomPassword">Generate Password</VBtn>
+        </VCol>
+      </template>
+
+      <template v-else>
+        <!-- Existing User Dropdown -->
+        <VCol cols="12" md="4">
           <VSelect
             v-model="user_id"
             label="Choose User"
@@ -188,16 +230,8 @@ const resetForm = () => {
             item-value="id"
             required
           />
-        </template>
-        <template v-else>
-          <VTextField
-            v-model="user_id"
-            label="User ID"
-            placeholder="Enter user ID"
-            required
-          />
-        </template>
-      </VCol>
+        </VCol>
+      </template>
 
       <!-- Products -->
       <VCol cols="12">
@@ -234,7 +268,8 @@ const resetForm = () => {
 
         <!-- Add Product Button -->
         <VCol cols="12">
-          <VBtn @click="addProduct" icon="ri-add-fill" color="warning">
+          <VBtn @click="addProduct" icon="ri-add-line" color="warning">
+            Add Product
           </VBtn>
         </VCol>
       </VCol>

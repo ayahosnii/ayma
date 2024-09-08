@@ -27,33 +27,49 @@ class OrderController extends Controller
 
     // Store a newly created resource in storage.
     public function store(CreateOrderRequest $request)
-    {
-        // Create the handlers
-        $createOrder = new CreateOrderHandler();
-        $processItems = new ProcessOrderItemsHandler();
-        $calculateTotal = new CalculateTotalHandler();
+{
+    // Handle user creation or fetching
+    $user = User::find($request->input('user_id'));
 
-        // Chain the handlers together: Create Order -> Process Items -> Calculate Total
-        $createOrder->setNext($processItems)
-            ->setNext($calculateTotal);
-
-        // Start the chain
-        $order = $createOrder->handle($request);
-
-        // Return the order with items
-        if ($order instanceof \Illuminate\Http\JsonResponse) {
-            return $order;  // In case any handler returns an error response
-        }
-
-        // Kafka Producer: Send order data to Kafka topic
-//        Kafka::publishOn('orders-topic')
-//            ->withHeaders(['event' => 'order.created'])
-//            ->withBodyKey('order_id', $order->id)
-//            ->withBodyKey('total_amount', $order->total_amount)
-//            ->send();
-
-        return response()->json($order->load('orderItems'), 201);
+    if (!$user) {
+        // Create the user if it does not exist
+        $user = User::create([
+            'name' => $request->input('customer_name'), // Use the customer's name for the new user
+            'email' => $request->input('customer_name') . '@example.com', // Generate a default email
+            'password' => Hash::make(Str::random(12)), // Generate a random password
+        ]);
     }
+
+    // Prepare order data
+    $orderData = array_merge($request->validated(), ['user_id' => $user->id]);
+
+    // Create the handlers
+    $createOrder = new CreateOrderHandler();
+    $processItems = new ProcessOrderItemsHandler();
+    $calculateTotal = new CalculateTotalHandler();
+
+    // Chain the handlers together: Create Order -> Process Items -> Calculate Total
+    $createOrder->setNext($processItems)
+                ->setNext($calculateTotal);
+
+    // Start the chain with the order data
+    $order = $createOrder->handle($orderData);
+
+    // Return the order with items
+    if ($order instanceof \Illuminate\Http\JsonResponse) {
+        return $order;  // In case any handler returns an error response
+    }
+
+    // Kafka Producer: Send order data to Kafka topic (Uncomment if Kafka is used)
+//    Kafka::publishOn('orders-topic')
+//        ->withHeaders(['event' => 'order.created'])
+//        ->withBodyKey('order_id', $order->id)
+//        ->withBodyKey('total_amount', $order->total_amount)
+//        ->send();
+
+    return response()->json($order->load('orderItems'), 201);
+}
+
     // Display the specified resource.
     public function show(Order $order)
     {
@@ -104,4 +120,6 @@ class OrderController extends Controller
 
         return $response;
     }
+
+
 }
