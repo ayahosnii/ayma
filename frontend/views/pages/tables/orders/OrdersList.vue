@@ -49,22 +49,22 @@
               <h3>Order Details</h3>
               <br>
               <VRow>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Order Number:</strong> {{ infoOrder.order_number }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Status:</strong> {{ infoOrder.status }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Total Amount:</strong> ${{ infoOrder.total_amount }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Payment Status:</strong> {{ infoOrder.payment_status }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Payment Method:</strong> {{ infoOrder.payment_method }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Transaction ID:</strong> {{ infoOrder.transaction_id }}
                 </VCol>
                 <VCol cols="4">
@@ -80,22 +80,22 @@
               <h3>Shipping Details</h3>
               <br>
               <VRow>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping Address:</strong> {{ infoOrder.shipping_address }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping City:</strong> {{ infoOrder.shipping_city }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping State:</strong> {{ infoOrder.shipping_state }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping Postal Code:</strong> {{ infoOrder.shipping_postal_code }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping Country:</strong> {{ infoOrder.shipping_country }}
                 </VCol>
-                <VCol cols="4">
+                <VCol cols="3">
                   <strong>Shipping Phone:</strong> {{ infoOrder.shipping_phone }}
                 </VCol>
               </VRow>
@@ -115,7 +115,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in infoOrder.orderItems" :key="item.id">
+              <tr v-for="item in infoOrder.order_items" :key="item.id">
                 <td class="text-center">{{ item.product_name }}</td>
                 <td class="text-center">{{ item.quantity }}</td>
                 <td class="text-center">${{ item.price }}</td>
