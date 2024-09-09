@@ -112,6 +112,7 @@
                 <th class="text-uppercase text-center">Product Name</th>
                 <th class="text-uppercase text-center">Quantity</th>
                 <th class="text-uppercase text-center">Price</th>
+                <th class="text-uppercase text-center">Total</th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +120,7 @@
                 <td class="text-center">{{ item.product_name }}</td>
                 <td class="text-center">{{ item.quantity }}</td>
                 <td class="text-center">${{ item.price }}</td>
+                <td class="text-center">${{ item.total }}</td>
               </tr>
             </tbody>
           </VTable>
