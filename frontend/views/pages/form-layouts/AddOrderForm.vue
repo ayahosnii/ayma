@@ -14,7 +14,7 @@ const status = ref('pending');
 const availableProducts = ref([]);
 const users = ref([]);
 const user_id = ref('');
-const useSelectForUserId = ref(false);
+const useSelectForUserId = ref(true);
 
 // Additional fields
 const order_number = ref('');
@@ -67,12 +67,13 @@ const fetchUsers = async () => {
   const token = localStorage.getItem('authToken');
   
   try {
-    const userResponse = await axios.get('http://127.0.0.1:8000/api/users', {
+    const userResponse = await axios.get('http://127.0.0.1:8000/api/customers', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
     users.value = userResponse.data;
+    console.log(userResponse);
   } catch (error) {
     $toast.error('Error fetching users: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching users:', error);
@@ -260,7 +261,6 @@ const resetForm = () => {
         <!-- Add Product Button -->
         <VCol cols="12">
           <VBtn @click="addProduct" icon="ri-add-line" color="warning">
-            Add Product
           </VBtn>
         </VCol>
       </VCol>

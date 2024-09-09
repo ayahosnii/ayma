@@ -21,6 +21,9 @@
           <td class="text-center">${{ order.total_amount }}</td>
           <td class="text-center">{{ order.status }}</td>
           <td class="text-center">
+            <VBtn size="small" title="Info" color="info" @click="openInfoModal(order)">
+              <i class="ri-information-line"></i>
+            </VBtn>&nbsp;
             <VBtn size="small" title="Edit" color="warning" @click="openEditModal(order)">
               <i class="ri-edit-fill"></i>
             </VBtn>&nbsp;
@@ -33,6 +36,102 @@
     </VTable>
 
     <VPagination v-model="currentPage" :length="totalPages" @page-change="onPageChange" />
+
+    <!-- Info Modal -->
+    <VDialog v-model="infoModal" max-width="1000px">
+      <VCard>
+        <VCardTitle>Order Details</VCardTitle>
+        <VCardText>
+
+          <!-- Order Details Section -->
+          <VRow>
+            <VCol cols="12">
+              <h3>Order Details</h3>
+              <br>
+              <VRow>
+                <VCol cols="4">
+                  <strong>Order Number:</strong> {{ infoOrder.order_number }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Status:</strong> {{ infoOrder.status }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Total Amount:</strong> ${{ infoOrder.total_amount }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Payment Status:</strong> {{ infoOrder.payment_status }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Payment Method:</strong> {{ infoOrder.payment_method }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Transaction ID:</strong> {{ infoOrder.transaction_id }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Order Date:</strong> {{ infoOrder.order_date }}
+                </VCol>
+              </VRow>
+            </VCol>
+          </VRow>
+
+          <!-- Shipping Details Section -->
+          <VRow>
+            <VCol cols="12" class="mt-4">
+              <h3>Shipping Details</h3>
+              <br>
+              <VRow>
+                <VCol cols="4">
+                  <strong>Shipping Address:</strong> {{ infoOrder.shipping_address }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Shipping City:</strong> {{ infoOrder.shipping_city }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Shipping State:</strong> {{ infoOrder.shipping_state }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Shipping Postal Code:</strong> {{ infoOrder.shipping_postal_code }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Shipping Country:</strong> {{ infoOrder.shipping_country }}
+                </VCol>
+                <VCol cols="4">
+                  <strong>Shipping Phone:</strong> {{ infoOrder.shipping_phone }}
+                </VCol>
+              </VRow>
+            </VCol>
+          </VRow>
+
+          <!-- Order Items Section -->
+      <VRow>
+        <VCol cols="12" class="mt-4">
+          <h3>Order Items</h3>
+          <VTable>
+            <thead>
+              <tr>
+                <th class="text-uppercase text-center">Product Name</th>
+                <th class="text-uppercase text-center">Quantity</th>
+                <th class="text-uppercase text-center">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="item in infoOrder.orderItems" :key="item.id">
+                <td class="text-center">{{ item.product_name }}</td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-center">${{ item.price }}</td>
+              </tr>
+            </tbody>
+          </VTable>
+        </VCol>
+      </VRow>
+        </VCardText>
+        <VCardActions>
+          <VCol cols="12" class="d-flex justify-end">
+            <VBtn color="error" @click="closeInfoModal">Close</VBtn>
+          </VCol>
+        </VCardActions>
+      </VCard>
+    </VDialog>
 
     <!-- Edit Modal -->
     <VDialog v-model="editModal" max-width="800px">
@@ -138,7 +237,6 @@
             </VRow>
           </VForm>
         </VCardText>
-
         <VCardActions>
           <VCol cols="12" class="d-flex gap-4">
             <VBtn color="success" @click="updateOrder">Save</VBtn>
@@ -173,12 +271,13 @@ const $toast = useToast();
 const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const orders = ref([]);
-const products = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
 
 const editModal = ref(false);
 const deleteModal = ref(false);
+const infoModal = ref(false);  // New modal for order details
+
 const editOrder = ref({
   id: '',
   customer_name: '',
@@ -199,6 +298,12 @@ const editOrder = ref({
   order_date: '',
 });
 
+
+const infoOrder = ref({
+  // existing fields
+  orderItems: [], // Add this line to hold the order items data
+});
+
 const statuses = ref([
   { label: 'Pending', value: 'pending' },
   { label: 'Processing', value: 'processing' },
@@ -216,14 +321,6 @@ const fetchOrders = async (page = 1) => {
   currentPage.value = response.data.current_page;
 };
 
-const fetchProducts = async () => {
-  const token = localStorage.getItem('authToken');
-  const response = await axios.get(`${BASE_URL}/products`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  products.value = response.data;
-};
-
 const openEditModal = (order) => {
   editOrder.value = { ...order };
   editModal.value = true;
@@ -231,6 +328,23 @@ const openEditModal = (order) => {
 
 const closeEditModal = () => {
   editModal.value = false;
+};
+
+const openInfoModal = async (order) => {
+  const token = localStorage.getItem('authToken');
+  try {
+    const response = await axios.get(`${BASE_URL}/orders/${order.id}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    infoOrder.value = response.data;
+    infoModal.value = true;
+  } catch (error) {
+    $toast.error('Error fetching order details: ' + error.response.data.message);
+  }
+};
+
+const closeInfoModal = () => {
+  infoModal.value = false;
 };
 
 const updateOrder = async () => {
@@ -276,6 +390,5 @@ const onPageChange = (page) => {
 
 onMounted(() => {
   fetchOrders();
-  fetchProducts();
 });
 </script>
