@@ -103,29 +103,29 @@
           </VRow>
 
           <!-- Order Items Section -->
-      <VRow>
-        <VCol cols="12" class="mt-4">
-          <h3>Order Items</h3>
-          <VTable>
-            <thead>
-              <tr>
-                <th class="text-uppercase text-center">Product Name</th>
-                <th class="text-uppercase text-center">Quantity</th>
-                <th class="text-uppercase text-center">Price</th>
-                <th class="text-uppercase text-center">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="item in infoOrder.order_items" :key="item.id">
-                <td class="text-center">{{ item.product_name }}</td>
-                <td class="text-center">{{ item.quantity }}</td>
-                <td class="text-center">${{ item.price }}</td>
-                <td class="text-center">${{ item.total }}</td>
-              </tr>
-            </tbody>
-          </VTable>
-        </VCol>
-      </VRow>
+          <VRow>
+            <VCol cols="12" class="mt-4">
+              <h3>Order Items</h3>
+              <VTable>
+                <thead>
+                  <tr>
+                    <th class="text-uppercase text-center">Product Name</th>
+                    <th class="text-uppercase text-center">Quantity</th>
+                    <th class="text-uppercase text-center">Price</th>
+                    <th class="text-uppercase text-center">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in infoOrder.order_items" :key="item.id">
+                    <td class="text-center">{{ item.product_name }}</td>
+                    <td class="text-center">{{ item.quantity }}</td>
+                    <td class="text-center">${{ item.price }}</td>
+                    <td class="text-center">${{ item.total }}</td>
+                  </tr>
+                </tbody>
+              </VTable>
+            </VCol>
+          </VRow>
         </VCardText>
         <VCardActions>
           <VCol cols="12" class="d-flex justify-end">
@@ -142,37 +142,20 @@
         <VCardText>
           <VForm ref="editForm">
             <VRow>
-              <!-- Order ID (Read-Only) -->
-              <VCol cols="4">
-                <VTextField v-model="editOrder.id" label="Order ID" readonly />
-              </VCol>
-
-              <!-- Order Number (Read-Only) -->
-              <VCol cols="4">
-                <VTextField v-model="editOrder.order_number" label="Order Number" readonly />
-              </VCol>
-
               <!-- Customer Name -->
               <VCol cols="4">
-                <VTextField v-model="editOrder.customer_name" label="Customer Name" required />
-              </VCol>
-            </VRow>
-
-            <VRow>
-              <!-- Product -->
-              <VCol cols="4">
-                <VSelect v-model="editOrder.product_id" :items="products" item-title="name" item-value="id" label="Product" required />
-              </VCol>
-
-              <!-- Quantity -->
-              <VCol cols="4">
-                <VTextField v-model="editOrder.quantity" label="Quantity" type="number" min="1" required />
+                <VTextField v-model="editOrder.user.name" label="Customer Name" required />
               </VCol>
 
               <!-- Status -->
               <VCol cols="4">
                 <VSelect v-model="editOrder.status" :items="statuses" item-title="label" item-value="value" label="Status" required />
               </VCol>
+
+              <!-- Transaction ID -->
+            <VCol cols="4">
+              <VTextField v-model="editOrder.transaction_id" label="Transaction ID" required />
+            </VCol>
             </VRow>
 
             <VRow>
@@ -227,14 +210,53 @@
             </VRow>
 
             <VRow>
-              <!-- Transaction ID -->
-              <VCol cols="4">
-                <VTextField v-model="editOrder.transaction_id" label="Transaction ID" required />
-              </VCol>
-
+              
               <!-- Order Date -->
               <VCol cols="4">
                 <VTextField v-model="editOrder.order_date" label="Order Date" type="date" required />
+              </VCol>
+            </VRow>
+            
+            <!-- Product Items Table in Edit Modal -->
+            <VRow>
+              <VCol cols="12" class="mt-4">
+                <h3>Order Items</h3>
+                <VTable>
+                  <thead>
+                    <tr>
+                      <th class="text-uppercase text-center">Product Name</th>
+                      <th class="text-uppercase text-center">Quantity</th>
+                      <th class="text-uppercase text-center">Price</th>
+                      <th class="text-uppercase text-center">Total</th>
+                      <th class="text-uppercase text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(item, index) in editOrder.order_items" :key="item.id">
+                      <td class="text-center">{{ item.product_name }}</td>
+                      <td class="text-center">
+                        <VTextField 
+                          v-model.number="item.quantity" 
+                          type="number" 
+                          min="1" 
+                          @input="updateItemTotal(item)"
+                        />
+                      </td>
+                      <td class="text-center">${{ item.price }}</td>
+                      <td class="text-center">${{ item.total }}</td>
+                      <td class="text-center">
+                        <VBtn color="error" @click="removeItem(index)"><i class="ri-close-line"></i></VBtn>
+                      </td>
+                    </tr>
+                  </tbody>
+                </VTable>
+              </VCol>
+            </VRow>
+
+            <VRow>
+              <!-- Total Amount (Automatically updated) -->
+              <VCol cols="4">
+                <VTextField v-model="editOrder.total_amount" label="Total Amount" readonly />
               </VCol>
             </VRow>
           </VForm>
@@ -255,8 +277,8 @@
         <VCardText>Are you sure you want to delete this order?</VCardText>
         <VCardActions>
           <VCol cols="12" class="d-flex gap-4">
-            <VBtn color="error" @click="closeDeleteModal">Cancel</VBtn>
-            <VBtn color="success" @click="deleteOrder">Delete</VBtn>
+            <VBtn color="error" @click="deleteOrder">Delete</VBtn>
+            <VBtn color="success" @click="closeDeleteModal">Cancel</VBtn>
           </VCol>
         </VCardActions>
       </VCard>
@@ -278,15 +300,11 @@ const totalPages = ref(1);
 
 const editModal = ref(false);
 const deleteModal = ref(false);
-const infoModal = ref(false);  // New modal for order details
+const infoModal = ref(false);
 
 const editOrder = ref({
-  id: '',
   customer_name: '',
-  product_id: null,
-  quantity: 1,
   status: 'pending',
-  order_number: '',
   total_amount: 0,
   shipping_address: '',
   shipping_city: '',
@@ -298,21 +316,13 @@ const editOrder = ref({
   payment_method: '',
   transaction_id: '',
   order_date: '',
+  order_items: [],
 });
 
+const infoOrder = ref({});
+const deleteOrderData = ref(null);
 
-const infoOrder = ref({
-  // existing fields
-  orderItems: [], // Add this line to hold the order items data
-});
-
-const statuses = ref([
-  { label: 'Pending', value: 'pending' },
-  { label: 'Processing', value: 'processing' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Cancelled', value: 'cancelled' },
-]);
-
+// Fetch orders from the API
 const fetchOrders = async (page = 1) => {
   const token = localStorage.getItem('authToken');
   const response = await axios.get(`${BASE_URL}/orders?page=${page}`, {
@@ -323,74 +333,109 @@ const fetchOrders = async (page = 1) => {
   currentPage.value = response.data.current_page;
 };
 
+// Open Edit Modal and load order details
 const openEditModal = (order) => {
-  editOrder.value = { ...order };
+  editOrder.value = { ...order, order_items: [...order.order_items] };
   editModal.value = true;
 };
 
+// Close Edit Modal
 const closeEditModal = () => {
   editModal.value = false;
 };
 
-const openInfoModal = async (order) => {
-  const token = localStorage.getItem('authToken');
-  try {
-    const response = await axios.get(`${BASE_URL}/orders/${order.id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    infoOrder.value = response.data;
-    infoModal.value = true;
-  } catch (error) {
-    $toast.error('Error fetching order details: ' + error.response.data.message);
-  }
+// Open Info Modal and load order details
+const openInfoModal = (order) => {
+  infoOrder.value = { ...order, order_items: [...order.order_items] };
+  infoModal.value = true;
 };
 
+// Close Info Modal
 const closeInfoModal = () => {
   infoModal.value = false;
 };
 
-const updateOrder = async () => {
-  const token = localStorage.getItem('authToken');
-  try {
-    await axios.put(`${BASE_URL}/orders/${editOrder.value.id}`, editOrder.value, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    $toast.success('Order updated successfully!');
-    fetchOrders(currentPage.value);
-    closeEditModal();
-  } catch (error) {
-    $toast.error('Error updating order: ' + error.response.data.message);
-  }
-};
-
+// Open Delete Modal and store order details
 const openDeleteModal = (order) => {
-  editOrder.value = { ...order };
+  deleteOrderData.value = order;
   deleteModal.value = true;
 };
 
+// Close Delete Modal
 const closeDeleteModal = () => {
   deleteModal.value = false;
 };
 
+// Delete order
 const deleteOrder = async () => {
   const token = localStorage.getItem('authToken');
   try {
-    await axios.delete(`${BASE_URL}/orders/${editOrder.value.id}`, {
+    await axios.delete(`${BASE_URL}/orders/${deleteOrderData.value.id}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     $toast.success('Order deleted successfully!');
-    fetchOrders(currentPage.value);
     closeDeleteModal();
+    fetchOrders();
   } catch (error) {
     $toast.error('Error deleting order: ' + error.response.data.message);
   }
 };
 
+// Update total for each item
+const updateItemTotal = (item) => {
+  item.total = item.quantity * item.price;
+  updateOrderTotal();
+};
+
+// Recalculate total order amount
+const updateOrderTotal = () => {
+  const total = editOrder.value.order_items.reduce((acc, item) => acc + item.total, 0);
+  editOrder.value.total_amount = total.toFixed(2);
+};
+
+// Remove an item from the order
+const removeItem = (index) => {
+  editOrder.value.order_items.splice(index, 1);
+  updateOrderTotal();
+};
+
+const updateOrder = async () => {
+  const token = localStorage.getItem('authToken');
+  try {
+    await axios.put(`${BASE_URL}/orders/${editOrder.value.id}`, {
+      ...editOrder.value,
+      // Ensure that the updated order_items are sent to the server
+      order_items: editOrder.value.order_items
+    }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    $toast.success('Order updated successfully!');
+    closeEditModal();
+    fetchOrders(); // Optionally refresh the orders list
+  } catch (error) {
+    $toast.error('Error updating order: ' + error.response.data.message);
+  }
+};
+
+
+// Pagination handling
 const onPageChange = (page) => {
+  currentPage.value = page;
   fetchOrders(page);
 };
 
 onMounted(() => {
   fetchOrders();
 });
+
+const statuses = ref([
+  { label: 'Pending', value: 'pending' },
+  { label: 'Processing', value: 'processing' },
+  { label: 'Completed', value: 'completed' },
+  { label: 'Cancelled', value: 'cancelled' },
+]);
 </script>
+
+<style scoped>
+/* Add any necessary styles here */
+</style>

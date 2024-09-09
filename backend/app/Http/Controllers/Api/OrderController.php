@@ -63,16 +63,29 @@ class OrderController extends Controller
         return response()->json($order->load('orderItems')); // Include order items in response
     }
 
-    // Update the specified resource in storage.
     public function update(CreateOrderRequest $request, Order $order)
-    {
-        // Update the order with validated data
-        $order->update($request->except('products'));
+{
+    // Update the order with validated data
+    $order->update($request->except(['id', 'order_number']));
 
-        // Optionally, you can update the associated order items here
+    // Handle updating or removing order items
+    $orderItems = $request->input('order_items', []);
+    // Assuming you have a method to update or remove order items
+    $this->updateOrderItems($order, $orderItems);
 
-        return response()->json($order);
+    return response()->json($order);
+}
+
+protected function updateOrderItems(Order $order, array $items)
+{
+    // Remove all existing items
+    $order->orderItems()->delete();
+
+    // Add new items
+    foreach ($items as $item) {
+        $order->orderItems()->create($item);
     }
+}
 
     // Remove the specified resource from storage.
     public function destroy(Order $order)
