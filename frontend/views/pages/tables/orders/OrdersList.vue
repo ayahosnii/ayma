@@ -200,7 +200,7 @@
 
               <!-- Payment Status -->
               <VCol cols="4">
-                <VSelect v-model="editOrder.payment_status" :items="['pending', 'completed', 'failed']" label="Payment Status" required />
+                <VSelect v-model="editOrder.payment_status" :items="['pending', 'paid', 'failed']" label="Payment Status" required />
               </VCol>
 
               <!-- Payment Method -->
