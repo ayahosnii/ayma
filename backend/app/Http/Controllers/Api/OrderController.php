@@ -64,28 +64,46 @@ class OrderController extends Controller
     }
 
     public function update(CreateOrderRequest $request, Order $order)
-{
-    // Update the order with validated data
-    $order->update($request->except(['id', 'order_number']));
+    {
+        // Update the order with validated data, excluding specific fields
+        $order->update($request->except(['id', 'order_number']));
 
-    // Handle updating or removing order items
-    $orderItems = $request->input('order_items', []);
-    // Assuming you have a method to update or remove order items
-    $this->updateOrderItems($order, $orderItems);
+        // Handle updating or removing order items and calculate total amount
+        $orderItems = $request->input('order_items', []);
+        $totalAmount = $this->updateOrderItems($order, $orderItems);
 
-    return response()->json($order);
-}
+        // Update the total amount of the order
+        $order->update(['total_amount' => $totalAmount]);
 
-protected function updateOrderItems(Order $order, array $items)
-{
-    // Remove all existing items
-    $order->orderItems()->delete();
-
-    // Add new items
-    foreach ($items as $item) {
-        $order->orderItems()->create($item);
+        return response()->json($order);
     }
-}
+
+    protected function updateOrderItems(Order $order, array $items)
+    {
+        // Remove all existing items
+        $order->orderItems()->delete();
+
+        // Initialize total amount
+        $totalAmount = 0;
+
+        // Add new items and calculate the total
+        foreach ($items as $item) {
+            // Create the new item
+            $orderItem = $order->orderItems()->create($item);
+
+            // Calculate total for each item (quantity * price)
+            $itemTotal = $orderItem->quantity * $orderItem->price;
+
+            // Add item total to the overall total amount
+            $totalAmount += $itemTotal;
+
+            // Update the total for the order item
+            $orderItem->update(['total' => $itemTotal]);
+        }
+
+        return $totalAmount;
+    }
+
 
     // Remove the specified resource from storage.
     public function destroy(Order $order)
