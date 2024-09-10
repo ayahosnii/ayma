@@ -14,6 +14,7 @@ use App\ChainOfResponsibility\Refund\UnjustifiedRefundHandler;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Junges\Kafka\Facades\Kafka;
 
@@ -48,7 +49,10 @@ class OrderController extends Controller
             return $order;  // In case any handler returns an error response
         }
 
-        // Kafka Producer: Send order data to Kafka topic
+        // Update the stock of products
+        $this->updateProductStock($request->products);
+
+        // Kafka Producer: Send order data to Kafka topic (optional)
 //        Kafka::publishOn('orders-topic')
 //            ->withHeaders(['event' => 'order.created'])
 //            ->withBodyKey('order_id', $order->id)
@@ -57,6 +61,24 @@ class OrderController extends Controller
 
         return response()->json($order->load('orderItems'), 201);
     }
+
+    // Function to update the product stock
+    protected function updateProductStock($products)
+    {
+        foreach ($products as $productData) {
+            $product = Product::find($productData['product_id']);
+
+            // Check if enough stock is available before updating
+            if ($product->stock >= $productData['quantity']) {
+                $product->stock -= $productData['quantity']; // Reduce stock
+                $product->save();
+            } else {
+                // If stock is insufficient, handle this case
+                throw new \Exception('Not enough stock for product: ' . $product->name);
+            }
+        }
+    }
+
     // Display the specified resource.
     public function show(Order $order)
     {
@@ -103,7 +125,6 @@ class OrderController extends Controller
 
         return $totalAmount;
     }
-
 
     // Remove the specified resource from storage.
     public function destroy(Order $order)
