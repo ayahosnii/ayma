@@ -1,9 +1,18 @@
-export default defineNuxtPlugin(() => {
-  addRouteMiddleware('levels/list', () => {
-    console.log('this global middleware was added in a plugin and will be run on every route change')
-  }, { global: true })
+// middleware/auth.ts
+export default defineNuxtRouteMiddleware((to) => {
+  if (process.server) {
+    // Skip on the server-side
+    return;
+  }
 
-  addRouteMiddleware('levels/add', () => {
-    console.log('this named middleware was added in a plugin and would override any existing middleware of the same name')
-  })
-})
+  // Perform the check on the client-side
+  const token = localStorage.getItem('accessToken');
+  const isAuthenticated = !!token;
+
+  console.log('Authenticated:', isAuthenticated);
+
+  // Redirect to login if not authenticated and trying to access protected route
+  if (!isAuthenticated && !['/login', '/register'].includes(to.path)) {
+    return navigateTo('/login');
+  }
+});

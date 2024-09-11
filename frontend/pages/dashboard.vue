@@ -10,6 +10,16 @@ import AnalyticsUserTable from '@/views/dashboard/AnalyticsUserTable.vue'
 import AnalyticsWeeklyOverview from '@/views/dashboard/AnalyticsWeeklyOverview.vue'
 import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertical.vue'
 
+const router = useRouter();
+
+onMounted(() => {
+  const accessToken = localStorage.getItem('accessToken');
+  if (!accessToken) {
+    // Redirect to login if accessToken is missing
+    router.push('/login');
+  }
+});
+
 const totalProfit = {
   title: 'Total Profit',
   color: 'secondary',

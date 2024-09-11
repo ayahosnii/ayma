@@ -4,10 +4,14 @@ import { fileURLToPath } from 'node:url'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  router: {
+    middleware: ['auth'],
+  },
+
   app: {
     head: {
-      titleTemplate: '%s - NuxtJS Admin Template',
-      title: 'Materio',
+      titleTemplate: '%s - AYMA Admin Template',
+      title: 'AYMA',
 
       link: [{
         rel: 'icon',
@@ -124,9 +128,6 @@ export default defineNuxtConfig({
 
   modules: ['@vueuse/nuxt', '@nuxtjs/device', '@pinia/nuxt'],
 
-  router: {
-    middleware: ['auth.ts'],
-  },
 
   compatibilityDate: '2024-08-18',
 })
