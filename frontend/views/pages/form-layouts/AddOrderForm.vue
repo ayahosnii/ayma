@@ -9,7 +9,7 @@ const $toast = useToast();
 
 // Form fields
 const customer_name = ref('');
-const products = ref([{ product_id: null, quantity: 1 }]);
+const products = ref([{ product_id: null, quantity: 1, stock: 0, error: '' }]);
 const status = ref('pending');
 const availableProducts = ref([]);
 const users = ref([]);
@@ -87,9 +87,23 @@ watch(useSelectForUserId, (newValue) => {
   }
 });
 
+// Watch products to validate quantity against stock
+watch(products, (newProducts) => {
+  newProducts.forEach((product, index) => {
+    if (product.product_id) {
+      const selectedProduct = availableProducts.value.find(p => p.id === product.product_id);
+      if (selectedProduct && product.quantity > selectedProduct.stock) {
+        product.error = `Only ${selectedProduct.stock} items in stock.`;
+      } else {
+        product.error = '';
+      }
+    }
+  });
+}, { deep: true });
+
 // Add a new product to the array
 const addProduct = () => {
-  products.value.push({ product_id: null, quantity: 1 });
+  products.value.push({ product_id: null, quantity: 1, stock: 0, error: '' });
 };
 
 // Remove a product from the array
@@ -112,11 +126,21 @@ const handleSubmit = async () => {
   const token = localStorage.getItem('authToken');
   let createdUserId = user_id.value;
 
+  // Check if any product exceeds stock
+  const hasStockError = products.value.some(product => product.error);
+  if (hasStockError) {
+    $toast.error('Please correct the product quantities before submitting.');
+    return;
+  }
+
   try {
     // Prepare orderData with user info conditionally
     const orderData = {
       customer_name: customer_name.value,
-      products: products.value,
+      products: products.value.map(product => ({
+        product_id: product.product_id,
+        quantity: product.quantity,
+      })),
       status: status.value,
       user_id: createdUserId,
       order_number: order_number.value,
@@ -163,7 +187,7 @@ const handleSubmit = async () => {
 // Optional: Function to reset the form
 const resetForm = () => {
   customer_name.value = '';
-  products.value = [{ product_id: null, quantity: 1 }];
+  products.value = [{ product_id: null, quantity: 1, stock: 0, error: '' }];
   status.value = 'pending';
   user_id.value = '';
   useSelectForUserId.value = false;
@@ -248,6 +272,8 @@ const resetForm = () => {
               label="Quantity"
               type="number"
               min="1"
+              :error="product.error !== ''"
+              :error-messages="product.error"
               required
             />
           </VCol>
