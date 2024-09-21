@@ -57,6 +57,11 @@ export default defineNuxtConfig({
   experimental: {
     typedPages: true,
   },
+  loading: {
+    color: '#ff0000', // Change the color to red
+    height: '5px', // Adjust the height
+    continuous: true, // Keeps the loading indicator running until the page is fully loaded
+  },
 
   typescript: {
     tsConfig: {
