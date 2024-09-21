@@ -101,16 +101,39 @@ class OrderController extends Controller
     }
 
     protected function updateOrderItems(Order $order, array $items)
-    {
-        // Remove all existing items
-        $order->orderItems()->delete();
+{
+    // Initialize total amount
+    $totalAmount = 0;
 
-        // Initialize total amount
-        $totalAmount = 0;
+    // Check if the order has any existing items to update their stock
+    $existingItems = $order->orderItems;
 
-        // Add new items and calculate the total
-        foreach ($items as $item) {
-            // Create the new item
+    // Step 1: Restore stock for existing items before updating
+    foreach ($existingItems as $existingItem) {
+        $product = Product::find($existingItem->product_id);
+        if ($product) {
+            // Restore the stock for the product (as if the original order was removed)
+            $product->stock += $existingItem->quantity;
+            $product->save();
+        }
+    }
+
+    // Step 2: Remove all existing items (clean the order for the new items)
+    $order->orderItems()->delete();
+
+    // If no items are passed, delete the order and return
+    if (empty($items)) {
+        $order->delete();
+        return 0;
+    }
+
+    // Step 3: Add new items and calculate the total
+    foreach ($items as $item) {
+        // Find the product for the new item
+        $product = Product::find($item['product_id']);
+
+        if ($product && $product->stock >= $item['quantity']) {
+            // Create the new item for the order
             $orderItem = $order->orderItems()->create($item);
 
             // Calculate total for each item (quantity * price)
@@ -121,10 +144,20 @@ class OrderController extends Controller
 
             // Update the total for the order item
             $orderItem->update(['total' => $itemTotal]);
-        }
 
-        return $totalAmount;
+            // Step 4: Decrease the stock based on the new quantities
+            $product->stock -= $orderItem->quantity;
+            $product->save();
+        } else {
+            throw new \Exception('Not enough stock for product: ' . $product->name);
+        }
     }
+
+    // Return the new total amount for the order
+    return $totalAmount;
+}
+
+
 
     // Remove the specified resource from storage.
     public function destroy(Order $order)

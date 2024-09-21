@@ -1,5 +1,10 @@
 <script setup>
-const statistics = [
+import { BASE_URL } from '@/config/apiConfig';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
+
+// Statistics array with placeholders for product count
+const statistics = ref([
   {
     title: 'Sales',
     stats: '245k',
@@ -13,9 +18,9 @@ const statistics = [
     color: 'success',
   },
   {
-    title: 'Product',
-    stats: '1.54k',
-    icon: 'ri-macbook-line',
+    title: 'Products',
+    stats: 'Loading...', // Placeholder for product count
+    icon: 'ri-apple-fill',
     color: 'warning',
   },
   {
@@ -24,7 +29,30 @@ const statistics = [
     icon: 'ri-money-dollar-circle-line',
     color: 'info',
   },
-]
+])
+
+const fetchProductCount = async () => {
+  try {
+    const token = localStorage.getItem('authToken')
+    const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    const productCount = productsResponse.data.countProducts
+    // Update the statistics array with the fetched product count
+    statistics.value = statistics.value.map(item =>
+      item.title === 'Products' ? { ...item, stats: `${productCount}` } : item
+    )
+  } catch (error) {
+    console.error('Error fetching product count:', error)
+  }
+}
+
+onMounted(() => {
+  fetchProductCount()
+})
 </script>
 
 <template>

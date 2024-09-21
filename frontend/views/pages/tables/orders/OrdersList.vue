@@ -435,7 +435,3 @@ const statuses = ref([
   { label: 'Cancelled', value: 'cancelled' },
 ]);
 </script>
-
-<style scoped>
-/* Add any necessary styles here */
-</style>
