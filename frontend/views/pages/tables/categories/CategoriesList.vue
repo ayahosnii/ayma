@@ -16,7 +16,7 @@
 
       <tbody>
         <tr v-for="item in categories" :key="item.id">
-          <td class="text-center">{{ item.name }}</td>
+          <td class="text-center">{{ item.name }}<span v-if="item.children && item.children.length > 0"> - {{ item.children.length }}</span></td>
           <td class="text-center">{{ item.slug }}</td>
           <td class="text-center">{{ item.parent ? item.parent.name : '-' }}</td>
           <td class="text-center">
