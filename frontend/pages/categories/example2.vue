@@ -220,11 +220,12 @@ export default {
 /* General Styling */
 ul {
   list-style-type: none;
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 li {
-  margin: 5px 0;
+  margin-block: 5px;
+  margin-inline: 0;
 }
 
 /* Category Row */
@@ -232,10 +233,11 @@ li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
   background-color: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  border-block-end: 1px solid #e0e0e0;
   cursor: pointer;
+  padding-block: 10px;
+  padding-inline: 20px;
 }
 
 .category-row:hover {
@@ -244,11 +246,11 @@ li {
 
 /* Collapsible Button */
 .collapse-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
   padding: 0;
-  margin-right: 10px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  margin-inline-end: 10px;
 }
 
 .icon-expanded::before {
@@ -262,20 +264,19 @@ li {
 /* Category and Subcategory Text */
 .category-name,
 .subcategory-name {
-  font-weight: 600;
   color: #333;
+  font-weight: 600;
 }
 
 .category-products,
 .subcategory-products {
   color: #777;
-  margin-left: auto;
-  margin-right: 10px;
+  margin-inline: auto 10px;
 }
 
 .category-status,
 .subcategory-status {
-  margin-right: 20px;
+  margin-inline-end: 20px;
 }
 
 .status-active {
@@ -288,13 +289,14 @@ li {
 
 /* Edit Button */
 .edit-btn {
-  background-color: #007bff;
-  color: white;
   border: none;
   border-radius: 4px;
-  padding: 5px 10px;
+  background-color: #007bff;
+  color: white;
   cursor: pointer;
   font-size: 12px;
+  padding-block: 5px;
+  padding-inline: 10px;
 }
 
 .edit-btn:hover {
@@ -304,9 +306,9 @@ li {
 /* Subcategory List */
 .subcategory-list,
 .nested-subcategory-list {
-  padding-left: 30px;
   background-color: #fafafa;
-  border-left: 2px solid #e0e0e0;
+  border-inline-start: 2px solid #e0e0e0;
+  padding-inline-start: 30px;
 }
 
 .subcategory-row,
@@ -314,7 +316,8 @@ li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 20px;
+  padding-block: 10px;
+  padding-inline: 20px;
 }
 
 .subcategory-row:hover,
