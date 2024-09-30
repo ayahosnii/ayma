@@ -36,6 +36,6 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\KafkaConsumeCommand::class,
+        \App\Console\Commands\ProcessKafkaMessages::class,
     ];
 }

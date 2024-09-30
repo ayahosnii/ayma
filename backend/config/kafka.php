@@ -12,7 +12,7 @@ return [
     'securityProtocol' =>  env('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
 
     /*
-     | Default sasl configuration 
+     | Default sasl configuration
      */
     'sasl' => [
         'mechanisms' => env('KAFKA_MECHANISMS', 'PLAINTEXT'),
@@ -52,12 +52,12 @@ return [
     /*
      | Kafka supports 4 compression codecs: none , gzip , lz4 and snappy
      */
-    'compression' => env('KAFKA_COMPRESSION_TYPE', 'snappy'),
+    'compression' => env('KAFKA_COMPRESSION_TYPE', 'gzip'),
 
     /*
      | Choose if debug is enabled or not.
      */
-    'debug' => env('KAFKA_DEBUG', false),
+    'debug' => env('KAFKA_DEBUG', true),
 
     /*
      | Repository for batching messages together
