@@ -1,6 +1,6 @@
 <template>
   <div v-if="loading" class="loading-container">
-    <div class="spinner">Loading...</div>
+    <div class="spinner"></div>
   </div>
 </template>
 
@@ -17,24 +17,24 @@ const props = defineProps({
 <style scoped>
 .loading-container {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 50%);
+  block-size: 100vh;
+  inline-size: 100vw;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .spinner {
   border: 6px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 6px solid #3498db;
-  width: 40px;
-  height: 40px;
   animation: spin 2s linear infinite;
+  block-size: 40px;
+  border-block-start: 6px solid #3498db;
+  inline-size: 40px;
 }
 
 @keyframes spin {
