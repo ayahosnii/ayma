@@ -426,8 +426,8 @@ button.collapse-btn {
 }
 
 .slide-image {
-  block-size: 100px;
-  inline-size: 100px;
+  block-size: 90px;
+  inline-size: 90px;
   object-fit: cover;
 }
 </style>
