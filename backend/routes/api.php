@@ -46,6 +46,9 @@ Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
     Route::resource('/categories', CategoryController::class);
+
+    Route::get('/categories/parents', [CategoryController::class, 'getParentCategories']); // Get parent categories
+Route::get('/categories/{parentId}/children', [CategoryController::class, 'getChildCategories']); // Get child categories for a specific parent
     Route::get('/count-categories', [CategoryController::class, 'count']); //Categories Count
 
     Route::resource('/products', ProductController::class);

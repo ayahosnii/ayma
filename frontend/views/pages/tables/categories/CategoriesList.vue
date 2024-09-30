@@ -15,8 +15,8 @@
 
       <tbody>
         <template v-for="(category, index) in categories" :key="category.id">
-          <!-- Main category row (parent categories) -->
-          <tr>
+          <!-- Parent category row -->
+          <tr v-if="!category.parent_id">
             <td class="text-center">
               <button @click="toggleCategory(index)" class="collapse-btn">
                 <i :class="category.expanded ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'"></i>
@@ -40,8 +40,8 @@
               </VBtn>
             </td>
           </tr>
-
-          <!-- Child categories (only visible when expanded) -->
+        
+          <!-- Child categories (shown only when parent is expanded) -->
           <tr v-if="category.expanded && category.children" v-for="child in category.children" :key="child.id" class="sub-category-row">
             <td class="text-center">
               <span class="ml-4">{{ child.name }}</span>
@@ -63,6 +63,7 @@
             </td>
           </tr>
         </template>
+        
       </tbody>
     </VTable>
 
@@ -72,14 +73,85 @@
       @page-change="onPageChange"
     />
 
-    <!-- Modals and other components are the same as before -->
     <!-- Edit Modal -->
     <VDialog v-model="editModal" max-width="600px">
       <VCard>
         <VCardTitle>Edit Category</VCardTitle>
         <VCardText>
           <VForm ref="editForm">
-            <!-- Edit Form Fields -->
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.name"
+                  label="Name"
+                  placeholder="Category Name"
+                  required
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.slug"
+                  label="Slug"
+                  placeholder="Category Slug"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.description"
+                  label="Description"
+                  placeholder="Category Description (optional)"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VFileInput
+                  v-model="editCategory.image"
+                  label="Image"
+                  placeholder="Select an image"
+                  accept="image/*"
+                  @change="handleEditImageUpload"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VSelect
+                  v-model="editCategory.parent_id"
+                  label="Choose Parent Category"
+                  :items="categories2"
+                  item-title="name"
+                  item-value="id"
+                  density="compact"
+                  class="me-3"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VTextField
+                  v-model="editCategory.order"
+                  label="Order"
+                  placeholder="Display Order"
+                  type="number"
+                  min="0"
+                />
+              </VCol>
+            </VRow>
+            <VRow>
+              <VCol cols="12">
+                <VCheckbox
+                  v-model="editCategory.is_active"
+                  label="Is Active?"
+                  :true-value="1"
+                  :false-value="0"
+                />
+              </VCol>
+            </VRow>
           </VForm>
         </VCardText>
         <VCardActions>
@@ -115,27 +187,37 @@
         <VCardTitle>Category Details</VCardTitle>
         <VRow>
           <VCol cols="12">
-            <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
-              <VImg :src="getImageUrl(infoCategory.image)" width="200" height="200" alt="Category Image" />
-              <VDivider :vertical="$vuetify.display.mdAndUp" />
-              <div>
-                <VCardItem>
-                  <VCardTitle>{{ infoCategory.name }}</VCardTitle>
-                </VCardItem>
-                <VCardText>
-                  <span class="font-weight-medium">Description:</span> <span>{{ infoCategory.description || 'No description available.' }}</span>
-                </VCardText>
-                <VCardText class="text-subtitle-1">
-                  <span class="font-weight-medium">Slug:</span> <span>{{ infoCategory.slug }}</span>
-                </VCardText>
-                <VCardText class="text-subtitle-1">
-                  <span class="font-weight-medium">Parent Category:</span> <span>{{ infoCategory.parent ? infoCategory.parent.name : 'None' }}</span>
-                </VCardText>
-                <VCardText class="text-subtitle-1">
-                  <span class="font-weight-medium">Status:</span> <span>{{ infoCategory.is_active ? 'Active' : 'Inactive' }}</span>
-                </VCardText>
+            
+              <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+                <!-- <div class="ma-auto pa-5"> -->
+                  <VImg :src="getImageUrl(infoCategory.image)" width="200" height="200" alt="Category Image" />
+                <!-- </div> -->
+
+                <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+                <div>
+                  <VCardItem>
+                    <VCardTitle>{{ infoCategory.name }}</VCardTitle>
+                  </VCardItem>
+
+                  <VCardText>
+                    <span class="font-weight-medium">Description:</span> <span>{{ infoCategory.description || 'No description available.'}}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Slug:</span> <span>{{ infoCategory.slug }}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Parent Category:</span> <span>{{ infoCategory.parent ? infoCategory.parent.name : 'None' }}</span>
+                  </VCardText>
+
+                  <VCardText class="text-subtitle-1">
+                    <span class="font-weight-medium">Status:</span> <span >{{ infoCategory.is_active ? 'Active' : 'Inactive' }}</span>
+                  </VCardText>
+                </div>
               </div>
-            </div>
+            
           </VCol>
         </VRow>
         <VCardActions>
