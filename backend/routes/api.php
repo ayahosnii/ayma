@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\LevelsController;
 use App\Http\Controllers\Api\OpenAIController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
+use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\SpeakingController;
 use App\Http\Controllers\Api\StoriesController;
 use App\Http\Controllers\Api\SizeController;
@@ -62,6 +63,8 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
     Route::resource('/order_items', OrderItemController::class); //Order items
     Route::get('/count-orders', [OrderController::class, 'countOrders']); //Order Count
 
+
+    Route::post('refund', [RefundController::class, 'processRefund']); //Levels
 
     Route::resource('/levels', LevelsController::class);
     Route::get('/count-levels', [LevelsController::class, 'countLevels']); //Levels Count
