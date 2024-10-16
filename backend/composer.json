@@ -16,10 +16,12 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "mateusjunges/laravel-kafka": "*",
+        "mongodb/mongodb": "^1.20",
         "nwidart/laravel-modules": "^8.0",
         "predis/predis": "^2.2",
         "rebing/graphql-laravel": "*",
-        "spatie/laravel-permission": "^6.9"
+        "spatie/laravel-permission": "^6.9",
+        "ext-mongodb": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
