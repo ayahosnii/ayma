@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\GrammarGamesController;
 use App\Http\Controllers\Api\ListeningController;
 use App\Http\Controllers\Api\ListeningQuestionController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\MongoControllers\ProductsMongoController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -87,3 +88,4 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
 
 });
 Route::post('/ratings', [RatingController::class, 'store']);
+Route::post('/products', [ProductsMongoController::class, 'store']);
