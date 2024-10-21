@@ -88,4 +88,4 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
 
 });
 Route::post('/ratings', [RatingController::class, 'store']);
-Route::post('/products', [ProductsMongoController::class, 'store']);
+Route::post('/products-mongo', [ProductsMongoController::class, 'store']);

@@ -33,9 +33,7 @@ class ProductsMongoController extends Controller
             'stock'          => 'required|integer|min:0',
             'is_featured'    => 'boolean',
             'category_id'    => 'required|string',
-            'additional_attributes' => 'nullable|array',  // Accept custom fields as an array
-            'additional_attributes.color' => 'nullable|array',  // Define color as an array if it can have multiple values
-            // You can define other multi-value attributes here (e.g., size, material, etc.)
+            'additional_attributes' => 'nullable|array',
         ]);
 
         // Check manually for uniqueness of 'sku' in the MongoDB collection
@@ -56,12 +54,9 @@ class ProductsMongoController extends Controller
             'stock'          => $validated['stock'],
             'is_featured'    => $validated['is_featured'] ?? false,
             'category_id'    => $validated['category_id'],
+            'additional_attributes'    => $validated['additional_attributes'],
         ];
 
-        // If additional attributes are provided, merge them into the product data
-        if (!empty($validated['additional_attributes'])) {
-            $productData = array_merge($productData, $validated['additional_attributes']);
-        }
 
         // Create and store the product in MongoDB
         $product = ProductsMongo::create($productData);
