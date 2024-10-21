@@ -58,6 +58,10 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
     Route::get('/count-products', [ProductController::class, 'countProducts']); //Product Count
     Route::put('products/{product}/stock', [ProductController::class, 'updateStock']);
 
+
+    Route::get('/products-mongo/index', [ProductsMongoController::class, 'index']);
+    Route::post('/products-mongo', [ProductsMongoController::class, 'store']);
+
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes
 
@@ -88,5 +92,3 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
 
 });
 Route::post('/ratings', [RatingController::class, 'store']);
-Route::get('/products-mongo/index', [ProductsMongoController::class, 'index']);
-Route::post('/products-mongo', [ProductsMongoController::class, 'store']);
