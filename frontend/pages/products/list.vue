@@ -1,11 +1,11 @@
 <script setup>
-import ProductsList from '@/views/pages/tables/products/ProductsList.vue';
+import ProductsMongoList from '@/views/pages/tables/products/ProductsMongoList.vue';
 </script>
 
 <template>
   <div>
     <VCard title="Products">
-      <ProductsList />
+      <ProductsMongoList />
     </VCard>
   </div>
 </template>

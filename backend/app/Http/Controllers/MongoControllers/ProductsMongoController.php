@@ -8,19 +8,34 @@ use App\Models\MongoModels\ProductsMongo;
 
 class ProductsMongoController extends Controller
 {
+
+    public function index()
+    {
+        // Retrieve all products from MongoDB
+        $products = ProductsMongo::all();
+
+        // Return a JSON response with the list of products
+        return response()->json([
+            'products' => $products,
+        ], 200);  // HTTP status 200 OK
+    }
+
     // Store a new product in MongoDB
     public function store(Request $request)
     {
-        // Validate the request data (without unique check for now)
+        // Validate the request data (excluding custom fields for now)
         $validated = $request->validate([
             'name'           => 'required|string|max:255',
-            'sku'            => 'required|string|max:255',  // Remove 'unique' from here
+            'sku'            => 'required|string|max:255',
             'price'          => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0',
             'description'    => 'nullable|string',
             'stock'          => 'required|integer|min:0',
             'is_featured'    => 'boolean',
             'category_id'    => 'required|string',
+            'additional_attributes' => 'nullable|array',  // Accept custom fields as an array
+            'additional_attributes.color' => 'nullable|array',  // Define color as an array if it can have multiple values
+            // You can define other multi-value attributes here (e.g., size, material, etc.)
         ]);
 
         // Check manually for uniqueness of 'sku' in the MongoDB collection
@@ -31,8 +46,8 @@ class ProductsMongoController extends Controller
             ], 422);  // Unprocessable Entity
         }
 
-        // Create and store the product in MongoDB
-        $product = ProductsMongo::create([
+        // Merge any additional attributes with the validated fields
+        $productData = [
             'name'           => $validated['name'],
             'sku'            => $validated['sku'],
             'price'          => $validated['price'],
@@ -41,7 +56,15 @@ class ProductsMongoController extends Controller
             'stock'          => $validated['stock'],
             'is_featured'    => $validated['is_featured'] ?? false,
             'category_id'    => $validated['category_id'],
-        ]);
+        ];
+
+        // If additional attributes are provided, merge them into the product data
+        if (!empty($validated['additional_attributes'])) {
+            $productData = array_merge($productData, $validated['additional_attributes']);
+        }
+
+        // Create and store the product in MongoDB
+        $product = ProductsMongo::create($productData);
 
         // Return a JSON response with the created product
         return response()->json([

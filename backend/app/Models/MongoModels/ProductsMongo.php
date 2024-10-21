@@ -13,7 +13,8 @@ class ProductsMongo extends Eloquent
     protected $connection = 'mongodb';
 
     // Define any fillable fields
-    protected $fillable = ['name', 'sku', 'price', 'discount_price', 'description', 'stock', 'is_featured', 'category_id'];
+    protected $fillable = ['name', 'sku', 'price', 'discount_price', 'description', 'stock', 'is_featured',
+    'additional_attributes', 'category_id'];
 
     // Timestamps can be enabled or disabled
     public $timestamps = true;
