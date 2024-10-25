@@ -159,6 +159,20 @@
         <VBtn @click="addAttribute">Add Attribute</VBtn>
       </VCol>
 
+      <!-- Image Upload Section -->
+      <VCol cols="12">
+        <h4>Images</h4>
+        <input type="file" @change="handleFileUpload" multiple accept="image/*" />
+        <VList>
+          <VListItem v-for="(image, index) in imagePreviews" :key="index">
+            <VImg :src="image" max-width="100" />
+            <VBtn icon @click="removeImage(index)">
+              <VIcon>mdi-delete</VIcon>
+            </VBtn>
+          </VListItem>
+        </VList>
+      </VCol>
+
       <!-- Buttons for Submit and Reset -->
       <VCol cols="12" class="d-flex gap-4">
         <VBtn type="submit" :disabled="!formValid">Add Product</VBtn>
@@ -186,6 +200,8 @@ const additional_attributes = ref([]);
 const newOption = ref('');
 const formValid = ref(false);
 const form = ref(null);
+const images = ref([]);
+const imagePreviews = ref([]);
 
 const multiValueAttributes = ['color', 'size'];
 const dynamicOptions = ref({
@@ -251,6 +267,20 @@ const removeAttribute = (index) => {
   additional_attributes.value.splice(index, 1);
 };
 
+// Handle file uploads
+const handleFileUpload = (event) => {
+  const files = Array.from(event.target.files);
+  images.value.push(...files);
+
+  // Create previews for the uploaded images
+  imagePreviews.value = images.value.map(file => URL.createObjectURL(file));
+};
+
+const removeImage = (index) => {
+  images.value.splice(index, 1);
+  imagePreviews.value.splice(index, 1);
+};
+
 const handleSubmit = async () => {
   const valid = await form.value.validate();
   if (!valid) {
@@ -259,22 +289,33 @@ const handleSubmit = async () => {
 
   const token = localStorage.getItem('authToken');
   try {
-    const formData = {
-      name: name.value,
-      sku: sku.value,
-      slug: slug.value,
-      is_featured: is_featured.value ? '1' : '0',
-      price: price.value,
-      discount_price: discount_price.value || null,
-      stock: stock.value,
-      category_id: category_id.value,
-      additional_attributes: Object.fromEntries(
-        additional_attributes.value.map(attr => [attr.key, attr.value])
-      )
-    };
+    const formData = new FormData();
+    formData.append('name', name.value);
+    formData.append('sku', sku.value);
+    formData.append('slug', slug.value);
+    formData.append('is_featured', is_featured.value ? '1' : '0');
+    formData.append('price', price.value);
+    formData.append('discount_price', discount_price.value || null);
+    formData.append('stock', stock.value);
+    formData.append('category_id', category_id.value);
+
+    // Append additional attributes
+    Object.entries(Object.fromEntries(
+      additional_attributes.value.map(attr => [attr.key, attr.value]))
+    ).forEach(([key, value]) => {
+      formData.append(`additional_attributes[${key}]`, value);
+    });
+
+    // Append images
+    images.value.forEach(image => {
+      formData.append('images[]', image);
+    });
 
     await axios.post('http://127.0.0.1:8000/api/products-mongo', formData, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { 
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
+      },
     });
 
     $toast.success('Product added successfully!');
@@ -287,13 +328,20 @@ const handleSubmit = async () => {
 const resetForm = () => {
   name.value = '';
   sku.value = '';
-  slug.value = '';
   is_featured.value = false;
   price.value = '';
   discount_price.value = '';
   stock.value = '';
   category_id.value = null;
   additional_attributes.value = [];
-  form.value.resetValidation();
+  images.value = [];
+  imagePreviews.value = [];
 };
+
 </script>
+
+<style scoped>
+.mb-4 {
+  margin-block-end: 16px;
+}
+</style>

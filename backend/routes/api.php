@@ -61,6 +61,7 @@ Route::get('/categories/{parentId}/children', [CategoryController::class, 'getCh
 
     Route::get('/products-mongo/index', [ProductsMongoController::class, 'index']);
     Route::post('/products-mongo', [ProductsMongoController::class, 'store']);
+    Route::resource('/products-mongo', ProductsMongoController::class);
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes
