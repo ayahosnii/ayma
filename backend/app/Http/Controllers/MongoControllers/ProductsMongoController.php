@@ -32,7 +32,7 @@ class ProductsMongoController extends Controller
             'description'    => 'nullable|string',
             'stock'          => 'required|integer|min:0',
             'is_featured'    => 'boolean',
-            'category_id'    => 'required|string',
+            'category_id'    => 'required',
             'additional_attributes' => 'nullable|array',
         ]);
 
@@ -55,6 +55,7 @@ class ProductsMongoController extends Controller
             'is_featured'    => $validated['is_featured'] ?? false,
             'category_id'    => $validated['category_id'],
             'additional_attributes'    => $validated['additional_attributes'],
+            'additional_attributes.*' => 'required|string',  // Ensure each additional attribute is a string
         ];
 
 

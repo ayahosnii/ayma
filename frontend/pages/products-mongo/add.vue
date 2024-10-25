@@ -1,12 +1,12 @@
 <script setup>
-import AddProductForm from '@/views/pages/form-layouts/AddProductForm.vue';
+import AddProductMongoForm from '@/views/pages/form-layouts/AddProductMongoForm.vue';
 </script>
 
 <template>
   <div>
     <VCard title="Add Product">
       <VCardText>
-        <AddProductForm />
+        <AddProductMongoForm />
       </VCardText>
     </VCard>
   </div>

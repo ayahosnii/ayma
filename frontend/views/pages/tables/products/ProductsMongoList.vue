@@ -2,7 +2,7 @@
   <div>
     <!-- Container for buttons -->
     <div class="d-flex align-items-center mb-4 ml-4">
-      <VBtn size="small" title="Add Product" type="button" color="secondary" href="/products/add">
+      <VBtn size="small" title="Add Product" type="button" color="secondary" @click="openCategoryModal">
         <i class="ri-add-circle-line"></i> Add Product
       </VBtn>
       <VBtn size="small" title="Colors" type="button" color="secondary" href="/colors/list" class="ml-2">
@@ -82,20 +82,12 @@
                 <VSelect v-model="editProduct.category_id" label="Category" :items="categories" item-title="name" item-value="id" density="compact" />
               </VCol>
               <VCol cols="4">
-                <VSelect
-                  v-model="editProduct.color_ids" 
-                  label="Colors" 
-                  :items="colors" 
-                  item-title="name" 
-                  item-value="id" 
-                  multiple 
-                  density="compact" 
-                  chips 
-                />
+                <VSelect v-model="editProduct.color_id" label="Color" :items="colors" item-title="name" item-value="id" density="compact" />
               </VCol>
               <VCol cols="4">
                 <VSelect v-model="editProduct.size_id" label="Size" :items="sizes" item-title="name" item-value="id" density="compact" />
               </VCol>
+              
             </VRow>
             <VRow>
               <VCol cols="6">
@@ -124,96 +116,115 @@
       </VCard>
     </VDialog>
 
-    <!-- Product Details Modal -->
-    <VDialog v-model="infoModal" max-width="800px">
+     <!-- Product Details Modal -->
+<VDialog v-model="infoModal" max-width="800px">
+  <VCard>
+    <VCardTitle>Product Details</VCardTitle>
+    <VCardText>
+      <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
+        <div class="image-gallery">
+          <VImg 
+            v-for="(image, index) in infoProduct.images" 
+            :key="index" 
+            :src="getImageUrl(image.image_path)" 
+            width="150" 
+            height="150" 
+            alt="Product Image" 
+            class="m-2"
+          />
+        </div>
+
+        <VDivider :vertical="$vuetify.display.mdAndUp" />
+
+        <div class="ml-4">
+          <VRow>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Name:</span> <span>{{ infoProduct.name }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">SKU:</span> <span>{{ infoProduct.sku }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Slug:</span> <span>{{ infoProduct.slug }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Price:</span> <span>${{ infoProduct.price }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Discount Price:</span> <span>${{ infoProduct.discount_price || '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Stock:</span> <span>{{ infoProduct.stock }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Category:</span> <span>{{ infoProduct.category ? infoProduct.category.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Color:</span> <span>{{ infoProduct.color ? infoProduct.color.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Size:</span> <span>{{ infoProduct.size ? infoProduct.size.name : '-' }}</span>
+              </VCardText>
+            </VCol>
+
+            <VCol cols="4">
+              <VCardText class="text-subtitle-1">
+                <span class="font-weight-medium">Featured:</span> <span>{{ infoProduct.is_featured ? 'Yes' : 'No' }}</span>
+              </VCardText>
+            </VCol>
+          </VRow>
+
+          <VCardText class="text-subtitle-1 mt-3">
+            <span class="font-weight-medium">Description:</span> <span>{{ infoProduct.description || 'No description available.' }}</span>
+          </VCardText>
+          <VCardText class="text-subtitle-1 mt-3">
+            <span class="font-weight-medium">Short Description:</span> <span>{{ infoProduct.short_description || 'No short description available.' }}</span>
+          </VCardText>
+        </div>
+      </div>
+    </VCardText>
+    <VCardActions>
+      <VCol cols="12" class="d-flex justify-end">
+        <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
+      </VCol>
+    </VCardActions>
+  </VCard>
+</VDialog>
+
+    <!-- Category Selection Modal -->
+    <VDialog v-model="categoryModal" max-width="600px">
       <VCard>
-        <VCardTitle>Product Details</VCardTitle>
+        <VCardTitle>Select Category</VCardTitle>
         <VCardText>
-          <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
-            <div class="image-gallery">
-              <VImg 
-                v-for="(image, index) in infoProduct.images" 
-                :key="index" 
-                :src="getImageUrl(image.image_path)" 
-                width="150" 
-                height="150" 
-                alt="Product Image" 
-                class="m-2"
-              />
-            </div>
-
-            <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-            <div class="ml-4">
-              <VRow>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Name:</span> <span>{{ infoProduct.name }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">SKU:</span> <span>{{ infoProduct.sku }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Slug:</span> <span>{{ infoProduct.slug }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Price:</span> <span>${{ infoProduct.price }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Discount Price:</span> <span>${{ infoProduct.discount_price || '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Stock:</span> <span>{{ infoProduct.stock }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Category:</span> <span>{{ infoProduct.category ? infoProduct.category.name : '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Colors:</span> <span>{{ infoProduct.colors.map(color => color.name).join(', ') || '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Size:</span> <span>{{ infoProduct.size ? infoProduct.size.name : '-' }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Featured:</span> <span>{{ infoProduct.is_featured ? 'Yes' : 'No' }}</span>
-                  </VCardText>
-                </VCol>
-              </VRow>
-
-              <VCardText class="text-subtitle-1 mt-3">
-                <span class="font-weight-medium">Description:</span> <span>{{ infoProduct.description || 'No description available.' }}</span>
-              </VCardText>
-              <VCardText class="text-subtitle-1 mt-3">
-                <span class="font-weight-medium">Short Description:</span> <span>{{ infoProduct.short_description || 'No short description available.' }}</span>
-              </VCardText>
-            </div>
-          </div>
+          <VList>
+            <VListItem v-for="category in categories" :key="category.id" @click="selectCategory(category.id)">
+              <VListItemContent>
+                <VListItemTitle>{{ category.name }}</VListItemTitle>
+              </VListItemContent>
+            </VListItem>
+          </VList>
         </VCardText>
         <VCardActions>
-          <VCol cols="12" class="d-flex justify-end">
-            <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
-          </VCol>
+          <VBtn color="error" @click="closeCategoryModal">Cancel</VBtn>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -251,48 +262,42 @@ const deleteModal = ref(false);
 const infoModal = ref(false);
 
 const editProduct = ref({
-  id: '',
-  name: '',
-  sku: '',
-  slug: '',
-  price: '',
-  discount_price: '',
-  stock: '',
-  category_id: null,
-  color_ids: [], // Changed to allow multiple colors
-  size_id: null,
-  is_featured: 0,
-  description: '',
-  short_description: '',
-  image: ''
+  id: '', name: '', sku: '', slug: '', price: '', discount_price: '', stock: '', category_id: null, color_id: null, size_id: null, is_featured: 0, description: '', short_description: '', image: ''
 });
 const originalSlug = ref('');
 const deleteProductId = ref(null);
 const infoProduct = ref({
-  id: '',
-  name: '',
-  sku: '',
-  slug: '',
-  price: '',
-  discount_price: '',
-  stock: '',
-  category: null,
-  colors: [], // To handle multiple colors
-  size: null,
-  is_featured: 0,
-  description: '',
-  short_description: '',
-  primaryImage: null
+  id: '', name: '', sku: '', slug: '', price: '', discount_price: '', stock: '', category: null, color: null, size: null, is_featured: 0, description: '', short_description: '', primaryImage: null
 });
 const colors = ref([]);
 const sizes = ref([]);
 const categories = ref([]);
 
+
+const categoryModal = ref(false);
+const selectedCategoryId = ref(null); // Define a ref for the selected category
+// Existing fetchProducts and fetchColorsAndSizes functions...
+
+const openCategoryModal = () => {
+  categoryModal.value = true;
+};
+
+const closeCategoryModal = () => {
+  categoryModal.value = false;
+};
+
+const selectCategory = (categoryId) => {
+  selectedCategoryId.value = categoryId; // Store selected category ID
+  closeCategoryModal();
+  // Redirect to add product form with the selected category
+  window.location.href = `/products-mongo/add?category=${categoryId}`;
+};
+
 const fetchProducts = async (page = 1) => {
   try {
     const token = localStorage.getItem('authToken');
     if (token) {
-      const response = await axios.get(`${BASE_URL}/products?page=${page}`, {
+      const response = await axios.get(`${BASE_URL}/products-mongo?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -339,13 +344,7 @@ const generateSlug = (name) => {
 };
 
 const openEditModal = (item) => {
-  editProduct.value = { 
-    ...item, 
-    image: '', 
-    color_ids: item.colors.map(color => color.id) || [], // Set multiple colors
-    category_id: item.category_id || null, 
-    size_id: item.size_id || null 
-  };
+  editProduct.value = { ...item, image: '', category_id: item.category_id || null, color_id: item.color_id || null, size_id: item.size_id || null };
   originalSlug.value = item.slug;
   editModal.value = true;
 };
@@ -361,6 +360,7 @@ const openInfoModal = (item) => {
   };
   infoModal.value = true;
 };
+
 
 const closeInfoModal = () => {
   infoModal.value = false;
@@ -383,7 +383,7 @@ const updateProduct = async () => {
         discount_price: editProduct.value.discount_price || null,
         stock: editProduct.value.stock,
         category_id: editProduct.value.category_id,
-        color_ids: editProduct.value.color_ids, // Send multiple colors
+        color_id: editProduct.value.color_id,
         size_id: editProduct.value.size_id,
         is_featured: editProduct.value.is_featured,
         description: editProduct.value.description,
@@ -470,14 +470,23 @@ onMounted(() => {
 watch(currentPage, (newPage) => fetchProducts(newPage));
 
 watch(() => editProduct.value.name, (newName) => {
-  editProduct.value.slug = generateSlug(newName);
+  if (!editModal.value || editProduct.value.slug === originalSlug.value) {
+    editProduct.value.slug = generateSlug(newName);
+  }
 });
-
 </script>
 
 <style scoped>
-.product-table {
-  margin: auto;
-  max-inline-size: 800px;
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.slide-image {
+  max-block-size: 50px;
+  max-inline-size: 50px;
 }
 </style>
