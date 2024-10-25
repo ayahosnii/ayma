@@ -339,12 +339,12 @@ const generateSlug = (name) => {
 };
 
 const openEditModal = (item) => {
-  editProduct.value = { 
-    ...item, 
-    image: '', 
-    color_ids: item.colors.map(color => color.id) || [], // Set multiple colors
-    category_id: item.category_id || null, 
-    size_id: item.size_id || null 
+  editProduct.value = {
+    ...item,
+    image: '',
+    color_ids: (item.colors && item.colors.map(color => color.id)) || [],
+    category_id: item.category_id || null,
+    size_id: item.size_id || null
   };
   originalSlug.value = item.slug;
   editModal.value = true;
@@ -357,8 +357,11 @@ const closeEditModal = () => {
 const openInfoModal = (item) => {
   infoProduct.value = {
     ...item,
-    images: item.images || [] // Ensure that the images array is present
+    images: item.images || [], // Fallback to empty array if not defined
+    colors: item.colors || [], // Fallback to empty array if not defined
+    size: item.size || null,
   };
+
   infoModal.value = true;
 };
 
