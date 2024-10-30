@@ -51,16 +51,13 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/categories', CategoryController::class);
 
     Route::get('/categories/parents', [CategoryController::class, 'getParentCategories']); // Get parent categories
-Route::get('/categories/{parentId}/children', [CategoryController::class, 'getChildCategories']); // Get child categories for a specific parent
+    Route::get('/categories/{parentId}/children', [CategoryController::class, 'getChildCategories']); // Get child categories for a specific parent
     Route::get('/count-categories', [CategoryController::class, 'count']); //Categories Count
 
     Route::resource('/products', ProductController::class);
     Route::get('/count-products', [ProductController::class, 'countProducts']); //Product Count
     Route::put('products/{product}/stock', [ProductController::class, 'updateStock']);
 
-
-    Route::get('/products-mongo/index', [ProductsMongoController::class, 'index']);
-    Route::post('/products-mongo', [ProductsMongoController::class, 'store']);
     Route::resource('/products-mongo', ProductsMongoController::class);
 
     Route::resource('/colors', ColorController::class); //Products Colors

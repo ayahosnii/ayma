@@ -12,7 +12,7 @@ class ProductsMongoController extends Controller
     public function index()
     {
         // Retrieve all products from MongoDB
-        $products = ProductsMongo::all();
+        $products = ProductsMongo::with('category')->get();
 
         // Return a JSON response with the list of products
         return response()->json([

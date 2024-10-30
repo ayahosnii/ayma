@@ -305,3 +305,13 @@ onMounted(() => {
 
 watch(currentPage, (newPage) => fetchSizes(newPage));
 </script>
+
+
+
+
+
+
+
+
+
+

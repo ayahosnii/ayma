@@ -13,6 +13,7 @@
       </VBtn>
     </div>
 
+    <!-- Product Table -->
     <VTable>
       <thead>
         <tr>
@@ -46,6 +47,7 @@
       </tbody>
     </VTable>
 
+    <!-- Pagination -->
     <VPagination v-model="currentPage" :length="totalPages" @page-change="onPageChange" />
 
     <!-- Edit Modal -->
@@ -98,13 +100,12 @@
         <VCardTitle>Product Details</VCardTitle>
         <VCardText>
           <VRow>
-            <VCol cols="6">
-              <div><strong>Name:</strong> {{ infoProduct.name }}</div>
-              <div><strong>SKU:</strong> {{ infoProduct.sku }}</div>
-              <div><strong>Price:</strong> ${{ infoProduct.price }}</div>
-              <div><strong>Stock:</strong> {{ infoProduct.stock }}</div>
-              <div><strong>Category:</strong> {{ infoProduct.category_id }}</div>
-              <div><strong>Description:</strong> {{ infoProduct.description || 'No description available.' }}</div>
+            <VCol cols="12">
+              <div v-for="(value, key) in infoProduct" :key="key">
+                <strong>{{ formatKey(key) }}:</strong>
+                <span v-if="Array.isArray(value)">{{ value.join(', ') }}</span>
+                <span v-else>{{ value }}</span>
+              </div>
             </VCol>
           </VRow>
         </VCardText>
@@ -139,7 +140,6 @@ import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();
-
 const products = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
@@ -148,20 +148,29 @@ const editModal = ref(false);
 const deleteModal = ref(false);
 const infoModal = ref(false);
 
-const editProduct = ref({
-  _id: '', name: '', sku: '', price: 0, discount_price: null, stock: 0, category_id: null, description: ''
-});
+const editProduct = ref({});
 const infoProduct = ref({});
 const deleteProductId = ref(null);
 const categories = ref([]);
+
+// Format keys for display
+const formatKey = (key) => {
+  const customLabels = {
+    is_featured: 'Featured Product',
+    discount_price: 'Discounted Price',
+    additional_attributes: 'Additional Attributes',
+    category: 'Category',
+  };
+  return customLabels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+};
 
 // Fetch products from the server
 const fetchProducts = async (page = 1) => {
   try {
     const response = await axios.get(`${BASE_URL}/products-mongo?page=${page}`);
-    products.value = response.data.products; // Adjust based on your API response
-    totalPages.value = response.data.totalPages; // Adjust based on your API response
-    currentPage.value = response.data.currentPage; // Adjust based on your API response
+    products.value = response.data;
+    totalPages.value = response.data.totalPages;
+    currentPage.value = response.data.currentPage;
   } catch (error) {
     console.error('Failed to fetch products:', error);
     $toast.error('Failed to fetch products');
@@ -172,7 +181,7 @@ const fetchProducts = async (page = 1) => {
 const fetchCategories = async () => {
   try {
     const response = await axios.get(`${BASE_URL}/categories`);
-    categories.value = response.data; // Adjust based on your API response
+    categories.value = response.data;
   } catch (error) {
     console.error('Failed to fetch categories:', error);
     $toast.error('Failed to fetch categories');
@@ -190,7 +199,18 @@ const closeEditModal = () => {
 };
 
 const openInfoModal = (item) => {
-  infoProduct.value = { ...item };
+  infoProduct.value = {
+    name: item.name,
+    sku: item.sku,
+    price: item.price,
+    discount_price: item.discount_price,
+    description: item.description,
+    stock: item.stock,
+    is_featured: item.is_featured ? 'Yes' : 'No',
+    category: item.category_id,
+    additional_attributes: item.additional_attributes || 'N/A',
+    images: item.images ? item.images.map((img) => img.url).join(', ') : 'No images',
+  };
   infoModal.value = true;
 };
 
@@ -209,36 +229,35 @@ const closeDeleteModal = () => {
 
 // Update product
 const updateProduct = async () => {
-    try {
-        await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, editProduct.value);
-        $toast.success('Product updated successfully!');
-        fetchProducts(currentPage.value);
-        closeEditModal();
-    } catch (error) {
-        console.error('Failed to update product:', error);
-        $toast.error('Error updating product');
-    }
+  try {
+    await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, editProduct.value);
+    $toast.success('Product updated successfully');
+    editModal.value = false;
+    fetchProducts(currentPage.value);
+  } catch (error) {
+    console.error('Failed to update product:', error);
+    $toast.error('Failed to update product');
+  }
 };
 
 // Delete product
 const deleteProduct = async () => {
-    try {
-        await axios.delete(`${BASE_URL}/products-mongo/${deleteProductId.value}`);
-        $toast.success('Product deleted successfully!');
-        fetchProducts(currentPage.value);
-        closeDeleteModal();
-    } catch (error) {
-        console.error('Failed to delete product:', error);
-        $toast.error('Error deleting product');
-    }
+  try {
+    await axios.delete(`${BASE_URL}/products-mongo/${deleteProductId.value}`);
+    $toast.success('Product deleted successfully');
+    deleteModal.value = false;
+    fetchProducts(currentPage.value);
+  } catch (error) {
+    console.error('Failed to delete product:', error);
+    $toast.error('Failed to delete product');
+  }
 };
 
-// Handle page change
 const onPageChange = (page) => {
   fetchProducts(page);
 };
 
-// Fetch data on component mount
+// Initialize component
 onMounted(() => {
   fetchProducts();
   fetchCategories();
@@ -246,5 +265,5 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Add any necessary styles here */
+/* Scoped styling as needed */
 </style>

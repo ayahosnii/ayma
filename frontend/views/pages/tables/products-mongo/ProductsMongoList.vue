@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- Container for buttons -->
+    <!-- Container for action buttons -->
     <div class="d-flex align-items-center mb-4 ml-4">
-      <VBtn size="small" title="Add Product" type="button" color="secondary" href="/products/add">
+      <VBtn size="small" title="Add Product" type="button" color="secondary" href="/products-mongo/add">
         <i class="ri-add-circle-line"></i> Add Product
       </VBtn>
       <VBtn size="small" title="Colors" type="button" color="secondary" href="/colors/list" class="ml-2">
@@ -13,6 +13,7 @@
       </VBtn>
     </div>
 
+    <!-- Product Table -->
     <VTable>
       <thead>
         <tr>
@@ -24,14 +25,13 @@
           <th class="text-uppercase text-center">Actions</th>
         </tr>
       </thead>
-
       <tbody>
-        <tr v-for="item in products" :key="item.id">
+        <tr v-for="item in products" :key="item._id">
           <td class="text-center">{{ item.name }}</td>
           <td class="text-center">{{ item.sku }}</td>
           <td class="text-center">${{ item.price }}</td>
           <td class="text-center">{{ item.stock }}</td>
-          <td class="text-center">{{ item.category ? item.category.name : '-' }}</td>
+          <td class="text-center">{{ item.category_id }}</td>
           <td class="text-center">
             <VBtn size="small" title="Info" color="info" @click="openInfoModal(item)">
               <i class="ri-information-line"></i>
@@ -47,6 +47,7 @@
       </tbody>
     </VTable>
 
+    <!-- Pagination -->
     <VPagination v-model="currentPage" :length="totalPages" @page-change="onPageChange" />
 
     <!-- Edit Modal -->
@@ -57,60 +58,29 @@
           <VForm ref="editForm">
             <VRow>
               <VCol cols="4">
-                <VTextField v-model="editProduct.name" label="Name" placeholder="Product Name" @input="onNameChange" />
+                <VTextField v-model="editProduct.name" label="Name" placeholder="Product Name" />
               </VCol>
               <VCol cols="4">
-                <VTextField v-model="editProduct.sku" label="SKU" placeholder="Product SKU" :disabled="editProduct.skuChanged" />
+                <VTextField v-model="editProduct.sku" label="SKU" placeholder="Product SKU" />
               </VCol>
               <VCol cols="4">
-                <VTextField v-model="editProduct.slug" label="Slug" placeholder="Product Slug" :disabled="slugDisabled" />
+                <VTextField v-model="editProduct.price" label="Price" placeholder="Product Price" type="number" min="0" />
               </VCol>
             </VRow>
             <VRow>
               <VCol cols="4">
-                <VTextField v-model="editProduct.price" label="Price" placeholder="Product Price" type="number" min="0" />
-              </VCol>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.discount_price" label="Discount Price" placeholder="Discounted Price (optional)" type="number" min="0" />
+                <VTextField v-model="editProduct.discount_price" label="Discount Price" placeholder="Discount Price" type="number" min="0" />
               </VCol>
               <VCol cols="4">
                 <VTextField v-model="editProduct.stock" label="Stock" placeholder="Available Stock" type="number" min="0" />
               </VCol>
-            </VRow>
-            <VRow>
               <VCol cols="4">
-                <VSelect v-model="editProduct.category_id" label="Category" :items="categories" item-title="name" item-value="id" density="compact" />
-              </VCol>
-              <VCol cols="4">
-                <VSelect
-                  v-model="editProduct.color_ids" 
-                  label="Colors" 
-                  :items="colors" 
-                  item-title="name" 
-                  item-value="id" 
-                  multiple 
-                  density="compact" 
-                  chips 
-                />
-              </VCol>
-              <VCol cols="4">
-                <VSelect v-model="editProduct.size_id" label="Size" :items="sizes" item-title="name" item-value="id" density="compact" />
+                <VSelect v-model="editProduct.category_id" label="Category" :items="categories" item-title="name" item-value="_id" />
               </VCol>
             </VRow>
             <VRow>
-              <VCol cols="6">
-                <VTextField v-model="editProduct.description" label="Description" placeholder="Product Description (optional)" multiline />
-              </VCol>
-              <VCol cols="6">
-                <VTextField v-model="editProduct.short_description" label="Short Description" placeholder="Short Description (optional)" multiline />
-              </VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="12" md="6">
-                <VFileInput v-model="editProduct.image" label="Image" placeholder="Select an image" accept="image/*" @change="handleEditImageUpload" />
-              </VCol>
-              <VCol cols="12" md="6">
-                <VSwitch v-model="editProduct.is_featured" label="Featured" inset />
+              <VCol cols="12">
+                <VTextField v-model="editProduct.description" label="Description" placeholder="Product Description" multiline />
               </VCol>
             </VRow>
           </VForm>
@@ -129,86 +99,15 @@
       <VCard>
         <VCardTitle>Product Details</VCardTitle>
         <VCardText>
-          <div class="d-flex justify-space-between flex-wrap flex-md-nowrap flex-column flex-md-row">
-            <div class="image-gallery">
-              <VImg 
-                v-for="(image, index) in infoProduct.images" 
-                :key="index" 
-                :src="getImageUrl(image.image_path)" 
-                width="150" 
-                height="150" 
-                alt="Product Image" 
-                class="m-2"
-              />
-            </div>
-
-            <VDivider :vertical="$vuetify.display.mdAndUp" />
-
-            <div class="ml-4">
-              <VRow>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Name:</span> <span>{{ infoProduct.name }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">SKU:</span> <span>{{ infoProduct.sku }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Slug:</span> <span>{{ infoProduct.slug }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Price:</span> <span>${{ infoProduct.price }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Discount Price:</span> <span>${{ infoProduct.discount_price || '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Stock:</span> <span>{{ infoProduct.stock }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Category:</span> <span>{{ infoProduct.category ? infoProduct.category.name : '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Colors:</span> <span>{{ infoProduct.colors.map(color => color.name).join(', ') || '-' }}</span>
-                  </VCardText>
-                </VCol>
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Size:</span> <span>{{ infoProduct.size ? infoProduct.size.name : '-' }}</span>
-                  </VCardText>
-                </VCol>
-
-                <VCol cols="4">
-                  <VCardText class="text-subtitle-1">
-                    <span class="font-weight-medium">Featured:</span> <span>{{ infoProduct.is_featured ? 'Yes' : 'No' }}</span>
-                  </VCardText>
-                </VCol>
-              </VRow>
-
-              <VCardText class="text-subtitle-1 mt-3">
-                <span class="font-weight-medium">Description:</span> <span>{{ infoProduct.description || 'No description available.' }}</span>
-              </VCardText>
-              <VCardText class="text-subtitle-1 mt-3">
-                <span class="font-weight-medium">Short Description:</span> <span>{{ infoProduct.short_description || 'No short description available.' }}</span>
-              </VCardText>
-            </div>
-          </div>
+          <VRow>
+            <VCol cols="12">
+              <div v-for="(value, key) in infoProduct" :key="key">
+                <strong>{{ formatKey(key) }}:</strong>
+                <span v-if="Array.isArray(value)">{{ value.join(', ') }}</span>
+                <span v-else>{{ value }}</span>
+              </div>
+            </VCol>
+          </VRow>
         </VCardText>
         <VCardActions>
           <VCol cols="12" class="d-flex justify-end">
@@ -237,11 +136,10 @@
 <script setup lang="ts">
 import { BASE_URL } from '@/config/apiConfig';
 import axios from 'axios';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();
-
 const products = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(1);
@@ -250,57 +148,35 @@ const editModal = ref(false);
 const deleteModal = ref(false);
 const infoModal = ref(false);
 
-const editProduct = ref({
-  id: '',
-  name: '',
-  sku: '',
-  slug: '',
-  price: '',
-  discount_price: '',
-  stock: '',
-  category_id: null,
-  color_ids: [], // Changed to allow multiple colors
-  size_id: null,
-  is_featured: 0,
-  description: '',
-  short_description: '',
-  image: ''
-});
-const originalSlug = ref('');
+const editProduct = ref({});
+const infoProduct = ref({});
 const deleteProductId = ref(null);
-const infoProduct = ref({
-  id: '',
-  name: '',
-  sku: '',
-  slug: '',
-  price: '',
-  discount_price: '',
-  stock: '',
-  category: null,
-  colors: [], // To handle multiple colors
-  size: null,
-  is_featured: 0,
-  description: '',
-  short_description: '',
-  primaryImage: null
-});
-const colors = ref([]);
-const sizes = ref([]);
 const categories = ref([]);
+
+// Format keys for display
+const formatKey = (key) => {
+  const customLabels = {
+    is_featured: 'Featured Product',
+    discount_price: 'Discounted Price',
+    additional_attributes: 'Additional Attributes',
+    category: 'Category',
+  };
+  return customLabels[key] || key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+};
 
 const fetchProducts = async (page = 1) => {
   try {
     const token = localStorage.getItem('authToken');
     if (token) {
-      const response = await axios.get(`${BASE_URL}/products-mongo/index?page=${page}`, {
+      const response = await axios.get(`${BASE_URL}/products-mongo?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      products.value = response.data.products; // Adjusted to match typical API response structure
-      totalPages.value = response.data.last_page;
-      currentPage.value = response.data.current_page;
+      products.value = response.data.products;
+    totalPages.value = response.data.totalPages;
+    currentPage.value = response.data.currentPage;
     } else {
       console.error('No auth token found');
     }
@@ -309,44 +185,25 @@ const fetchProducts = async (page = 1) => {
   }
 };
 
-const fetchColorsAndSizes = async () => {
-  try {
-    const token = localStorage.getItem('authToken');
-    const [colorsResponse, sizesResponse, categoriesResponse] = await Promise.all([
-      axios.get(`${BASE_URL}/colors`, { headers: { Authorization: `Bearer ${token}` } }),
-      axios.get(`${BASE_URL}/sizes`, { headers: { Authorization: `Bearer ${token}` } }),
-      axios.get(`${BASE_URL}/categories`, { headers: { Authorization: `Bearer ${token}` } })
-    ]);
 
-    colors.value = colorsResponse.data;
-    sizes.value = sizesResponse.data;
-    categories.value = categoriesResponse.data;
+const fetchCategories = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/categories`, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // Include your token here
+      },
+    });
+    categories.value = response.data;
   } catch (error) {
-    console.error('Failed to fetch colors, sizes, and categories:', error);
+    console.error('Failed to fetch categories:', error);
+    $toast.error('Failed to fetch categories');
   }
 };
 
-const getImageUrl = (path) => {
-  return path ? `http://127.0.0.1:8000/storage/${path}` : 'placeholder_image_url';
-};
 
-const generateSlug = (name) => {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-};
-
+// Open modals
 const openEditModal = (item) => {
-  editProduct.value = {
-    ...item,
-    image: '',
-    color_ids: (item.colors && item.colors.map(color => color.id)) || [],
-    category_id: item.category_id || null,
-    size_id: item.size_id || null
-  };
-  originalSlug.value = item.slug;
+  editProduct.value = { ...item };
   editModal.value = true;
 };
 
@@ -356,12 +213,17 @@ const closeEditModal = () => {
 
 const openInfoModal = (item) => {
   infoProduct.value = {
-    ...item,
-    images: item.images || [], // Fallback to empty array if not defined
-    colors: item.colors || [], // Fallback to empty array if not defined
-    size: item.size || null,
+    name: item.name,
+    sku: item.sku,
+    price: item.price,
+    discount_price: item.discount_price,
+    description: item.description,
+    stock: item.stock,
+    is_featured: item.is_featured ? 'Yes' : 'No',
+    category: item.category_id,
+    additional_attributes: item.additional_attributes || 'N/A',
+    images: item.images ? item.images.map((img) => img.url).join(', ') : 'No images',
   };
-
   infoModal.value = true;
 };
 
@@ -369,69 +231,8 @@ const closeInfoModal = () => {
   infoModal.value = false;
 };
 
-const handleEditImageUpload = (event) => {
-  const file = event.target.files[0];
-  editProduct.value.image = file;
-};
-
-const updateProduct = async () => {
-  try {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const productData = {
-        name: editProduct.value.name,
-        sku: editProduct.value.sku,
-        slug: editProduct.value.slug,
-        price: editProduct.value.price,
-        discount_price: editProduct.value.discount_price || null,
-        stock: editProduct.value.stock,
-        category_id: editProduct.value.category_id,
-        color_ids: editProduct.value.color_ids, // Send multiple colors
-        size_id: editProduct.value.size_id,
-        is_featured: editProduct.value.is_featured,
-        description: editProduct.value.description,
-        short_description: editProduct.value.short_description
-      };
-
-      if (editProduct.value.slug === originalSlug.value) {
-        delete productData.slug;
-      }
-
-      if (editProduct.value.image instanceof File) {
-        const formData = new FormData();
-        Object.keys(productData).forEach(key => {
-          formData.append(key, productData[key]);
-        });
-        formData.append('image', editProduct.value.image);
-
-        await axios.put(`${BASE_URL}/products/${editProduct.value.id}`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        });
-      } else {
-        await axios.put(`${BASE_URL}/products/${editProduct.value.id}`, productData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-      }
-
-      $toast.success('Product updated successfully!');
-      fetchProducts(currentPage.value);
-      closeEditModal();
-    } else {
-      console.error('No auth token found');
-    }
-  } catch (error) {
-    console.error('Failed to update product:', error);
-    $toast.error('Error updating product: ' + (error.response?.data?.message || error.message));
-  }
-};
-
 const openDeleteModal = (item) => {
-  deleteProductId.value = item.id;
+  deleteProductId.value = item._id;
   deleteModal.value = true;
 };
 
@@ -439,48 +240,43 @@ const closeDeleteModal = () => {
   deleteModal.value = false;
 };
 
+// Update product
+const updateProduct = async () => {
+  try {
+    await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, editProduct.value);
+    $toast.success('Product updated successfully');
+    editModal.value = false;
+    fetchProducts(currentPage.value);
+  } catch (error) {
+    console.error('Failed to update product:', error);
+    $toast.error('Failed to update product');
+  }
+};
+
+// Delete product
 const deleteProduct = async () => {
   try {
-    const token = localStorage.getItem('authToken');
-    if (token && deleteProductId.value) {
-      await axios.delete(`${BASE_URL}/products/${deleteProductId.value}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      $toast.success('Product deleted successfully!');
-      fetchProducts(currentPage.value);
-      closeDeleteModal();
-    } else {
-      console.error('No auth token found or delete product ID missing');
-    }
+    await axios.delete(`${BASE_URL}/products-mongo/${deleteProductId.value}`);
+    $toast.success('Product deleted successfully');
+    deleteModal.value = false;
+    fetchProducts(currentPage.value);
   } catch (error) {
     console.error('Failed to delete product:', error);
-    $toast.error('Error deleting product: ' + (error.response?.data?.message || error.message));
+    $toast.error('Failed to delete product');
   }
 };
 
 const onPageChange = (page) => {
-  currentPage.value = page;
+  fetchProducts(page);
 };
 
+// Initialize component
 onMounted(() => {
-  fetchProducts(currentPage.value);
-  fetchColorsAndSizes();
+  fetchProducts();
+  fetchCategories();
 });
-
-watch(currentPage, (newPage) => fetchProducts(newPage));
-
-watch(() => editProduct.value.name, (newName) => {
-  editProduct.value.slug = generateSlug(newName);
-});
-
 </script>
 
 <style scoped>
-.product-table {
-  margin: auto;
-  max-inline-size: 800px;
-}
+/* Scoped styling as needed */
 </style>
