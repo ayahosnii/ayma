@@ -212,6 +212,7 @@ const infoModal = ref(false);
 
 const editProduct = ref({});
 const infoProduct = ref({});
+const baseImageUrl = "http://127.0.0.1:8000/storage/";
 const deleteProductId = ref(null);
 const categories = ref([]);
 
@@ -284,7 +285,7 @@ const openInfoModal = (item) => {
     is_featured: item.is_featured ? 'Yes' : 'No',
     category: item.category_id,
     additional_attributes: item.additional_attributes || {},
-    images: item.images ? item.images.map((img) => img.url) : []
+    images: item.images ? item.images.map((img) => `${baseImageUrl}${img}`) : []
   };
   infoModal.value = true;
 };
