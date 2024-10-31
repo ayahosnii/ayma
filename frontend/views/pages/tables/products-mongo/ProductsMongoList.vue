@@ -95,27 +95,89 @@
     </VDialog>
 
     <!-- Product Details Modal -->
-    <VDialog v-model="infoModal" max-width="800px">
-      <VCard>
-        <VCardTitle>Product Details</VCardTitle>
-        <VCardText>
-          <VRow>
-            <VCol cols="12">
-              <div v-for="(value, key) in infoProduct" :key="key">
-                <strong>{{ formatKey(key) }}:</strong>
-                <span v-if="Array.isArray(value)">{{ value.join(', ') }}</span>
-                <span v-else>{{ value }}</span>
-              </div>
-            </VCol>
-          </VRow>
-        </VCardText>
-        <VCardActions>
-          <VCol cols="12" class="d-flex justify-end">
-            <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
-          </VCol>
-        </VCardActions>
-      </VCard>
-    </VDialog>
+    <!-- Product Details Modal -->
+<VDialog v-model="infoModal" max-width="800px">
+  <VCard>
+    <VCardTitle>Product Details</VCardTitle>
+    <VCardText>
+      <!-- Product Information with two items per row -->
+      <VRow>
+        <VCol cols="6">
+          <strong>Name:</strong> {{ infoProduct.name }}
+        </VCol>
+        <VCol cols="6">
+          <strong>SKU:</strong> {{ infoProduct.sku }}
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="6">
+          <strong>Price:</strong> ${{ infoProduct.price }}
+        </VCol>
+        <VCol cols="6">
+          <strong>Discount Price:</strong> ${{ infoProduct.discount_price || 'N/A' }}
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="6">
+          <strong>Stock:</strong> {{ infoProduct.stock }}
+        </VCol>
+        <VCol cols="6">
+          <strong>Featured Product:</strong> {{ infoProduct.is_featured }}
+        </VCol>
+      </VRow>
+      <VRow>
+        <VCol cols="6">
+          <strong>Description:</strong> {{ infoProduct.description || 'N/A' }}
+        </VCol>
+        <VCol cols="6">
+          <strong>Category:</strong> {{ infoProduct.category }}
+        </VCol>
+      </VRow>
+      <!-- Additional Attributes Table -->
+      <VRow>
+        <VCol cols="12">
+          <strong>Additional Attributes:</strong>
+          <VTable v-if="infoProduct.additional_attributes && Object.keys(infoProduct.additional_attributes).length">
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(value, key) in infoProduct.additional_attributes" :key="key">
+                <td>{{ formatKey(key) }}</td>
+                <td>{{ value }}</td>
+              </tr>
+            </tbody>
+          </VTable>
+          <span v-else>No additional attributes</span>
+        </VCol>
+      </VRow>
+
+      <!-- Images Section -->
+      <VRow v-if="infoProduct.images && infoProduct.images.length">
+        <VCol cols="12">
+          <strong>Images:</strong>
+          <div class="d-flex gap-2 flex-wrap">
+            <img v-for="(imgUrl, index) in infoProduct.images" :key="index" :src="imgUrl" alt="Product Image" class="product-image" />
+          </div>
+        </VCol>
+      </VRow>
+      <VRow v-else>
+        <VCol cols="12">
+          <span>No images available</span>
+        </VCol>
+      </VRow>
+    </VCardText>
+    <VCardActions>
+      <VCol cols="12" class="d-flex justify-end">
+        <VBtn color="secondary" @click="closeInfoModal">Close</VBtn>
+      </VCol>
+    </VCardActions>
+  </VCard>
+</VDialog>
+
 
     <!-- Delete Modal -->
     <VDialog v-model="deleteModal" max-width="500px">
@@ -126,7 +188,7 @@
           <VCol cols="12" class="d-flex gap-4">
             <VBtn color="error" text @click="closeDeleteModal">Cancel</VBtn>
             <VBtn color="success" text @click="deleteProduct">Delete</VBtn>
-          </VCol>
+        </VCol>
         </VCardActions>
       </VCard>
     </VDialog>
@@ -221,11 +283,12 @@ const openInfoModal = (item) => {
     stock: item.stock,
     is_featured: item.is_featured ? 'Yes' : 'No',
     category: item.category_id,
-    additional_attributes: item.additional_attributes || 'N/A',
-    images: item.images ? item.images.map((img) => img.url).join(', ') : 'No images',
+    additional_attributes: item.additional_attributes || {},
+    images: item.images ? item.images.map((img) => img.url) : []
   };
   infoModal.value = true;
 };
+
 
 const closeInfoModal = () => {
   infoModal.value = false;
@@ -278,5 +341,10 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Scoped styling as needed */
+.product-image {
+  border-radius: 4px;
+  block-size: auto;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 20%);
+  inline-size: 100px;
+}
 </style>
