@@ -51,48 +51,81 @@
     <VPagination v-model="currentPage" :length="totalPages" @page-change="onPageChange" />
 
     <!-- Edit Modal -->
-    <VDialog v-model="editModal" max-width="800px">
-      <VCard>
-        <VCardTitle>Edit Product</VCardTitle>
-        <VCardText>
-          <VForm ref="editForm">
-            <VRow>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.name" label="Name" placeholder="Product Name" />
-              </VCol>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.sku" label="SKU" placeholder="Product SKU" />
-              </VCol>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.price" label="Price" placeholder="Product Price" type="number" min="0" />
-              </VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.discount_price" label="Discount Price" placeholder="Discount Price" type="number" min="0" />
-              </VCol>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.stock" label="Stock" placeholder="Available Stock" type="number" min="0" />
-              </VCol>
-              <VCol cols="4">
-                <VSelect v-model="editProduct.category_id" label="Category" :items="categories" item-title="name" item-value="_id" />
-              </VCol>
-            </VRow>
-            <VRow>
-              <VCol cols="12">
-                <VTextField v-model="editProduct.description" label="Description" placeholder="Product Description" multiline />
-              </VCol>
-            </VRow>
-          </VForm>
-        </VCardText>
-        <VCardActions>
-          <VCol cols="12" class="d-flex gap-4">
-            <VBtn color="success" @click="updateProduct">Save</VBtn>
-            <VBtn color="error" @click="closeEditModal">Cancel</VBtn>
+<VDialog v-model="editModal" max-width="800px">
+  <VCard>
+    <VCardTitle>Edit Product</VCardTitle>
+    <VCardText>
+      <VForm ref="editForm">
+        <!-- Basic Information -->
+        <VRow>
+          <VCol cols="4">
+            <VTextField v-model="editProduct.name" label="Name" placeholder="Product Name" />
           </VCol>
-        </VCardActions>
-      </VCard>
-    </VDialog>
+          <VCol cols="4">
+            <VTextField v-model="editProduct.sku" label="SKU" placeholder="Product SKU" />
+          </VCol>
+          <VCol cols="4">
+            <VTextField v-model="editProduct.price" label="Price" placeholder="Product Price" type="number" min="0" />
+          </VCol>
+        </VRow>
+
+        <VRow>
+          <VCol cols="4">
+            <VTextField v-model="editProduct.discount_price" label="Discount Price" placeholder="Discount Price" type="number" min="0" />
+          </VCol>
+          <VCol cols="4">
+            <VTextField v-model="editProduct.stock" label="Stock" placeholder="Available Stock" type="number" min="0" />
+          </VCol>
+          <VCol cols="4">
+            <VSelect v-model="editProduct.category_id" label="Category" :items="categories" item-title="name" item-value="_id" />
+          </VCol>
+        </VRow>
+
+        <!-- Additional Fields -->
+        <VRow>
+          <VCol cols="4">
+            <VSwitch v-model="editProduct.is_featured" label="Featured Product" />
+          </VCol>
+          <VCol cols="8">
+            <VTextField v-model="editProduct.description" label="Description" placeholder="Product Description" multiline />
+          </VCol>
+        </VRow>
+
+        <!-- Additional Attributes -->
+        <VRow>
+          <VCol cols="12">
+            <strong>Additional Attributes:</strong>
+            <div v-for="(value, key) in editProduct.additional_attributes" :key="key" class="d-flex align-items-center mb-2">
+              <VTextField
+                v-model="editProduct.additional_attributes[key]"
+                :label="formatKey(key)"
+                placeholder="Enter value"
+                class="mr-2"
+              />
+            </div>
+          </VCol>
+        </VRow>
+
+        <!-- Images Section -->
+        <VRow>
+          <VCol cols="12">
+            <strong>Images:</strong>
+            <div class="d-flex gap-2 flex-wrap">
+              <img v-for="(imgUrl, index) in editProduct.images" :key="index" :src="imgUrl" alt="Product Image" class="product-image" />
+            </div>
+          </VCol>
+        </VRow>
+      </VForm>
+    </VCardText>
+    <VCardActions>
+      <VCol cols="12" class="d-flex gap-4">
+        <VBtn color="success" @click="updateProduct">Save</VBtn>
+        <VBtn color="error" @click="closeEditModal">Cancel</VBtn>
+      </VCol>
+    </VCardActions>
+  </VCard>
+</VDialog>
+
 
     <!-- Product Details Modal -->
     <!-- Product Details Modal -->
@@ -266,7 +299,12 @@ const fetchCategories = async () => {
 
 // Open modals
 const openEditModal = (item) => {
-  editProduct.value = { ...item };
+  editProduct.value = {
+    ...item,
+    additional_attributes: { ...item.additional_attributes }, // Preserve additional attributes
+    is_featured: item.is_featured, // Featured status
+    images: item.images ? item.images.map((img) => `${baseImageUrl}${img}`) : []
+  };
   editModal.value = true;
 };
 

@@ -13,14 +13,21 @@
       </VCol>
 
       <VCol cols="12" md="6">
-        <VTextField
-          v-model="sku"
-          label="SKU"
-          placeholder="Product SKU"
-          :rules="[rules.required]"
-          required
-        />
-      </VCol>
+        <VInput>
+          <template #prepend>
+            <VBtn icon small color="secondary" @click="generateSKU">
+              <i class="ri-refresh-line"></i>
+            </VBtn>
+          </template>
+          <VTextField
+            v-model="sku"
+            label="SKU"
+            placeholder="Product SKU"
+            :rules="[rules.required]"
+            required
+          />
+        </VInput>
+      </VCol>      
 
       <!-- Slug and Is Featured -->
       <VCol cols="12" md="6">
@@ -138,7 +145,7 @@
                 />
               </VCol>
               <VCol cols="3" class="d-flex align-items-center">
-                <VBtn @click="addOption(attribute.key, newOption); newOption = ''">
+                <VBtn color="secondary" @click="addOption(attribute.key, newOption); newOption = ''">
                   Add Option
                 </VBtn>
               </VCol>
@@ -156,7 +163,7 @@
           </div>
         </div>
 
-        <VBtn @click="addAttribute">Add Attribute</VBtn>
+        <VBtn color="secondary" @click="addAttribute">Add Attribute</VBtn>
       </VCol>
 
       <!-- Image Upload Section -->
@@ -175,8 +182,8 @@
 
       <!-- Buttons for Submit and Reset -->
       <VCol cols="12" class="d-flex gap-4">
-        <VBtn type="submit" :disabled="!formValid">Add Product</VBtn>
-        <VBtn type="reset" @click="resetForm">Reset</VBtn>
+        <VBtn color="success" type="submit" :disabled="!formValid">Add Product</VBtn>
+        <VBtn color="error" type="reset" @click="resetForm">Reset</VBtn>
       </VCol>
     </VRow>
   </VForm>
@@ -205,7 +212,7 @@ const imagePreviews = ref([]);
 
 const multiValueAttributes = ['color', 'size'];
 const dynamicOptions = ref({
-  color: ["red", "blue", "green"],
+  color: ["Red", "Blue", "Green"],
   size: ["S", "M", "L"]
 });
 
@@ -279,6 +286,10 @@ const handleFileUpload = (event) => {
 const removeImage = (index) => {
   images.value.splice(index, 1);
   imagePreviews.value.splice(index, 1);
+};
+
+const generateSKU = () => {
+  sku.value = `SKU-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 };
 
 const handleSubmit = async () => {
