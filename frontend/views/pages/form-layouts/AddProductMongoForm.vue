@@ -166,8 +166,8 @@
         <VList>
           <VListItem v-for="(image, index) in imagePreviews" :key="index">
             <VImg :src="image" max-width="100" />
-            <VBtn icon @click="removeImage(index)">
-              <VIcon>mdi-delete</VIcon>
+            <VBtn color="error" icon @click="removeImage(index)">
+              <i class="ri-delete-bin-line"></i>
             </VBtn>
           </VListItem>
         </VList>
