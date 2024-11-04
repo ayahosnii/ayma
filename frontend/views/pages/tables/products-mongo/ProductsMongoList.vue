@@ -320,15 +320,26 @@ const updateProduct = async () => {
 // Delete product
 const deleteProduct = async () => {
   try {
-    await axios.delete(`${BASE_URL}/products-mongo/${deleteProductId.value}`);
-    $toast.success('Product deleted successfully');
-    deleteModal.value = false;
-    fetchProducts(currentPage.value);
+    const token = localStorage.getItem('authToken');
+    if (token && deleteProductId.value) {
+      await axios.delete(`${BASE_URL}/products-mongo/${deleteProductId.value}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      $toast.success('Product deleted successfully!');
+      fetchProducts(currentPage.value);
+      closeDeleteModal();
+    } else {
+      console.error('No auth token found or delete product ID missing');
+    }
   } catch (error) {
     console.error('Failed to delete product:', error);
-    $toast.error('Failed to delete product');
+    $toast.error('Error deleting product: ' + (error.response?.data?.message || error.message));
   }
 };
+
 
 const onPageChange = (page) => {
   fetchProducts(page);
@@ -346,6 +357,6 @@ onMounted(() => {
   border-radius: 4px;
   block-size: auto;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 20%);
-  inline-size: 100px;
+  inline-size: 200px;
 }
 </style>
