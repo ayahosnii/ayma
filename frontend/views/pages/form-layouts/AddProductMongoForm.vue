@@ -27,7 +27,7 @@
             required
           />
         </VInput>
-      </VCol>      
+      </VCol>
 
       <!-- Slug and Is Featured -->
       <VCol cols="12" md="6">
@@ -42,6 +42,17 @@
 
       <VCol cols="12" md="6">
         <VSwitch v-model="is_featured" label="Featured" inset />
+      </VCol>
+
+      <!-- Description (using VTextarea for multiline input) -->
+      <VCol cols="12">
+        <VTextarea
+          v-model="description"
+          label="Description"
+          placeholder="Product Description"
+          :rules="[rules.required]"
+          required
+        />
       </VCol>
 
       <!-- Price and Discount Price -->
@@ -166,6 +177,7 @@
         <VBtn color="secondary" @click="addAttribute">Add Attribute</VBtn>
       </VCol>
 
+
       <!-- Image Upload Section -->
       <VCol cols="12">
         <h4>Images</h4>
@@ -197,6 +209,7 @@ import { useToast } from 'vue-toast-notification';
 const $toast = useToast();
 const name = ref('');
 const sku = ref('');
+const description = ref('');
 const is_featured = ref(false);
 const price = ref('');
 const discount_price = ref('');
@@ -274,12 +287,9 @@ const removeAttribute = (index) => {
   additional_attributes.value.splice(index, 1);
 };
 
-// Handle file uploads
 const handleFileUpload = (event) => {
   const files = Array.from(event.target.files);
   images.value.push(...files);
-
-  // Create previews for the uploaded images
   imagePreviews.value = images.value.map(file => URL.createObjectURL(file));
 };
 
@@ -304,20 +314,19 @@ const handleSubmit = async () => {
     formData.append('name', name.value);
     formData.append('sku', sku.value);
     formData.append('slug', slug.value);
+    formData.append('description', description.value);
     formData.append('is_featured', is_featured.value ? '1' : '0');
     formData.append('price', price.value);
     formData.append('discount_price', discount_price.value || null);
     formData.append('stock', stock.value);
     formData.append('category_id', category_id.value);
 
-    // Append additional attributes
     Object.entries(Object.fromEntries(
       additional_attributes.value.map(attr => [attr.key, attr.value]))
     ).forEach(([key, value]) => {
       formData.append(`additional_attributes[${key}]`, value);
     });
 
-    // Append images
     images.value.forEach(image => {
       formData.append('images[]', image);
     });
@@ -339,6 +348,7 @@ const handleSubmit = async () => {
 const resetForm = () => {
   name.value = '';
   sku.value = '';
+  description.value = '';
   is_featured.value = false;
   price.value = '';
   discount_price.value = '';
@@ -348,7 +358,6 @@ const resetForm = () => {
   images.value = [];
   imagePreviews.value = [];
 };
-
 </script>
 
 <style scoped>

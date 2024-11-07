@@ -83,11 +83,11 @@
 
         <!-- Additional Fields -->
         <VRow>
+          <VCol cols="8">
+            <VTextarea v-model="editProduct.description" label="Description" placeholder="Product Description" />
+          </VCol>
           <VCol cols="4">
             <VSwitch v-model="editProduct.is_featured" label="Featured Product" />
-          </VCol>
-          <VCol cols="8">
-            <VTextField v-model="editProduct.description" label="Description" placeholder="Product Description" multiline />
           </VCol>
         </VRow>
 
@@ -95,7 +95,7 @@
         <VRow>
           <VCol cols="12">
             <strong>Additional Attributes:</strong>
-            <div v-for="(value, key) in editProduct.additional_attributes" :key="key" class="d-flex align-items-center mb-2">
+            <div v-for="(value, key) in editProduct.additional_attributes" :key="key" class="d-flex align-items-center mb-2 mt-2">
               <VTextField
                 v-model="editProduct.additional_attributes[key]"
                 :label="formatKey(key)"
@@ -106,15 +106,33 @@
           </VCol>
         </VRow>
 
-        <!-- Images Section -->
-        <VRow>
-          <VCol cols="12">
-            <strong>Images:</strong>
-            <div class="d-flex gap-2 flex-wrap">
-              <img v-for="(imgUrl, index) in editProduct.images" :key="index" :src="imgUrl" alt="Product Image" class="product-image" />
-            </div>
-          </VCol>
-        </VRow>
+        <!-- Images Section in Edit Modal -->
+<VRow>
+  <VCol cols="12">
+    <strong>Images:</strong>
+    <div class="d-flex gap-2 flex-wrap">
+      <!-- Display existing images with delete option -->
+      <div v-for="(imgUrl, index) in editProduct.images" :key="index" class="image-container">
+        <img :src="imgUrl" alt="Product Image" class="product-image" />
+        <VBtn icon small color="error" @click="removeImage(index)">
+          <i class="ri-close-line"></i>
+        </VBtn>
+      </div>
+    </div>
+  </VCol>
+</VRow>
+
+<!-- New Image Upload Field -->
+<VRow>
+  <VCol cols="12">
+    <VFileInput
+      v-model="newImages"
+      label="Add New Images"
+      multiple
+      accept="image/*"
+    />
+  </VCol>
+</VRow>
       </VForm>
     </VCardText>
     <VCardActions>
@@ -126,8 +144,6 @@
   </VCard>
 </VDialog>
 
-
-    <!-- Product Details Modal -->
     <!-- Product Details Modal -->
 <VDialog v-model="infoModal" max-width="800px">
   <VCard>
@@ -284,17 +300,24 @@ const fetchProducts = async (page = 1) => {
 
 const fetchCategories = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/categories`, {
-      headers: {
-        'Authorization': `Bearer ${token}`, // Include your token here
-      },
-    });
-    categories.value = response.data;
+    const token = localStorage.getItem('authToken'); // Retrieve token here
+    if (token) {
+      const response = await axios.get(`${BASE_URL}/categories`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Use the retrieved token
+        },
+      });
+      categories.value = response.data;
+    } else {
+      console.error('No auth token found');
+      $toast.error('Authorization token is missing.');
+    }
   } catch (error) {
     console.error('Failed to fetch categories:', error);
     $toast.error('Failed to fetch categories');
   }
 };
+
 
 
 // Open modals
@@ -342,10 +365,48 @@ const closeDeleteModal = () => {
   deleteModal.value = false;
 };
 
-// Update product
+const newImages = ref([]); // Holds newly added images for uploading
+
+// Remove an image from editProduct's images array
+const removeImage = (index) => {
+  editProduct.value.images.splice(index, 1);
+};
+
+// Update product method
 const updateProduct = async () => {
   try {
-    await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, editProduct.value);
+    const token = localStorage.getItem('authToken'); // Retrieve token again here
+    if (!token) {
+      $toast.error('No authentication token found');
+      return;
+    }
+
+    // Prepare form data for sending the updated product data with images
+    const formData = new FormData();
+    formData.append('name', editProduct.value.name);
+    formData.append('sku', editProduct.value.sku);
+    formData.append('price', editProduct.value.price);
+    formData.append('discount_price', editProduct.value.discount_price);
+    formData.append('description', editProduct.value.description);
+    formData.append('stock', editProduct.value.stock);
+    formData.append('is_featured', editProduct.value.is_featured);
+    formData.append('category_id', editProduct.value.category_id);
+    formData.append('additional_attributes', JSON.stringify(editProduct.value.additional_attributes));
+
+    // Append images that are not deleted
+    formData.append('existing_images', JSON.stringify(editProduct.value.images));
+
+    // Append new images
+    newImages.value.forEach((file) => formData.append('images[]', file));
+
+    // Make the PUT request to update the product
+    await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, formData, {
+      headers: {
+        'Authorization': `Bearer ${token}`,  // Add the token here
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
     $toast.success('Product updated successfully');
     editModal.value = false;
     fetchProducts(currentPage.value);
@@ -354,6 +415,8 @@ const updateProduct = async () => {
     $toast.error('Failed to update product');
   }
 };
+
+
 
 // Delete product
 const deleteProduct = async () => {
