@@ -62,9 +62,8 @@ class ProductsMongoController extends Controller
             'discount_price' => 'nullable|numeric|min:0',
             'description' => 'nullable|string',
             'stock' => 'required|integer|min:0',
-            'is_featured' => 'boolean',
             'category_id' => 'required',
-            'additional_attributes' => 'nullable|array',
+            'additional_attributes' => 'nullable',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,svg',
         ]);
