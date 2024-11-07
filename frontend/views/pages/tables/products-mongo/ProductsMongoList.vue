@@ -375,12 +375,6 @@ const removeImage = (index) => {
 // Update product method
 const updateProduct = async () => {
   try {
-    const token = localStorage.getItem('authToken'); // Retrieve token again here
-    if (!token) {
-      $toast.error('No authentication token found');
-      return;
-    }
-
     // Prepare form data for sending the updated product data with images
     const formData = new FormData();
     formData.append('name', editProduct.value.name);
@@ -392,17 +386,15 @@ const updateProduct = async () => {
     formData.append('is_featured', editProduct.value.is_featured);
     formData.append('category_id', editProduct.value.category_id);
     formData.append('additional_attributes', JSON.stringify(editProduct.value.additional_attributes));
-
+    
     // Append images that are not deleted
     formData.append('existing_images', JSON.stringify(editProduct.value.images));
 
     // Append new images
     newImages.value.forEach((file) => formData.append('images[]', file));
 
-    // Make the PUT request to update the product
     await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, formData, {
       headers: {
-        'Authorization': `Bearer ${token}`,  // Add the token here
         'Content-Type': 'multipart/form-data',
       },
     });
@@ -415,7 +407,6 @@ const updateProduct = async () => {
     $toast.error('Failed to update product');
   }
 };
-
 
 
 // Delete product
