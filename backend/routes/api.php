@@ -59,6 +59,7 @@ Route::middleware('auth:api')->group(function () {
     Route::put('products/{product}/stock', [ProductController::class, 'updateStock']);
 
     Route::resource('/products-mongo', ProductsMongoController::class);
+    Route::get('/count-products-mongo', [ProductsMongoController::class, 'countProductsMongo']); //Product Count
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes

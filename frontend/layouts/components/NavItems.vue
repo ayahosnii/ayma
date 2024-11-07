@@ -11,6 +11,7 @@ const storiesCount = ref();
 const levelsCount = ref();
 const categoriesCount = ref();
 const productsCount = ref();
+const productsmongoCount = ref();
 const ordersCount = ref();
 
 const fetchCounts = async () => {
@@ -43,13 +44,22 @@ const fetchCounts = async () => {
     categoriesCount.value = categoriesResponse.data.count;
 
     // Fetch products count
-    const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
+    // const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+
+    // productsCount.value = productsResponse.data.countProducts;
+
+    // Fetch products Mongo count
+    const productsmongoResponse = await axios.get(`${BASE_URL}/count-products-mongo`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    productsCount.value = productsResponse.data.countProducts;
+    productsmongoCount.value = productsmongoResponse.data.countProductsMongo;
 
     
     const ordersResponse = await axios.get(`${BASE_URL}/count-orders`, {
@@ -197,9 +207,9 @@ onMounted(() => {
     :item="{
       title: 'Products',
       icon:'ri-apple-fill',
-      href: '/products/list',
-      badgeContent: productsCount,
-      badgeClass: 'bg-warning',
+      href: '/products-mongo/list',
+      badgeContent: productsmongoCount,
+      badgeClass: 'bg-secondary',
     }"
   />
   <VerticalNavLink

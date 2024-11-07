@@ -122,4 +122,11 @@ class ProductsMongoController extends Controller
             'product' => $product,
         ], 200);
     }
+
+
+    public function countProductsMongo()
+    {
+        $countProductsMongo = ProductsMongo::count();
+        return response()->json(['countProductsMongo' => $countProductsMongo]);
+    }
 }
