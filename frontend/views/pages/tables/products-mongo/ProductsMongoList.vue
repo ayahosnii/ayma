@@ -377,6 +377,7 @@ const updateProduct = async () => {
   try {
     // Prepare form data for sending the updated product data with images
     const formData = new FormData();
+    formData.append('_method', 'PUT');
     formData.append('name', editProduct.value.name);
     formData.append('sku', editProduct.value.sku);
     formData.append('price', editProduct.value.price);
@@ -387,16 +388,19 @@ const updateProduct = async () => {
     formData.append('category_id', editProduct.value.category_id);
     formData.append('additional_attributes', JSON.stringify(editProduct.value.additional_attributes));
     formData.append('_method', 'PUT');
-    
+
     // Append images that are not deleted
     formData.append('existing_images', JSON.stringify(editProduct.value.images));
 
     // Append new images
     newImages.value.forEach((file) => formData.append('images[]', file));
 
+    const token = localStorage.getItem('authToken');
+
     await axios.post(`${BASE_URL}/products-mongo/${editProduct.value._id}`, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data'
       },
     });
 
