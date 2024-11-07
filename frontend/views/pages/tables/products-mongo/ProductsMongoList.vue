@@ -386,6 +386,7 @@ const updateProduct = async () => {
     formData.append('is_featured', editProduct.value.is_featured);
     formData.append('category_id', editProduct.value.category_id);
     formData.append('additional_attributes', JSON.stringify(editProduct.value.additional_attributes));
+    formData.append('_method', 'PUT');
     
     // Append images that are not deleted
     formData.append('existing_images', JSON.stringify(editProduct.value.images));
@@ -393,7 +394,7 @@ const updateProduct = async () => {
     // Append new images
     newImages.value.forEach((file) => formData.append('images[]', file));
 
-    await axios.put(`${BASE_URL}/products-mongo/${editProduct.value._id}`, formData, {
+    await axios.post(`${BASE_URL}/products-mongo/${editProduct.value._id}`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
