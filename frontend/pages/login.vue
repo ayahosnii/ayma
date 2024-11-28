@@ -48,7 +48,7 @@ const handleSubmit = async () => {
 
     // Handle successful login (e.g., save token, redirect)
     // Example: Save token to localStorage
-    localStorage.setItem('accessToken', response.data.accessToken)
+    localStorage.setItem('authToken', response.data.accessToken)
 
     // Redirect to the homepage or another route
     window.location.href = '/';

@@ -6,7 +6,7 @@ export default defineNuxtRouteMiddleware((to) => {
   }
 
   // Perform the check on the client-side
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem('authToken');
   const isAuthenticated = !!token;
 
   console.log('Authenticated:', isAuthenticated);

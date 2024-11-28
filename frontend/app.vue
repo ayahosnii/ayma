@@ -7,7 +7,7 @@ if (isMobile)
 const router = useRouter()
 
 const checkToken = () => {
-  if (!localStorage.getItem('accessToken')) {
+  if (!localStorage.getItem('authToken')) {
     router.push('/login');
   }
 }

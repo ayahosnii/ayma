@@ -13,7 +13,7 @@ import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertica
 const router = useRouter();
 
 onMounted(() => {
-  const accessToken = localStorage.getItem('accessToken');
+  const accessToken = localStorage.getItem('authToken');
   if (!accessToken) {
     // Redirect to login if accessToken is missing
     router.push('/login');
