@@ -2,7 +2,6 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import axios from "axios";
 
-
 const items = ref([]);
 const query = `
   query {
