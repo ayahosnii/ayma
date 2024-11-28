@@ -153,6 +153,21 @@
       <path value="$PROJECT_DIR$/backend/vendor/laravel/pint" />
       <path value="$PROJECT_DIR$/backend/vendor/defuse/php-encryption" />
       <path value="$PROJECT_DIR$/backend/vendor/composer" />
+      <path value="$PROJECT_DIR$/backend/vendor/widmogrod/php-functional" />
+      <path value="$PROJECT_DIR$/backend/vendor/beberlei/assert" />
+      <path value="$PROJECT_DIR$/backend/vendor/flix-tech/avro-php" />
+      <path value="$PROJECT_DIR$/backend/vendor/functional-php/fantasy-land" />
+      <path value="$PROJECT_DIR$/backend/vendor/mateusjunges/avro-serde-php" />
+      <path value="$PROJECT_DIR$/backend/vendor/mateusjunges/confluent-schema-registry-api" />
+      <path value="$PROJECT_DIR$/backend/vendor/mateusjunges/laravel-kafka" />
+      <path value="$PROJECT_DIR$/backend/vendor/spatie/laravel-permission" />
+      <path value="$PROJECT_DIR$/backend/vendor/rebing/graphql-laravel" />
+      <path value="$PROJECT_DIR$/backend/vendor/kwn/php-rdkafka-stubs" />
+      <path value="$PROJECT_DIR$/backend/vendor/laragraph/utils" />
+      <path value="$PROJECT_DIR$/backend/vendor/webonyx/graphql-php" />
+      <path value="$PROJECT_DIR$/backend/vendor/thecodingmachine/safe" />
+      <path value="$PROJECT_DIR$/backend/vendor/mongodb/mongodb" />
+      <path value="$PROJECT_DIR$/backend/vendor/jenssegers/mongodb" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

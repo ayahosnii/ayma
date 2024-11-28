@@ -4,4 +4,4 @@
  * e.g. If you are using cookies to store the application please update this function
  */
 
-export const isUserLoggedIn = () => !!(localStorage.getItem('userData') && localStorage.getItem('accessToken'))
+export const isUserLoggedIn = () => !!(localStorage.getItem('userData') && localStorage.getItem('authToken'))
