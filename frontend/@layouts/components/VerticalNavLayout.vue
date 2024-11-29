@@ -91,6 +91,7 @@ export default defineComponent({
 
   .layout-navbar {
     z-index: variables.$layout-vertical-nav-layout-navbar-z-index;
+    background: rgba(var(--v-theme-surface));
 
     .navbar-content-container {
       block-size: variables.$layout-vertical-nav-navbar-height;

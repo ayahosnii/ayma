@@ -1,5 +1,5 @@
 <script setup>
-import trophy from '@images/misc/trophy.png'
+import trophy from '@images/avatars/avatar-12.png'
 </script>
 
 <template>
@@ -7,21 +7,9 @@ import trophy from '@images/misc/trophy.png'
     <VCardText>
       <div class="mb-2">
         <h5 class="text-h5">
-          Congratulations John! <span class="text-high-emphasis">🎉</span>
+          Welcome Back John! <span class="text-high-emphasis">🎉</span>
         </h5>
-        <div class="text-body-1">
-          Best seller of the month
-        </div>
       </div>
-      <h4 class="text-h4 text-primary">
-        $42.8k
-      </h4>
-      <div class="text-body-1 mb-2">
-        78% of target <span class="text-high-emphasis">🚀</span>
-      </div>
-      <VBtn size="small">
-        View Sales
-      </VBtn>
     </VCardText>
 
     <!-- Trophy -->
@@ -33,10 +21,16 @@ import trophy from '@images/misc/trophy.png'
 </template>
 
 <style lang="scss">
-.v-card .trophy {
+.trophy {
   position: absolute;
-  inline-size: 5.188rem;
-  inset-block-end: 1.25rem;
-  inset-inline-end: 1.25rem;
+  inline-size: 4.188rem;
+  /* Adjust positioning to move it outside */
+  inset-block-start: -1rem; /* Move it upward */
+  inset-inline-end: -1rem; /* Move it to the right */
+}
+
+.v-card {
+  /* Optional: Add a margin or padding to ensure spacing */
+  margin-block-start: 1rem;
 }
 </style>

@@ -80,6 +80,13 @@ onMounted(() => {
 </script>
 
 <template>
+  <VerticalNavLink
+    :item="{
+        title: 'Dashboards',
+        icon: 'ri-home-smile-line',
+        to: '/dashboard',
+      }"
+  />
   <!-- 👉 Dashboards -->
   <VerticalNavGroup
     :item="{
@@ -187,83 +194,44 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
-      title: 'Stories',
-      badgeContent: storiesCount,
-      badgeClass: 'bg-success',
-      icon: 'ri-git-repository-line',
-      href: '/stories/list',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
       title: 'Categories',
       icon: 'ri-function-fill',
-      href: '/categories/list',
+      to: '/categories/list',
       badgeContent: categoriesCount,
-      badgeClass: 'bg-warning',
+      badgeClass: 'bg-secondary-darken-1',
     }"
   />
   <VerticalNavLink
     :item="{
       title: 'Products',
       icon:'ri-apple-fill',
-      href: '/products-mongo/list',
+      to: '/products-mongo/list',
       badgeContent: productsmongoCount,
-      badgeClass: 'bg-secondary',
+      badgeClass: 'bg-secondary-darken-1',
     }"
   />
   <VerticalNavLink
     :item="{
       title: 'Orders',
       badgeContent: ordersCount,
-      badgeClass: 'bg-error',
       icon:' ri-truck-fill',
-      href: '/orders/list',
+      to: '/orders/list',
       // badgeContent: 'New',
-      // badgeClass: 'bg-light-primary text-primary',
+      badgeClass: 'bg-secondary-darken-1',
     }"
   />
   <VerticalNavLink
     :item="{
-      title: 'Levels',
-      badgeContent: levelsCount,
-      badgeClass: 'bg-warning',
+      title: 'Sales Analysis',
+      badgeContent: 0,
+      badgeClass: 'bg-secondary-darken-1',
       icon: 'ri-stack-line',
-      href: '/levels/list',
+      to: '/sales-analysis/list',
       // badgeContent: 'New',
       // badgeClass: 'bg-light-primary text-primary',
     }"
   />
-  <VerticalNavGroup
-    :item="{
-      title: 'Grammar',
-      icon: 'ri-menu-search-line',
-    }"
-  >
-    <VerticalNavLink
-      :item="{
-        title: 'Games',
-        href: '/grammar-games/list',
-        icon: 'ri-puzzle-2-line',
-      }"
-    />
-    <VerticalNavLink
-    :item="{
-      title: 'Questions',
-      icon: 'ri-questionnaire-line',
-      href: '/grammar-questions',
-      // badgeContent: 'New',
-      // badgeClass: 'bg-light-primary text-primary',
-    }"
-  />
-  </VerticalNavGroup>
-  <VerticalNavLink
-    :item="{
-      title: 'Listening Section',
-      icon: 'ri-customer-service-line',
-      href: '/listening/list',
-    }"
-  />
+
   <VerticalNavLink
     :item="{
       title: 'Calendar',

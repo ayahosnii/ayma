@@ -23,6 +23,5 @@ onMounted(() => {
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
-    <UpgradeToPro />
   </VApp>
 </template>

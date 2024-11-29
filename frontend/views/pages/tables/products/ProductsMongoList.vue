@@ -2,7 +2,7 @@
   <div>
     <!-- Container for action buttons -->
     <div class="d-flex align-items-center mb-4 ml-4">
-      <VBtn size="small" title="Add Product" type="button" color="secondary" href="/products-mongo/add">
+      <VBtn size="small" title="Add Product" type="button" color="secondary" to="/products-mongo/add">
         <i class="ri-add-circle-line"></i> Add Product
       </VBtn>
       <VBtn size="small" title="Colors" type="button" color="secondary" href="/colors/list" class="ml-2">

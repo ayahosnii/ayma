@@ -29,97 +29,94 @@ const totalProfit = {
   subtitle: 'Weekly Project',
 }
 
-const newProject = {
-  title: 'New Project',
-  color: 'primary',
-  icon: 'ri-file-word-2-line',
-  stats: '862',
-  change: -18,
-  subtitle: 'Yearly Project',
-}
+const totalSales = {
+  title: 'Total Sales',
+  color: 'secondary',
+  icon: 'ri-bar-chart-line',
+  stats: '$862',
+  statsUnit: 'units',
+  change: 18,
+  changeType: 'negative',
+  subtitle: 'Compared to last year',
+  period: '2024',
+  tooltip: 'Total sales for the current year with a comparison to the previous year.',
+};
+
 </script>
 
 <template>
   <VRow class="match-height">
     <VCol
       cols="12"
-      md="4"
+      md="12"
     >
       <AnalyticsAward />
     </VCol>
 
-    <VCol
-      cols="12"
-      md="8"
-    >
-      <AnalyticsTransactions />
-    </VCol>
+
 
     <VCol
       cols="12"
-      md="4"
-    >
-      <AnalyticsWeeklyOverview />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="4"
-    >
-      <AnalyticsTotalEarning />
-    </VCol>
-
-    <VCol
-      cols="12"
-      md="4"
+      md="12"
     >
       <VRow class="match-height">
         <VCol
           cols="12"
-          sm="6"
+          sm="3"
+        >
+          <CardStatisticsVertical v-bind="totalSales" />
+        </VCol>
+        <VCol
+          cols="12"
+          sm="3"
         >
           <AnalyticsTotalProfitLineCharts />
         </VCol>
 
         <VCol
           cols="12"
-          sm="6"
+          sm="3"
         >
           <CardStatisticsVertical v-bind="totalProfit" />
         </VCol>
 
         <VCol
           cols="12"
-          sm="6"
-        >
-          <CardStatisticsVertical v-bind="newProject" />
-        </VCol>
-
-        <VCol
-          cols="12"
-          sm="6"
+          sm="3"
         >
           <AnalyticsBarCharts />
         </VCol>
       </VRow>
     </VCol>
-
     <VCol
       cols="12"
-      md="4"
+      md="6"
+    >
+      <AnalyticsTotalEarning />
+    </VCol>
+    <VCol
+      cols="12"
+      md="6"
     >
       <AnalyticsSalesByCountries />
     </VCol>
 
-    <VCol
-      cols="12"
-      md="8"
-    >
-      <AnalyticsDepositWithdraw />
-    </VCol>
-
     <VCol cols="12">
       <AnalyticsUserTable />
+    </VCol>
+
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <AnalyticsWeeklyOverview />
+    </VCol>
+
+    <VCol
+      cols="12"
+      md="6"
+    >
+      <AnalyticsDepositWithdraw />
     </VCol>
   </VRow>
 </template>

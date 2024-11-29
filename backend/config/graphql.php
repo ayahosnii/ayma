@@ -76,13 +76,17 @@ return [
         'default' => [
             'query' => [
                 'products' => App\GraphQL\Queries\ProductQuery::class,
+                'cart' => App\GraphQL\Queries\CartQuery::class,
             ],
             'mutation' => [
                 // ExampleMutation::class,
+                'addToCart' => App\GraphQL\Mutations\AddToCartMutation::class,
             ],
             // The types only available in this schema
             'types' => [
                 'Product' => App\GraphQL\Types\ProductType::class,
+                'Cart' => App\GraphQL\Types\CartType::class,
+                'ProductInput' => App\GraphQL\Types\ProductInputType::class,
             ],
 
             // Laravel HTTP middleware

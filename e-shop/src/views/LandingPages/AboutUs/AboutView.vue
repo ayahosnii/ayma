@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from "vue";
 import axios from "axios";
 
+
 const items = ref([]);
 const query = `
   query {
@@ -14,6 +15,46 @@ const query = `
     }
   }
 `;
+
+const cart = ref([]);
+// Mutation for adding products to the cart
+const addToCartMutation = `
+  mutation addToCart($products: [ProductInput!]!) {
+    addToCart(products: $products) {
+      products {
+        id
+        name
+        price
+        stock
+        description
+        first_image
+      }
+      quantity
+      total_price
+      currency
+    }
+  }
+`;
+const addToCart = async (productId, quantity) => {
+  const variables = {
+    products: [{ product_id: productId, quantity }]
+  };
+
+  try {
+    const response = await axios.post(
+      "http://127.0.0.1:8000/graphql",
+      { query: addToCartMutation, variables },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+
+    // Add response data to the cart
+    const addedProduct = response.data.data.addToCart;
+    cart.value = addedProduct.products;  // Update cart with the added products
+    console.log("Cart updated:", cart.value);
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+  }
+};
 
 //example components
 import DefaultNavbar from "../../../examples/navbars/NavbarDefault.vue";
@@ -481,7 +522,7 @@ onUnmounted(() => {
                 <a href="" class="btn btn-sm text-dark p-0"
                   ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
                 >
-                <a href="" class="btn btn-sm text-dark p-0"
+                <a @click="addToCart(item.id, 1)" class="btn btn-sm text-dark p-0"
                   ><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To
                   Cart</a
                 >
