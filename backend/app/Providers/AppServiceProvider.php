@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Dashboard\Contracts\ProductRepositoryInterface;
+use App\Repositories\Dashboard\ProductRepository;
 use App\Services\KafkaConsumerService;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(KafkaConsumerService::class, function ($app) {
             return new KafkaConsumerService(config('kafka.topics.orders-topic'));
         });
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
     }
 
     /**

@@ -72,6 +72,8 @@ class OrderController extends Controller
             if ($product->stock >= $productData['quantity']) {
                 $product->stock -= $productData['quantity']; // Reduce stock
                 $product->save();
+
+                $this->updateSalesMetrics($productData['product_id'], $productData['quantity'], $product->price);
             } else {
                 // If stock is insufficient, handle this case
                 throw new \Exception('Not enough stock for product: ' . $product->name);
@@ -79,6 +81,20 @@ class OrderController extends Controller
         }
     }
 
+    // Function to update sales metrics
+    protected function updateSalesMetrics($productId, $quantity, $price)
+    {
+        // Find or create a sales metrics record for the product
+        $salesMetric = \App\Models\SalesMetric::firstOrCreate(
+            ['product_id' => $productId],
+            ['units_sold' => 0, 'revenue' => 0]
+        );
+
+        // Update units sold and revenue
+        $salesMetric->units_sold += $quantity;
+        $salesMetric->revenue += $quantity * $price;
+        $salesMetric->save();
+    }
     // Display the specified resource.
     public function show(Order $order)
     {

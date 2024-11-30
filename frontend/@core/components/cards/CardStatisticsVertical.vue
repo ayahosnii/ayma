@@ -25,13 +25,26 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  loading: {
+    type: Boolean,
+    default: false, // Loading state prop to control spinner visibility
+  }
 })
 
 const isPositive = computed(() => Math.sign(props.change) === 1)
 </script>
 
 <template>
-  <VCard>
+  <VCard class="position-relative">
+    <!-- Show loading spinner when loading is true -->
+    <v-progress-circular
+      v-if="loading"
+      indeterminate
+      color="primary"
+      class="loading-spinner"
+    />
+
+    <!-- Card Content -->
     <VCardText class="d-flex align-center">
       <VAvatar
         v-if="props.icon"
@@ -75,3 +88,13 @@ const isPositive = computed(() => Math.sign(props.change) === 1)
     </VCardText>
   </VCard>
 </template>
+
+<style scoped>
+/* Center the loading spinner in the card */
+.loading-spinner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
