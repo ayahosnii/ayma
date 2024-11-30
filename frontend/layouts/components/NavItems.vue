@@ -44,22 +44,22 @@ const fetchCounts = async () => {
     categoriesCount.value = categoriesResponse.data.count;
 
     // Fetch products count
-    // const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
-
-    // productsCount.value = productsResponse.data.countProducts;
-
-    // Fetch products Mongo count
-    const productsmongoResponse = await axios.get(`${BASE_URL}/count-products-mongo`, {
+    const productsResponse = await axios.get(`${BASE_URL}/count-products`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
 
-    productsmongoCount.value = productsmongoResponse.data.countProductsMongo;
+    productsCount.value = productsResponse.data.countProducts;
+
+    // Fetch products Mongo count
+    // const productsmongoResponse = await axios.get(`${BASE_URL}/count-products-mongo`, {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
+
+    // productsmongoCount.value = productsmongoResponse.data.countProductsMongo;
 
     
     const ordersResponse = await axios.get(`${BASE_URL}/count-orders`, {
@@ -87,59 +87,6 @@ onMounted(() => {
         to: '/dashboard',
       }"
   />
-  <!-- 👉 Dashboards -->
-  <VerticalNavGroup
-    :item="{
-      title: 'Dashboards',
-      badgeContent: '5',
-      badgeClass: 'bg-success',
-      icon: 'ri-home-smile-line',
-    }"
-  >
-    <VerticalNavLink
-      :item="{
-        title: 'Analytics',
-        to: '/dashboard',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'CRM',
-        href: 'https://demos.themeselection.com/materio-vuetify-nuxtjs-admin-template/demo-1/dashboards/crm',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'ECommerce',
-        href: 'https://demos.themeselection.com/materio-vuetify-nuxtjs-admin-template/demo-1/dashboards/ecommerce',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Academy',
-        href: 'https://demos.themeselection.com/materio-vuetify-nuxtjs-admin-template/demo-1/dashboards/academy',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-    <VerticalNavLink
-      :item="{
-        title: 'Logistics',
-        href: 'https://demos.themeselection.com/materio-vuetify-nuxtjs-admin-template/demo-1/dashboards/logistics',
-        target: '_blank',
-        badgeContent: 'Pro',
-        badgeClass: 'bg-light-primary text-primary',
-      }"
-    />
-  </VerticalNavGroup>
-
   <!-- 👉 Front Pages -->
   <VerticalNavGroup
     :item="{
@@ -205,8 +152,8 @@ onMounted(() => {
     :item="{
       title: 'Products',
       icon:'ri-apple-fill',
-      to: '/products-mongo/list',
-      badgeContent: productsmongoCount,
+      to: '/products/list',
+      badgeContent: productsCount,
       badgeClass: 'bg-secondary-darken-1',
     }"
   />

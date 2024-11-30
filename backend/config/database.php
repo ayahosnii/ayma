@@ -97,11 +97,11 @@ return [
             'driver'   => 'mongodb',
             'host'     => env('MONGO_DB_HOST', '127.0.0.1'),
             'port'     => env('MONGO_DB_PORT', 27017),
-            'database' => env('MONGO_DB_DATABASE', 'ayma-pos'),
-            'username' => env('MONGO_DB_USERNAME', 'aya'),
-            'password' => env('MONGO_DB_PASSWORD', 'aymapos'),
+            'database' => env('MONGO_DB_DATABASE', 'ayma_pos_system'),
+            'username' => env('MONGO_DB_USERNAME', 'Magd'),
+            'password' => env('MONGO_DB_PASSWORD', 'Magd'),
             'options'  => [
-                'database' => 'ayma-pos' // or the database where the user was created
+                'database' => 'ayma_pos_system' // or the database where the user was created
             ]
         ]
 
