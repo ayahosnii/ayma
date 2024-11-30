@@ -2,6 +2,7 @@
 
 namespace App\GraphQL\Queries;
 
+use App\Models\Product;
 use GraphQL\Type\Definition\Type;
 use Rebing\GraphQL\Support\Facades\GraphQL;
 use Rebing\GraphQL\Support\Query;
@@ -39,7 +40,7 @@ class CartQuery extends Query
 
         // Fetch product details for the items in the cart
         $productIds = array_keys($cartItems);
-        $products = \App\Models\MongoModels\ProductsMongo::find($productIds);
+        $products = Product::find($productIds);
 
         $totalPrice = 0;
         $totalQuantity = 0;
@@ -47,7 +48,7 @@ class CartQuery extends Query
         // Build the product details array, including quantity
         $cartProducts = [];
         foreach ($products as $product) {
-            $productId = (string) $product->_id;
+            $productId = (string) $product->id;
             $quantity = $cartItems[$productId] ?? 0;
 
             $cartProducts[] = [

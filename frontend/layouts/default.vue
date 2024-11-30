@@ -1,17 +1,29 @@
 <script setup>
 import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVerticalNav.vue'
 import Loading from '../components/Loading.vue'
-import { useState, nextTick, onMounted } from '#imports'
+import { useState, nextTick, onMounted, ref } from '#imports'
 import { useRouter } from 'vue-router'
 
-// Manage loading state using Nuxt's global state and router hooks
 const loading = useState('loading', () => true) // Start with loading being true
+const isLoggedIn = ref(true) // Initialize with false
 
 const router = useRouter()
 
+// Check for login status only on the client side
+onMounted(() => {
+  if (!localStorage.getItem('authToken')) {
+    isLoggedIn.value = false
+  }else {
+    isLoggedIn.value = true
+  }
+})
+
 // Trigger loading state during navigation
 router.beforeEach((to, from, next) => {
-  loading.value = true
+  // Only set loading to true if user is not logged in
+  if (!isLoggedIn.value) {
+    loading.value = true
+  }
   next()
 })
 
@@ -20,23 +32,25 @@ router.afterEach(async () => {
   loading.value = false
 })
 
-// Ensure loading is shown on the initial mount
+// Ensure loading is shown on the initial mount, but only if not logged in
 onMounted(async () => {
-  await nextTick()
-  loading.value = false
+  if (!isLoggedIn.value) {
+    await nextTick()
+    loading.value = false
+  }
 })
 </script>
 
 <template>
   <div>
-    <!-- Display loading screen while loading is true -->
-    <Loading :loading="loading" />
+    <!-- Display loading screen while loading is true and the user is not logged in -->
+    <Loading v-if="!isLoggedIn && loading" :loading="loading" />
 
-    <!-- Render the layout only when loading is false -->
-    <div v-if="!loading">
+    <!-- Render the layout only when loading is false or the user is logged in -->
+    <div v-if="!loading || isLoggedIn">
       <DefaultLayoutWithVerticalNav>
         <slot />
-      </DefaultLayoutWithVerticalNav>
+        </DefaultLayoutWithVerticalNav>
     </div>
   </div>
 </template>

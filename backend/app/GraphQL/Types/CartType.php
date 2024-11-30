@@ -20,10 +20,6 @@ class CartType extends GraphQLType
                 'type' => Type::listOf(GraphQL::type('Product')),
                 'description' => 'List of products in the cart',
             ],
-            'quantity' => [
-                'type' => Type::listOf(Type::int()),
-                'description' => 'Quantities of the products in the cart',
-            ],
             'total_price' => [
                 'type' => Type::int(), // Scalar value for total price
                 'description' => 'Total price of the products in the cart',
