@@ -87,28 +87,22 @@ class ProductType extends GraphQLType
                 'type' => Type::listOf(Type::string()), // Define as a list of strings
                 'description' => 'The list of product image URLs',
                 'resolve' => function ($root) {
-                    return $root->images; // Return the array as-is
+                    // Convert the collection of ProductImage objects to an array of image paths
+                    return $root->images->map(function ($image) {
+                        return $image->image_path; // Return only the `image_path`
+                    })->toArray();
                 },
             ],
             'first_image' => [
-                'type' => Type::string(), // Define as a single string type
+                'type' => Type::string(), // Single string for the first image URL
                 'description' => 'The first image URL of the product',
                 'resolve' => function ($root) {
-                    // Check if images exist and are not empty
-                    if (is_array($root->images) && !empty($root->images)) {
-                        // Decode the first image (assume it's a JSON string)
-                        $firstImage = json_decode($root->images[0], true);
-
-                        // Return the image path if decoding is successful and the key exists
-                        if (is_array($firstImage) && isset($firstImage['image_path'])) {
-                            return $firstImage['image_path'];
-                        }
-                    }
-
-                    // Return null if no valid first image is found
-                    return null;
+                    // Check if the images relationship has any data and return the first image's path
+                    $firstImage = $root->images->first(); // Get the first image from the collection
+                    return $firstImage ? $firstImage->image_path : null; // Return the image path or null
                 },
             ],
+
             'quantity' => [
                 'type' => Type::int(),
                 'description' => 'The quantity of this product in the cart',
