@@ -11,13 +11,15 @@
         />
       </VCol>
 
-      <VCol cols="12" md="6">
+      <VCol cols="12" md="6" class="d-flex align-center">
         <VTextField
           v-model="sku"
           label="SKU"
           placeholder="Product SKU"
           required
+          class="flex-grow-1"
         />
+        <VBtn class="ml-2" @click="generateSKU">Generate SKU</VBtn>
       </VCol>
 
       <!-- Row for Slug and Is Featured -->
@@ -227,6 +229,15 @@ onMounted(async () => {
     console.error('Error fetching data:', error);
   }
 });
+
+// Generate SKU
+const generateSKU = () => {
+  if (name.value) {
+    sku.value = `${name.value.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`;
+  } else {
+    $toast.warning('Please enter a product name to generate SKU.');
+  }
+};
 
 // Handle image upload
 const handleImageUpload = (event) => {
