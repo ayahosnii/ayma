@@ -1,29 +1,35 @@
 <script setup>
-import aviato from '@images/logos/aviato.png'
-import bitbank from '@images/logos/bitbank.png'
-import zipcar from '@images/logos/zipcar.png'
+import product1 from '@images/ecommerce/2.png'
+import product2 from '@images/ecommerce/2.png'
+import product3 from '@images/ecommerce/2.png'
 
-const earnings = [
+const productHighlights = [
   {
-    avatar: zipcar,
-    title: 'Zipcar',
-    subtitle: 'Vuejs, React & HTML',
-    amount: '$24,895.65',
-    progress: 'primary',
+    image: product1,
+    name: 'Stylish Backpack',
+    unitsSold: 1200,
+    revenue: '$24,895.65',
+    stockAvailability: 20, // Remaining stock
+    stockAlert: true, // Low stock alert
+    progress: 80, // Stock usage percentage
   },
   {
-    avatar: bitbank,
-    title: 'Bitbank',
-    subtitle: 'Sketch, Figma & XD',
-    amount: '$8,6500.20',
-    progress: 'info',
+    image: product2,
+    name: 'Wireless Headphones',
+    unitsSold: 850,
+    revenue: '$18,650.20',
+    stockAvailability: 50,
+    stockAlert: false,
+    progress: 60,
   },
   {
-    avatar: aviato,
-    title: 'Aviato',
-    subtitle: 'HTML & Anguler',
-    amount: '$1,2450.80',
-    progress: 'secondary',
+    image: product3,
+    name: 'Smart Watch',
+    unitsSold: 450,
+    revenue: '$12,450.80',
+    stockAvailability: 10,
+    stockAlert: true, // Low stock alert
+    progress: 90,
   },
 ]
 </script>
@@ -31,7 +37,7 @@ const earnings = [
 <template>
   <VCard>
     <VCardItem>
-      <VCardTitle>Total Earning</VCardTitle>
+      <VCardTitle>Product Highlights & Sales Overview</VCardTitle>
 
       <template #append>
         <div class="me-n3">
@@ -41,52 +47,46 @@ const earnings = [
     </VCardItem>
 
     <VCardText>
-      <div class="d-flex align-center">
-        <h3 class="text-h3">
-          $24,895
-        </h3>
-
-        <VIcon
-          size="24"
-          icon="ri-arrow-up-s-line"
-          color="success"
-        />
-        <div class="text-success">
-          10%
-        </div>
-      </div>
-      <div class="text-body-1 mb-12">
-        Compared to $84,325 last year
-      </div>
-
       <VList class="card-list">
         <VListItem
-          v-for="earning in earnings"
-          :key="earning.title"
+          v-for="product in productHighlights"
+          :key="product.name"
         >
+          <!-- Product Image -->
           <template #prepend>
             <VAvatar
               rounded
-              :image="earning.avatar"
+              :image="product.image"
               variant="tonal"
             />
           </template>
 
-          <VListItemTitle class="font-weight-medium">
-            {{ earning.title }}
-          </VListItemTitle>
-          <VListItemSubtitle class="text-body-1">
-            {{ earning.subtitle }}
-          </VListItemSubtitle>
+          <!-- Product Name and Revenue -->
+          <div>
+            <VListItemTitle class="font-weight-medium">
+              {{ product.name }}
+            </VListItemTitle>
+            <VListItemSubtitle class="text-body-1">
+              Revenue: {{ product.revenue }}
+            </VListItemSubtitle>
+          </div>
 
+          <!-- Units Sold and Stock Availability -->
           <template #append>
             <div>
               <h6 class="text-h6 mb-2">
-                {{ earning.amount }}
+                Units Sold: {{ product.unitsSold }}
               </h6>
+              <p
+                class="text-body-2"
+                :class="{ 'text-danger': product.stockAlert }"
+              >
+                Stock: {{ product.stockAvailability }}
+                <span v-if="product.stockAlert">(Low Stock)</span>
+              </p>
               <VProgressLinear
-                :color="earning.progress"
-                model-value="80"
+                :color="product.stockAlert ? 'error' : 'primary'"
+                :model-value="product.progress"
                 rounded-bar
                 rounded
               />
@@ -101,5 +101,9 @@ const earnings = [
 <style lang="scss" scoped>
 .card-list {
   --v-card-list-gap: 1.5rem;
+}
+
+.text-danger {
+  color: #d32f2f; /* Red for low stock alert */
 }
 </style>

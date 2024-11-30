@@ -20,27 +20,56 @@ onMounted(() => {
   }
 });
 
-const totalProfit = {
-  title: 'Total Profit',
-  color: 'secondary',
-  icon: 'ri-pie-chart-2-line',
-  stats: '$25.6k',
-  change: 42,
-  subtitle: 'Weekly Project',
-}
 
 const totalSales = {
   title: 'Total Sales',
   color: 'secondary',
-  icon: 'ri-bar-chart-line',
-  stats: '$862',
-  statsUnit: 'units',
+  icon: 'ri-money-dollar-circle-line', // Dollar sign icon
+  stats: '$862k',
+  statsUnit: 'USD',
   change: 18,
-  changeType: 'negative',
+  changeType: 'negative', // 'positive' or 'negative'
   subtitle: 'Compared to last year',
   period: '2024',
-  tooltip: 'Total sales for the current year with a comparison to the previous year.',
+  tooltip: 'Total revenue generated in the current year, compared to last year.',
 };
+const totalProfit = {
+  title: 'Total Profit',
+  color: 'success',
+  icon: 'ri-line-chart-line', // Upward graph icon
+  stats: '$245k',
+  statsUnit: 'USD',
+  change: 5,
+  changeType: 'positive', // 'positive' or 'negative'
+  subtitle: 'Profit margin analysis',
+  period: '2024',
+  tooltip: 'Total profit for the current year, including profit margin trends.',
+};
+const orders = {
+  title: 'Orders',
+  color: 'primary',
+  icon: 'ri-shopping-cart-line', // Shopping cart icon
+  stats: '1,200',
+  statsUnit: 'orders',
+  change: 10,
+  changeType: 'positive', // 'positive' or 'negative'
+  subtitle: 'Compared to last month',
+  period: 'Last 30 days',
+  tooltip: 'Total number of orders placed in the last 30 days with comparison to the previous period.',
+};
+const newCustomers = {
+  title: 'New Customers',
+  color: 'info',
+  icon: 'ri-user-line', // User icon
+  stats: '350',
+  statsUnit: 'customers',
+  change: 7,
+  changeType: 'positive', // 'positive' or 'negative'
+  subtitle: 'Growth in customer base',
+  period: '2024',
+  tooltip: 'New customers acquired in the current year and their percentage growth compared to last year.',
+};
+
 
 </script>
 
@@ -70,13 +99,6 @@ const totalSales = {
           cols="12"
           sm="3"
         >
-          <AnalyticsTotalProfitLineCharts />
-        </VCol>
-
-        <VCol
-          cols="12"
-          sm="3"
-        >
           <CardStatisticsVertical v-bind="totalProfit" />
         </VCol>
 
@@ -84,7 +106,14 @@ const totalSales = {
           cols="12"
           sm="3"
         >
-          <AnalyticsBarCharts />
+          <CardStatisticsVertical v-bind="orders" />
+        </VCol>
+
+        <VCol
+          cols="12"
+          sm="3"
+        >
+          <CardStatisticsVertical v-bind="newCustomers " />
         </VCol>
       </VRow>
     </VCol>
