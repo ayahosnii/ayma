@@ -37,17 +37,17 @@ class ProductQuery extends Query
 
     public function resolve($root, $args)
     {
-        $query = ProductsMongo::query();
+        $query = Product::query();
 
-//        if (isset($args['category'])) {
-//            $query->whereHas('category', function (Builder $q) use ($args) {
-//                $q->where('name', $args['category']);
-//            });
-//        }
-//
-//        if (isset($args['limit'])) {
-//            $query->limit($args['limit']);
-//        }
+        if (isset($args['category'])) {
+            $query->whereHas('category', function (Builder $q) use ($args) {
+                $q->where('name', $args['category']);
+            });
+        }
+
+        if (isset($args['limit'])) {
+            $query->limit($args['limit']);
+        }
 
         return $query->get();
     }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\GrammarOptionController;
 use App\Http\Controllers\Api\GrammarQuestionController;
 use App\Http\Controllers\Api\LevelsController;
@@ -48,19 +49,22 @@ Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('/categories', CategoryController::class);
+    Route::get('/dashboard', [DashboardController::class, 'index']);
 
+    /******************************************* Start Categories *******************************************/
+    Route::resource('/categories', CategoryController::class);
     Route::get('/categories/parents', [CategoryController::class, 'getParentCategories']); // Get parent categories
     Route::get('/categories/{parentId}/children', [CategoryController::class, 'getChildCategories']); // Get child categories for a specific parent
-    Route::get('/count-categories', [CategoryController::class, 'count']); //Categories Count
-
+    Route::get('/count-categories', [CategoryController::class, 'count']);
+    /******************************************* End  Categories *******************************************/
+    /******************************************* Start Products *******************************************/
     Route::resource('/products', ProductController::class);
     Route::get('/count-products', [ProductController::class, 'countProducts']); //Product Count
     Route::put('products/{product}/stock', [ProductController::class, 'updateStock']);
-
     Route::resource('/products-mongo', ProductsMongoController::class);
     Route::post('/products-mongo/update/{products_mongo}', [ProductsMongoController::class, 'update']);
     Route::get('/count-products-mongo', [ProductsMongoController::class, 'countProductsMongo']); //Product Count
+    /******************************************* End   Products *******************************************/
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes

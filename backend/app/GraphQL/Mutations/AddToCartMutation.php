@@ -3,7 +3,7 @@
 namespace App\GraphQL\Mutations;
 
 use App\GraphQL\Services\CartService;
-use App\Models\MongoModels\ProductsMongo;
+use App\Models\Product;
 use Rebing\GraphQL\Support\Mutation;
 use GraphQL\Type\Definition\Type;
 
@@ -63,21 +63,23 @@ class AddToCartMutation extends Mutation
         $totalQuantity = $cartData['totalQuantity']; // Get total quantity from the service response
 
         // 13. Fetch product details for the updated cart
-        $cartProducts = ProductsMongo::find(array_keys($cartItems)); // Fetch product details using the cart item IDs
+        $cartProducts = Product::find(array_keys($cartItems)); // Fetch product details using the cart item IDs
 
-        // 14. Map the products with their quantities
         $mappedProducts = $cartProducts->map(function($product) use ($cartItems) {
+            // Add quantity to the product object
             $product->quantity = $cartItems[$product->id]; // Map quantity to each product
             return $product;
         });
 
-        // Return the updated cart data, including total price, total quantity, and currency
-        return [
-            'products' => $mappedProducts, // List of products in the cart with quantity
-            'quantity' => array_values($cartItems), // Array of quantities for each product
-            'total_price' => $totalPrice, // Total price of the products in the cart
-            'total_quantity' => $totalQuantity, // Total quantity of products in the cart
-            'currency' => 'USD', // Currency code (hardcoded to USD)
+// Prepare the response structure to include quantity
+        $response = [
+            'products' => $mappedProducts, // The products with their mapped quantities
+            'quantity' => $mappedProducts->pluck('quantity'), // Extract quantity values into a separate array
+            'total_price' => $totalPrice,  // Assuming you have a total price variable
+            'currency' => 'USD',          // Assuming USD currency, you can adjust this as needed
         ];
+
+// Return the response (or pass it to the GraphQL mutation response)
+        return $response;
     }
 }

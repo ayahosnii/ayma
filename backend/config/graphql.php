@@ -81,6 +81,7 @@ return [
             'mutation' => [
                 // ExampleMutation::class,
                 'addToCart' => App\GraphQL\Mutations\AddToCartMutation::class,
+                'removeFromCart' => \App\GraphQL\Mutations\RemoveFromCartMutation::class,
             ],
             // The types only available in this schema
             'types' => [

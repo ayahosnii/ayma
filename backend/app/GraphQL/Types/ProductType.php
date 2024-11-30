@@ -16,11 +16,8 @@ class ProductType extends GraphQLType
     {
         return [
             'id' => [
-                'type' => Type::string(), // _id is an ObjectId, so it should be a string in GraphQL
-                'description' => 'The unique ID of the product',
-                'resolve' => function ($root) {
-                    return (string) $root->_id; // Convert MongoDB ObjectId to string
-                },
+                'type' => Type::string(),
+                'description' => 'The ID of the product',
             ],
             'name' => [
                 'type' => Type::string(),
@@ -94,11 +91,27 @@ class ProductType extends GraphQLType
                 },
             ],
             'first_image' => [
-                'type' => Type::string(), // Define as a single string
+                'type' => Type::string(), // Define as a single string type
                 'description' => 'The first image URL of the product',
                 'resolve' => function ($root) {
-                    return $root->images[0] ?? null; // Return the first image or null
+                    // Check if images exist and are not empty
+                    if (is_array($root->images) && !empty($root->images)) {
+                        // Decode the first image (assume it's a JSON string)
+                        $firstImage = json_decode($root->images[0], true);
+
+                        // Return the image path if decoding is successful and the key exists
+                        if (is_array($firstImage) && isset($firstImage['image_path'])) {
+                            return $firstImage['image_path'];
+                        }
+                    }
+
+                    // Return null if no valid first image is found
+                    return null;
                 },
+            ],
+            'quantity' => [
+                'type' => Type::int(),
+                'description' => 'The quantity of this product in the cart',
             ],
             'updated_at' => [
                 'type' => Type::string(), // Dates can be strings
