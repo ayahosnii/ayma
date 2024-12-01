@@ -5,26 +5,16 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
-use App\Http\Controllers\Api\GrammarOptionController;
-use App\Http\Controllers\Api\GrammarQuestionController;
-use App\Http\Controllers\Api\LevelsController;
-use App\Http\Controllers\Api\OpenAIController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
-use App\Http\Controllers\Api\SpeakingController;
-use App\Http\Controllers\Api\StoriesController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\GrammarGamesController;
-use App\Http\Controllers\Api\ListeningController;
-use App\Http\Controllers\Api\ListeningQuestionController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\MongoControllers\ProductsMongoController;
 use App\Http\Controllers\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpFoundation\Response;
 
 /*
 |--------------------------------------------------------------------------
