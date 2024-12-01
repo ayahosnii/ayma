@@ -41,6 +41,7 @@ onMounted(async () => {
       },
     });
 
+
     const data = await response.json();
 
     if (data.status === 'success') {
@@ -90,16 +91,17 @@ onMounted(async () => {
         tooltip: 'Total profit for the current year, including profit margin trends.',
       };
       orders.value = {
-        title: 'Orders',
-        color: 'primary',
-        icon: 'ri-shopping-cart-line', // Shopping cart icon
-        stats: orderCount.value,
-        statsUnit: 'orders',
-        change: orderCount.change, // Modify based on data
-        subtitle: 'Compared to last month',
-        period: 'Last 30 days',
-        tooltip: 'Total number of orders placed in the last 30 days with comparison to the previous period.',
+      title: 'Orders',
+      color: 'primary',
+      icon: 'ri-shopping-cart-line',
+      stats: orderCount.value,  // Correctly assigning orderCount.value
+      statsUnit: 'orders',
+      change: orderCount.change !== null ? orderCount.change.toFixed(2) : 'N/A', // Ensure proper formatting
+      subtitle: 'Compared to last month',
+      period: 'Last 30 days',
+      tooltip: 'Total number of orders placed in the last 30 days with comparison to the previous period.',
       };
+
 
       newCustomers.value = {
         title: 'New Customers',
@@ -112,10 +114,14 @@ onMounted(async () => {
         tooltip: 'New customers acquired in the current year and their percentage growth compared to last year.',
       };
 
+      
+
     }
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
   }
+
+  
 });
 </script>
 

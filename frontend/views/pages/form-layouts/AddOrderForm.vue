@@ -184,6 +184,13 @@ const handleSubmit = async () => {
   }
 };
 
+// Function to generate a random order number
+const generateOrderNumber = () => {
+  const prefix = 'ORD'; // Optional prefix for clarity
+  const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase(); // 6 random alphanumeric characters
+  order_number.value = `${prefix}-${randomPart}`;
+};
+
 // Optional: Function to reset the form
 const resetForm = () => {
   customer_name.value = '';
@@ -231,7 +238,7 @@ const resetForm = () => {
         <!-- Random Password -->
         <VCol cols="12" md="4">
           <VTextField v-model="newUserPassword" label="Password" :readonly="true" placeholder="Generated password" />
-          <VBtn @click="generateRandomPassword">Generate Password</VBtn>
+          <VBtn @click="generateRandomPassword" color="primary" class="mt-2">Generate Password</VBtn>
         </VCol>
       </template>
 
@@ -306,9 +313,13 @@ const resetForm = () => {
         <VTextField
           v-model="order_number"
           label="Order Number"
-          placeholder="Enter order number"
+          placeholder="Generate order number"
+          :readonly="true"
           required
         />
+        <VBtn @click="generateOrderNumber" color="primary" class="mt-2">
+          Generate Order Number
+        </VBtn>
       </VCol>
 
       <!-- Total Amount -->
