@@ -415,7 +415,7 @@ watch(currentPage, (newPage) => fetchCategories(newPage));
 /* Styles for table rows */
 
 tbody tr.sub-category-row {
-  background-color: #e9cb1e5e;
+  background-color: #e9ecef;
   font-weight: 500;
 }
 

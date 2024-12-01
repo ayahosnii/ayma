@@ -38,29 +38,35 @@ class CategoryController extends Controller
     }
 
     public function update(CreateCategoryRequest $request, $id)
-    {
-        // Find the category by ID
-        $category = Category::findOrFail($id);
+{
+    // Find the category by ID
+    $category = Category::findOrFail($id);
 
-        // Validate the request data
-        $data = $request->validated();
+    // Validate the request data
+    $data = $request->validated();
 
-        // Handle image upload if a new image is provided
-        if ($request->hasFile('image')) {
-            // Delete the old image if it exists
-            if ($category->image) {
-                Storage::disk('public')->delete($category->image);
-            }
+    // Generate slug if it's not present in the request
+    if (!isset($data['slug']) || empty($data['slug'])) {
+        $data['slug'] = \Str::slug($data['name']);
+    }
 
-            // Store the new image and update the data array
-            $data['image'] = $request->file('image')->store('category_images', 'public');
+    // Handle image upload if a new image is provided
+    if ($request->hasFile('image')) {
+        // Delete the old image if it exists
+        if ($category->image) {
+            Storage::disk('public')->delete($category->image);
         }
 
-        // Update the category with the validated data
-        $category->update($data);
-
-        return response()->json(['message' => 'Category updated successfully', 'category' => $category], 200);
+        // Store the new image and update the data array
+        $data['image'] = $request->file('image')->store('category_images', 'public');
     }
+
+    // Update the category with the validated data
+    $category->update($data);
+
+    return response()->json(['message' => 'Category updated successfully', 'category' => $category], 200);
+}
+
 
     /**
  * Remove the specified category from the database.
