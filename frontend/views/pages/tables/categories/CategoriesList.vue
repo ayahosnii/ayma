@@ -335,9 +335,10 @@ const updateCategory = async () => {
         Object.keys(categoryData).forEach(key => {
           formData.append(key, categoryData[key]);
         });
+        formData.append('_method', 'PUT');
         formData.append('image', editCategory.value.image);
 
-        await axios.put(`${BASE_URL}/categories/${editCategory.value.id}`, formData, {
+        await axios.post(`${BASE_URL}/categories/${editCategory.value.id}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
