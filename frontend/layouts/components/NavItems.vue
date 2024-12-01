@@ -159,6 +159,15 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Suppliers',
+      badgeContent: 0,
+      icon:' ri-truck-fill',
+      to: '/suppliers/list',
+      badgeClass: 'bg-secondary-darken-1',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Orders',
       badgeContent: ordersCount,
       icon:' ri-truck-fill',
