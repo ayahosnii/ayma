@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\ListeningController;
 use App\Http\Controllers\Api\ListeningQuestionController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\MongoControllers\ProductsMongoController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,6 +69,13 @@ Route::middleware('auth:api')->group(function () {
 
     Route::resource('/colors', ColorController::class); //Products Colors
     Route::resource('/sizes', SizeController::class); //Products Sizes
+    /******************************************* Start Suppliers *******************************************/
+    Route::get('/suppliers', [SupplierController::class, 'index']);
+    Route::post('/suppliers', [SupplierController::class, 'store']);
+    Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
+    Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
+    Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
+    /******************************************* End   Suppliers *******************************************/
 
     Route::resource('/orders', OrderController::class); //Orders
     Route::resource('/order_items', OrderItemController::class); //Order items

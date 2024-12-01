@@ -2,13 +2,13 @@
   <div>
     <!-- Container for buttons -->
     <div class="d-flex align-items-center mb-4 ml-4">
-      <VBtn size="small" title="Add Product" type="button" color="secondary" href="/products/add">
+      <VBtn size="small" title="Add Product" type="button" color="secondary" to="/products/add">
         <i class="ri-add-circle-line"></i> Add Product
       </VBtn>
-      <VBtn size="small" title="Colors" type="button" color="secondary" href="/colors/list" class="ml-2">
+      <VBtn size="small" title="Colors" type="button" color="secondary" to="/colors/list" class="ml-2">
         <i class="ri-palette-line"></i> Colors
       </VBtn>
-      <VBtn size="small" title="Sizes" type="button" color="secondary" href="/sizes/list" class="ml-2">
+      <VBtn size="small" title="Sizes" type="button" color="secondary" to="/sizes/list" class="ml-2">
         <i class="ri-ruler-line"></i> Sizes
       </VBtn>
     </div>
