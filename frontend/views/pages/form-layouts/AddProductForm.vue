@@ -84,6 +84,26 @@
         />
       </VCol>
 
+      <!-- Row for Purchase Price and Date -->
+      <VCol cols="12" md="6">
+        <VTextField
+          v-model="purchase_price"
+          label="Purchase Price"
+          placeholder="Purchase Price"
+          type="number"
+          min="0"
+        />
+      </VCol>
+
+      <VCol cols="12" md="6">
+        <VTextField
+          v-model="purchase_date"
+          label="Purchase Date"
+          placeholder="Purchase Date"
+          type="date"
+        />
+      </VCol>
+
       <!-- Row for Category -->
       <VCol cols="12" md="6">
         <VSelect
@@ -139,6 +159,19 @@
         />
       </VCol>
 
+      <!-- Row for Supplier -->
+      <VCol cols="12" md="6">
+        <VSelect
+          v-model="supplier_id"
+          label="Supplier"
+          :items="suppliers"
+          item-title="name"
+          item-value="id"
+          density="compact"
+          required
+        />
+      </VCol>
+
       <!-- Row for Images -->
       <VCol cols="12" md="6">
         <VFileInput
@@ -180,15 +213,19 @@ const price = ref('');
 const discount_price = ref('');
 const stock = ref('');
 const low_stock_threshold = ref('');
-const category_id = ref(null); // New field for category_id
+const category_id = ref(null);
 const color_id = ref(null);
 const size_id = ref(null);
 const images = ref([]);
-const categories = ref([]); // New ref for categories
+const categories = ref([]);
 const colors = ref([]);
 const sizes = ref([]);
+const suppliers = ref([]);
 const description = ref('');
 const short_description = ref('');
+const supplier_id = ref(null);
+const purchase_price = ref(''); // New field for purchase price
+const purchase_date = ref(''); // New field for purchase date
 
 // Generate slug automatically based on name
 const slug = computed(() => {
@@ -198,12 +235,12 @@ const slug = computed(() => {
     .replace(/(^-|-$)/g, ''); // Remove leading and trailing hyphens
 });
 
-// Fetch categories, colors, and sizes when the component mounts
+// Fetch categories, colors, sizes, and suppliers when the component mounts
 onMounted(async () => {
   const token = localStorage.getItem('authToken');
 
   try {
-    const [categoriesResponse, colorsResponse, sizesResponse] = await Promise.all([
+    const [categoriesResponse, colorsResponse, sizesResponse, suppliersResponse] = await Promise.all([
       axios.get('http://127.0.0.1:8000/api/categories', {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -219,11 +256,17 @@ onMounted(async () => {
           Authorization: `Bearer ${token}`,
         },
       }),
+      axios.get('http://127.0.0.1:8000/api/suppliers', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
     ]);
 
-    categories.value = categoriesResponse.data; // Set fetched categories
+    categories.value = categoriesResponse.data;
     colors.value = colorsResponse.data;
     sizes.value = sizesResponse.data;
+    suppliers.value = suppliersResponse.data.data;
   } catch (error) {
     $toast.error('Error fetching data: ' + (error.response?.data?.message || error.message));
     console.error('Error fetching data:', error);
@@ -241,7 +284,7 @@ const generateSKU = () => {
 
 // Handle image upload
 const handleImageUpload = (event) => {
-  images.value = Array.from(event.target.files); // Store multiple files
+  images.value = Array.from(event.target.files);
 };
 
 // Handle form submission
@@ -252,24 +295,26 @@ const handleSubmit = async () => {
     const formData = new FormData();
     formData.append('name', name.value);
     formData.append('sku', sku.value);
-    formData.append('slug', slug.value); // Added slug to form data
-    formData.append('is_featured', is_featured.value ? '1' : '0'); // Added is_featured to form data
+    formData.append('slug', slug.value);
+    formData.append('is_featured', is_featured.value ? '1' : '0');
     formData.append('price', price.value);
     formData.append('discount_price', discount_price.value || '');
     formData.append('stock', stock.value);
     formData.append('low_stock_threshold', low_stock_threshold.value || '');
-    formData.append('category_id', category_id.value || ''); // Added category_id to form data
+    formData.append('category_id', category_id.value || '');
     formData.append('color_id', color_id.value || '');
     formData.append('size_id', size_id.value || '');
     formData.append('description', description.value || '');
     formData.append('short_description', short_description.value || '');
-    
-    // Append all images
+    formData.append('supplier_id', supplier_id.value || '');
+    formData.append('purchase_price', purchase_price.value || '');
+    formData.append('purchase_date', purchase_date.value || '');
+
     images.value.forEach((file, index) => {
       formData.append(`images[${index}]`, file);
     });
 
-    const response = await axios.post('http://127.0.0.1:8000/api/products', formData, {
+    await axios.post('http://127.0.0.1:8000/api/products', formData, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'multipart/form-data',
@@ -277,32 +322,31 @@ const handleSubmit = async () => {
     });
 
     $toast.success('Product added successfully!');
-    console.log('Product added successfully:', response.data);
-
-    // Optionally, reset the form or redirect
     resetForm();
-    // router.push('/products');
   } catch (error) {
     $toast.error('Error adding product: ' + (error.response?.data?.message || error.message));
     console.error('Error adding product:', error);
   }
 };
 
-// Function to reset the form
+// Reset form
 const resetForm = () => {
   name.value = '';
+  slug.value = '';
   sku.value = '';
-  slug.value = ''; // Reset slug
-  is_featured.value = false; // Reset is_featured
+  is_featured.value = false;
   price.value = '';
   discount_price.value = '';
   stock.value = '';
   low_stock_threshold.value = '';
-  category_id.value = null; // Reset category_id
+  category_id.value = null;
   color_id.value = null;
   size_id.value = null;
-  images.value = []; // Reset images array
   description.value = '';
   short_description.value = '';
+  supplier_id.value = null;
+  purchase_price.value = '';
+  purchase_date.value = '';
+  images.value = [];
 };
 </script>

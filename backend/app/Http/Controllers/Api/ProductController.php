@@ -7,6 +7,8 @@ use App\Http\Requests\CreateProductRequest;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -30,34 +32,72 @@ class ProductController extends Controller
      */
     public function store(CreateProductRequest $request)
     {
-        // Validate and get the data
-        $validatedData = $request->validated();
+        // Start a database transaction
+        DB::beginTransaction();
 
-        // Create the product
-        $product = Product::create($validatedData);
+        try {
+            // Validate and get the data
+            $validatedData = $request->validated();
 
-        // Check if there are images in the request
-        if ($request->hasFile('images')) {
-            // Loop through each image
-            foreach ($request->file('images') as $index => $image) {
-                $path = $image->store('product_images', 'public');
+            // Create the product
+            $product = Product::create($validatedData);
 
-                // Create a record for each image
-                ProductImage::create([
-                    'product_id' => $product->id,
-                    'image_path' => $path,
-                    'is_primary' => $index === 0, // Set the first image as primary
-                ]);
+            // Check if there are images in the request
+            if ($request->hasFile('images')) {
+                // Loop through each image
+                foreach ($request->file('images') as $index => $image) {
+                    $path = $image->store('product_images', 'public');
+
+                    // Create a record for each image
+                    ProductImage::create([
+                        'product_id' => $product->id,
+                        'image_path' => $path,
+                        'is_primary' => $index === 0, // Set the first image as primary
+                    ]);
+                }
             }
+
+            // Check if supplier data is included
+            if ($request->has('supplier_id')) {
+                // Prepare the pivot data
+                $supplierData = [
+                    $request->supplier_id => [
+                        'purchase_price' => $request->purchase_price,
+                        'purchase_date' => $request->purchase_date,
+                        'quantity' => $request->stock,
+                    ]
+                ];
+
+                // Sync the supplier with the product
+                $product->suppliers()->sync($supplierData);
+            }
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return response
+            return response()->json([
+                'message' => 'Product created successfully.',
+                'product' => $product->load('color', 'size', 'category', 'primaryImage', 'images') // Load relationships
+            ], 201);
+
+        } catch (\Exception $e) {
+            // Rollback the transaction if any error occurs
+            DB::rollBack();
+
+            // Log the error
+            Log::error('Error creating product: ' . $e->getMessage(), [
+                'request' => $request->all(),
+                'error' => $e,
+            ]);
+
+            // Return a response indicating the error
+            return response()->json([
+                'message' => 'Error creating product. Please try again.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Return response
-        return response()->json([
-            'message' => 'Product created successfully.',
-            'product' => $product->load('color', 'size', 'category', 'primaryImage', 'images') // Load relationships
-        ], 201);
     }
-
     /**
      * Update the specified resource in storage.
      *
