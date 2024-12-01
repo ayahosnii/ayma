@@ -67,7 +67,7 @@ onMounted(() => {
   <VerticalNavLink
     :item="{
         title: 'Dashboards',
-        icon: 'ri-home-smile-line',
+        icon: 'ri-home-2-fill',
         to: '/dashboard',
       }"
   />
@@ -154,7 +154,7 @@ onMounted(() => {
     :item="{
       title: 'Orders',
       badgeContent: ordersCount,
-      icon:' ri-truck-fill',
+      icon:'ri-shopping-cart-2-fill',
       to: '/orders/list',
       // badgeContent: 'New',
       badgeClass: 'bg-secondary-darken-1',
@@ -165,7 +165,7 @@ onMounted(() => {
       title: 'Sales Analysis',
       badgeContent: 0,
       badgeClass: 'bg-secondary-darken-1',
-      icon: 'ri-stack-line',
+      icon: 'ri-line-chart-fill',
       to: '/sales-analysis/list',
       // badgeContent: 'New',
       // badgeClass: 'bg-light-primary text-primary',
