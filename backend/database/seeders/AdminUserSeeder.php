@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\User; // Make sure to import your User model
+use App\Models\User; // Ensure your User model is imported
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
@@ -16,15 +16,18 @@ class AdminUserSeeder extends Seeder
      */
     public function run()
     {
-        // Create the admin role if it doesn't exist
-        $role = Role::firstOrCreate(['name' => 'admin']);
+        // Create the admin role with the 'api' guard if it doesn't exist
+        $role = Role::firstOrCreate(
+            ['name' => 'admin', 'guard_name' => 'api']
+        );
 
         // Check if the admin user already exists
-        if (!User::where('email', 'admin@example.com')->exists()) {
+        if (!User::where('email', 'admin@ayma.com')->exists()) {
+            // Create the admin user
             $user = User::create([
                 'name' => 'Admin User',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('securepassword'), // Use a secure password
+                'email' => 'admin@ayma.com',
+                'password' => Hash::make('password'),
             ]);
 
             // Assign the admin role to the user

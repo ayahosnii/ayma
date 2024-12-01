@@ -18,22 +18,6 @@ const fetchCounts = async () => {
   try {
     const token = localStorage.getItem('authToken');
 
-    // Fetch stories count
-    const storiesResponse = await axios.get(`${BASE_URL}/count-stories`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    storiesCount.value = storiesResponse.data.count;
-
-    // Fetch levels count
-    const levelsResponse = await axios.get(`${BASE_URL}/count-levels`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    levelsCount.value = levelsResponse.data.countLevels;
-
     // Fetch categories count
     const categoriesResponse = await axios.get(`${BASE_URL}/count-categories`, {
       headers: {
