@@ -47,4 +47,9 @@ class Product extends Model
             ->withPivot('purchase_price', 'purchase_date', 'quantity')
             ->withTimestamps();
     }
+
+    public function supplierProducts()
+    {
+        return $this->hasMany(SupplierProduct::class);
+    }
 }

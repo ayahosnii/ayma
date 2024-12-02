@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ColorController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
+use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
@@ -72,7 +73,15 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/order_items', OrderItemController::class); //Order items
     Route::get('/count-orders', [OrderController::class, 'countOrders']); //Order Count
 
-
+    /******************************************* Start Inventory *******************************************/
+    Route::prefix('inventory')->group(function () {
+        Route::get('/', [InventoryController::class, 'index']); // Fetch inventory updates (paginated)
+        Route::post('/', [InventoryController::class, 'store']); // Add a new inventory update
+        Route::get('/{id}', [InventoryController::class, 'show']); // Get details of a specific inventory update
+        Route::put('/{id}', [InventoryController::class, 'update']); // Update an inventory update
+        Route::delete('/{id}', [InventoryController::class, 'destroy']); // Delete an inventory update
+    });
+    /******************************************* End   Inventory *******************************************/
     Route::post('refund', [RefundController::class, 'processRefund']); //Levels
 
     Route::get('/customers', [CustomerController::class, 'index']); //Stories Count
