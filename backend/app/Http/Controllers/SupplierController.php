@@ -101,4 +101,10 @@ class SupplierController extends Controller
             'message' => 'Supplier deleted successfully',
         ]);
     }
+
+    public function countSuppliers()
+    {
+        $countSuppliers = Supplier::count();
+        return response()->json(['countSuppliers' => $countSuppliers]);
+    }
 }

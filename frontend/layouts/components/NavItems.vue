@@ -13,6 +13,8 @@ const categoriesCount = ref();
 const productsCount = ref();
 const productsmongoCount = ref();
 const ordersCount = ref();
+const suppliersCount = ref(); 
+
 
 const fetchCounts = async () => {
   try {
@@ -53,6 +55,16 @@ const fetchCounts = async () => {
     });
 
     ordersCount.value = ordersResponse.data.countOrders;
+
+    //Suppliers Count
+    const suppliersResponse = await axios.get(`${BASE_URL}/count-suppliers`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    suppliersCount.value = suppliersResponse.data.countSuppliers;
+
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
@@ -144,7 +156,7 @@ onMounted(() => {
   <VerticalNavLink
     :item="{
       title: 'Suppliers',
-      badgeContent: 0,
+      badgeContent: suppliersCount,
       icon:' ri-truck-fill',
       to: '/suppliers/list',
       badgeClass: 'bg-secondary-darken-1',

@@ -65,6 +65,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/suppliers/{id}', [SupplierController::class, 'show']);
     Route::put('/suppliers/{id}', [SupplierController::class, 'update']);
     Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
+    Route::get('/count-suppliers', [SupplierController::class, 'countSuppliers']);
     /******************************************* End   Suppliers *******************************************/
 
     Route::resource('/orders', OrderController::class); //Orders

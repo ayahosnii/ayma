@@ -53,10 +53,40 @@
               <strong>Phone:</strong> {{ infoSupplier.phone }}
             </VCol>
             <VCol cols="6">
+              <strong>Contact Info</strong> {{ infoSupplier.contact_info }}
+            </VCol>
+            <VCol cols="6">
               <strong>Email:</strong> {{ infoSupplier.email }}
             </VCol>
-            <VCol cols="12">
+            <VCol cols="6">
               <strong>Address:</strong> {{ infoSupplier.address }}
+            </VCol>
+            <VCol cols="4">
+              <strong>City:</strong> {{ infoSupplier.city }}
+            </VCol>
+            <VCol cols="4">
+              <strong>State:</strong> {{ infoSupplier.state }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Postal Code:</strong> {{ infoSupplier.postal_code }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Country:</strong> {{ infoSupplier.country }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Supplier Type:</strong> {{ infoSupplier.supplier_type }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Website:</strong> {{ infoSupplier.website }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Tax ID:</strong> {{ infoSupplier.tax_id }}
+            </VCol>
+            <VCol cols="4">
+              <strong>Status:</strong> {{ infoSupplier.status }}
+            </VCol>
+            <VCol cols="12">
+              <strong>Notes:</strong> {{ infoSupplier.notes }}
             </VCol>
           </VRow>
         </VCardText>
@@ -65,6 +95,7 @@
         </VCardActions>
       </VCard>
     </VDialog>
+
 
     <!-- Edit Modal -->
     <VDialog v-model="editModal" max-width="600px">
