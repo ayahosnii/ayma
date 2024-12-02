@@ -73,9 +73,6 @@
               <VCol cols="4">
                 <VTextField v-model="editProduct.discount_price" label="Discount Price" placeholder="Discounted Price (optional)" type="number" min="0" />
               </VCol>
-              <VCol cols="4">
-                <VTextField v-model="editProduct.stock" label="Stock" placeholder="Available Stock" type="number" min="0" />
-              </VCol>
             </VRow>
             <VRow>
               <VCol cols="4">
@@ -245,7 +242,7 @@ const deleteModal = ref(false);
 const infoModal = ref(false);
 
 const editProduct = ref({
-  id: '', name: '', sku: '', slug: '', price: '', discount_price: '', stock: '', category_id: null, color_id: null, size_id: null, is_featured: 0, description: '', short_description: '', image: ''
+  id: '', name: '', sku: '', slug: '', price: '', discount_price: '', category_id: null, color_id: null, size_id: null, is_featured: 0, description: '', short_description: '', image: ''
 });
 const originalSlug = ref('');
 const deleteProductId = ref(null);
@@ -344,7 +341,6 @@ const updateProduct = async () => {
         slug: editProduct.value.slug,
         price: editProduct.value.price,
         discount_price: editProduct.value.discount_price || null,
-        stock: editProduct.value.stock,
         category_id: editProduct.value.category_id,
         color_id: editProduct.value.color_id,
         size_id: editProduct.value.size_id,

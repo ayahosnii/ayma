@@ -110,12 +110,18 @@ class ProductController extends Controller
         // Find the product
         $product = Product::findOrFail($id);
 
-        // Update product details
-        $product->update($request->validated());
+        // Extract the validated data (excluding stock)
+        $data = $request->validated();
+
+        // Ensure stock remains unchanged
+        unset($data['stock']); // Ignore the stock field
+
+        // Update the product details (but stock remains the same)
+        $product->update($data);
 
         // Handle images if provided
         if ($request->hasFile('image')) {
-            // Delete the old primary image if exists
+            // Delete the old primary image if it exists
             if ($product->primaryImage) {
                 Storage::disk('public')->delete($product->primaryImage->image_path);
                 $product->primaryImage->delete();
