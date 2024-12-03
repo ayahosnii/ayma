@@ -14,6 +14,7 @@ const productsCount = ref();
 const productsmongoCount = ref();
 const ordersCount = ref();
 const suppliersCount = ref(); 
+const inventoryrecordsCount = ref(); 
 
 
 const fetchCounts = async () => {
@@ -65,10 +66,21 @@ const fetchCounts = async () => {
 
     suppliersCount.value = suppliersResponse.data.countSuppliers;
 
+    //Inventory Reocrds Count
+    const inventoryrecordsResponse = await axios.get(`${BASE_URL}/count-inventoryrecords`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    inventoryrecordsCount.value = inventoryrecordsResponse.data.countInvetoryRecords;
+
   } catch (error) {
     console.error('Error fetching counts:', error);
   }
 };
+
+
 
 onMounted(() => {
   fetchCounts();
@@ -175,7 +187,7 @@ onMounted(() => {
   <VerticalNavLink
     :item="{
       title: 'Inventory',
-      badgeContent: 0,
+      badgeContent: inventoryrecordsCount,
       badgeClass: 'bg-secondary-darken-1',
       icon: 'ri-archive-drawer-fill',
       to: '/inventory/list',
