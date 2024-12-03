@@ -89,10 +89,10 @@
         <VCardText>
           <VRow>
             <VCol cols="6">
-              <strong>Supplier:</strong> {{ inventoryData.supplier_name || 'N/A' }}
+              <strong>Supplier:</strong> {{ inventoryData.supplier.name|| 'N/A' }}
             </VCol>
             <VCol cols="6">
-              <strong>Product:</strong> {{ inventoryData.product_name || 'N/A' }}
+              <strong>Product:</strong> {{ inventoryData.product.name || 'N/A' }}
             </VCol>
           </VRow>
           <VRow>
@@ -134,9 +134,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
 import { BASE_URL } from '@/config/apiConfig';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();

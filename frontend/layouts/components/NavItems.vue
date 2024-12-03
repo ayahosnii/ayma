@@ -174,6 +174,17 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Inventory',
+      badgeContent: 0,
+      badgeClass: 'bg-secondary-darken-1',
+      icon: 'ri-archive-drawer-fill',
+      to: '/inventory/list',
+      // badgeContent: 'New',
+      // badgeClass: 'bg-light-primary text-primary',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Sales Analysis',
       badgeContent: 0,
       badgeClass: 'bg-secondary-darken-1',
