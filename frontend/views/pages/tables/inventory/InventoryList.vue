@@ -108,11 +108,23 @@
       <VCard>
         <VCardTitle>Inventory Details</VCardTitle>
         <VCardText>
-          <p><strong>Supplier:</strong> {{ inventoryData.supplier?.name || 'N/A' }}</p>
-          <p><strong>Product:</strong> {{ inventoryData.product?.name || 'N/A' }}</p>
-          <p><strong>Purchase Price:</strong> ${{ inventoryData.purchase_price || 'N/A' }}</p>
-          <p><strong>Quantity:</strong> {{ inventoryData.quantity || 'N/A' }}</p>
-          <p><strong>Purchase Date:</strong> {{ inventoryData.purchase_date || 'N/A' }}</p>
+          <VRow>
+          <VCol cols="6">
+            <strong>Supplier:</strong> {{ inventoryData.supplier?.name || 'N/A' }}
+          </VCol>
+          <VCol cols="6">
+            <strong>Product:</strong> {{ inventoryData.product?.name || 'N/A' }}
+          </VCol>
+          <VCol cols="6">
+            <strong>Purchase Price:</strong> ${{ inventoryData.purchase_price || 'N/A' }}
+          </VCol>
+          <VCol cols="6">
+            <strong>Quantity:</strong> {{ inventoryData.quantity || 'N/A' }}
+          </VCol>
+          <VCol cols="6">
+            <strong>Purchase Date:</strong> {{ inventoryData.purchase_date || 'N/A' }}
+          </VCol> 
+        </VRow>
         </VCardText>
         <VCardActions>
           <VBtn color="secondary" @click="closeViewModal">Close</VBtn>
