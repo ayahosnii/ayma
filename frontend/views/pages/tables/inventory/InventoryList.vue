@@ -1,54 +1,57 @@
 <template>
   <div>
-    <!-- Header: Add Inventory Button and Supplier Filter -->
+    <!-- Header: Add Inventory Button -->
     <div class="d-flex align-items-center justify-between gap-2 mb-4">
       <VBtn class="mb-4 ml-4" size="small" color="secondary" @click="openAddModal">
         <i class="ri-add-circle-line"></i> Add Inventory Update
       </VBtn>
-
-      <VSelect
-        v-model="selectedSupplier"
-        :items="suppliers"
-        label="Filter by Supplier"
-        item-title="name"
-        item-value="id"
-        clearable
-        
-        class="mr-10"
-      />
     </div>
+
+    <!-- Filter Section -->
+    <VRow class="mb-4">
+      <VCol cols="12" md="4">
+        <VSelect
+          v-model="selectedSupplier"
+          :items="suppliers"
+          label="Filter by Supplier"
+          item-title="name"
+          item-value="id"
+          clearable
+        />
+      </VCol>
+    </VRow>
 
     <!-- Inventory Updates Table -->
     <VTable>
       <thead>
-        <tr>
-          <th class="text-center text-uppercase">Supplier</th>
-          <th class="text-center text-uppercase">Product</th>
-          <th class="text-center text-uppercase">Purchase Price</th>
-          <th class="text-center text-uppercase">Purchase Date</th>
-          <th class="text-center text-uppercase">Quantity</th>
-          <th class="text-center text-uppercase">Actions</th>
-        </tr>
+      <tr>
+        <th class="text-center text-uppercase">Supplier</th>
+        <th class="text-center text-uppercase">Product</th>
+        <th class="text-center text-uppercase">Purchase Price</th>
+        <th class="text-center text-uppercase">Purchase Date</th>
+        <th class="text-center text-uppercase">Quantity</th>
+        <th class="text-center text-uppercase">Actions</th>
+      </tr>
       </thead>
       <tbody>
-        <tr v-for="item in filteredInventory" :key="item.id">
-          <td class="text-center">{{ item.supplier.name }}</td>
-          <td class="text-center">{{ item.product.name }}</td>
-          <td class="text-center">${{ item.purchase_price }}</td>
-          <td class="text-center">{{ item.purchase_date || 'N/A' }}</td>
-          <td class="text-center">{{ item.quantity }}</td>
-          <td class="text-center">
-            <VBtn size="small" color="info" @click="viewInventory(item)">
-              <i class="ri-information-line"></i>
-            </VBtn>&nbsp;
-            <VBtn size="small" color="warning" @click="editInventory(item)">
-              <i class="ri-edit-fill"></i>
-            </VBtn>&nbsp;
-            <VBtn size="small" color="error" @click="deleteInventory(item.id)">
-              <i class="ri-delete-bin-line"></i>
-            </VBtn>
-          </td>
-        </tr>
+      <tr v-for="item in filteredInventory" :key="item.id">
+        <td class="text-center">{{ item.supplier.name }}</td>
+        <td class="text-center">{{ item.product.name }}</td>
+        <td class="text-center">${{ item.purchase_price }}</td>
+        <td class="text-center">{{ item.purchase_date || 'N/A' }}</td>
+        <td class="text-center">{{ item.quantity }}</td>
+        <td class="text-center">
+          <VBtn size="small" color="info" @click="viewInventory(item)">
+            <i class="ri-information-line"></i>
+          </VBtn>&nbsp;
+          <VBtn size="small" color="warning" @click="editInventory(item)">
+            <i class="ri-edit-fill"></i>
+          </VBtn>&nbsp;
+          <VBtn size="small" color="error" @click="deleteInventory(item.id)">
+            <i class="ri-delete-bin-line"></i>
+          </VBtn>
+        </td>
+      </tr>
       </tbody>
     </VTable>
 
@@ -109,22 +112,22 @@
         <VCardTitle>Inventory Details</VCardTitle>
         <VCardText>
           <VRow>
-          <VCol cols="6">
-            <strong>Supplier:</strong> {{ inventoryData.supplier?.name || 'N/A' }}
-          </VCol>
-          <VCol cols="6">
-            <strong>Product:</strong> {{ inventoryData.product?.name || 'N/A' }}
-          </VCol>
-          <VCol cols="6">
-            <strong>Purchase Price:</strong> ${{ inventoryData.purchase_price || 'N/A' }}
-          </VCol>
-          <VCol cols="6">
-            <strong>Quantity:</strong> {{ inventoryData.quantity || 'N/A' }}
-          </VCol>
-          <VCol cols="6">
-            <strong>Purchase Date:</strong> {{ inventoryData.purchase_date || 'N/A' }}
-          </VCol> 
-        </VRow>
+            <VCol cols="6">
+              <strong>Supplier:</strong> {{ inventoryData.supplier?.name || 'N/A' }}
+            </VCol>
+            <VCol cols="6">
+              <strong>Product:</strong> {{ inventoryData.product?.name || 'N/A' }}
+            </VCol>
+            <VCol cols="6">
+              <strong>Purchase Price:</strong> ${{ inventoryData.purchase_price || 'N/A' }}
+            </VCol>
+            <VCol cols="6">
+              <strong>Quantity:</strong> {{ inventoryData.quantity || 'N/A' }}
+            </VCol>
+            <VCol cols="6">
+              <strong>Purchase Date:</strong> {{ inventoryData.purchase_date || 'N/A' }}
+            </VCol>
+          </VRow>
         </VCardText>
         <VCardActions>
           <VBtn color="secondary" @click="closeViewModal">Close</VBtn>
