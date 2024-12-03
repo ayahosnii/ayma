@@ -133,6 +133,11 @@ class InventoryController extends Controller
         return response()->json(['message' => 'Inventory update deleted successfully, stock adjusted!']);
     }
 
+    public function countInvetoryRecords()
+    {
+        $countInvetoryRecords = SupplierProduct::count();
+        return response()->json(['countInvetoryRecords' => $countInvetoryRecords]);
+    }
 
 }
 

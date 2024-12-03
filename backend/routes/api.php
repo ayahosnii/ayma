@@ -80,7 +80,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/{id}', [InventoryController::class, 'show']); // Get details of a specific inventory update
         Route::put('/{id}', [InventoryController::class, 'update']); // Update an inventory update
         Route::delete('/{id}', [InventoryController::class, 'destroy']); // Delete an inventory update
+
     });
+        Route::get('/count-inventoryrecords', [InventoryController::class, 'countInvetoryRecords']); //Inventory Records Count
     /******************************************* End   Inventory *******************************************/
     Route::post('refund', [RefundController::class, 'processRefund']); //Levels
 
