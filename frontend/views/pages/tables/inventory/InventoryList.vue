@@ -9,7 +9,7 @@
 
     <!-- Filter Section -->
     <VRow class="mb-4">
-      <VCol cols="12" md="4">
+      <VCol cols="12" md="4" class="mx-4">
         <VSelect
           v-model="selectedSupplier"
           :items="suppliers"
