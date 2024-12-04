@@ -2,10 +2,12 @@
 
 namespace App\ChainOfResponsibility\orders;
 
+use App\Broadcasting\StockNotificationChannel;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Support\Facades\Broadcast;
 
 class ProcessOrderItemsHandler extends AbstractOrderProcessHandler {
     public function handle($request, Order $order = null) {
@@ -27,7 +29,16 @@ class ProcessOrderItemsHandler extends AbstractOrderProcessHandler {
             ]);
         }
 
-        echo "Order items processed.\n";
-        return parent::handle($request, $order); // Pass the order to the next handler
+        // Check stock after processing each product
+        if ($product->stock <= $product->low_stock_threshold) {
+            // Broadcast a notification to the admin (or any listener)
+
+            event(new StockNotificationChannel($product->id,
+                $product->name,
+                $product->stock));
+
+        }
+
+        return parent::handle($request, $order);
     }
 }
