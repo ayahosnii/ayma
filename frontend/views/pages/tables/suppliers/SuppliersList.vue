@@ -1,37 +1,60 @@
 <template>
   <div>
-    <VTable>
-      <thead>
-      <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" to="/suppliers/add">
+    <!-- Add Supplier Button and Search Input -->
+    <div class="mb-4 ml-4 d-flex align-items-center">
+      <VBtn size="small" title="Add" type="Add" color="secondary" to="/suppliers/add">
         <i class="ri-add-circle-line"></i> Add Supplier
       </VBtn>
-      <tr>
-        <th class="text-uppercase text-center">Supplier Name</th>
-        <th class="text-uppercase text-center">Contact Person</th>
-        <th class="text-uppercase text-center">Phone</th>
-        <th class="text-uppercase text-center">Email</th>
-        <th class="text-uppercase text-center">Actions</th>
-      </tr>
+      <VTextField
+        v-model="searchQuery"
+        label="Search Suppliers"
+        class="ml-4"
+        hide-details
+        clearable
+        dense
+        style="max-inline-size: 300px;"
+        placeholder="Search by name, phone, email, etc."
+      />
+    </div>
+
+    <!-- Table to Display Suppliers -->
+    <VTable>
+      <thead>
+        <tr>
+          <th class="text-uppercase text-center">Supplier Name</th>
+          <th class="text-uppercase text-center">Contact Person</th>
+          <th class="text-uppercase text-center">Phone</th>
+          <th class="text-uppercase text-center">Email</th>
+          <th class="text-uppercase text-center">Actions</th>
+        </tr>
       </thead>
 
       <tbody>
-      <tr v-for="supplier in suppliers" :key="supplier.id">
-        <td class="text-center">{{ supplier.name }}</td>
-        <td class="text-center">{{ supplier.contact_person }}</td>
-        <td class="text-center">{{ supplier.phone }}</td>
-        <td class="text-center">{{ supplier.email }}</td>
-        <td class="text-center">
-          <VBtn size="small" title="Info" color="info" @click="openInfoModal(supplier)">
-            <i class="ri-information-line"></i>
-          </VBtn>&nbsp;
-          <VBtn size="small" title="Edit" color="warning" @click="openEditModal(supplier)">
-            <i class="ri-edit-fill"></i>
-          </VBtn>&nbsp;
-          <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(supplier)">
-            <i class="ri-delete-bin-line"></i>
-          </VBtn>
-        </td>
-      </tr>
+        <tr v-for="supplier in filteredSuppliers" :key="supplier.id">
+          <td class="text-center">{{ supplier.name }}</td>
+          <td class="text-center">{{ supplier.contact_person }}</td>
+          <td class="text-center">
+            <a :href="`https://wa.me/${supplier.phone.replace(/\D/g, '')}`" target="_blank" style="color: inherit;">
+              {{ supplier.phone }}
+            </a>
+          </td>
+          <td class="text-center">
+            <a :href="`mailto:${supplier.email}`" target="_blank" style="color: inherit;">
+              {{ supplier.email }}
+            </a>
+          </td>
+          <td class="text-center">
+            <VBtn size="small" title="Info" color="info" @click="openInfoModal(supplier)">
+              <i class="ri-information-line"></i>
+            </VBtn>&nbsp;
+            <VBtn size="small" title="Edit" color="warning" @click="openEditModal(supplier)">
+              <i class="ri-edit-fill"></i>
+            </VBtn>&nbsp;
+            <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(supplier)">
+              <i class="ri-delete-bin-line"></i>
+            </VBtn>
+          </td>
+        </tr>
       </tbody>
     </VTable>
 
@@ -50,13 +73,17 @@
               <strong>Contact Person:</strong> {{ infoSupplier.contact_person }}
             </VCol>
             <VCol cols="6">
-              <strong>Phone:</strong> {{ infoSupplier.phone }}
+              <strong>Phone:</strong> <a :href="`https://wa.me/${infoSupplier.phone.replace(/\D/g, '')}`" target="_blank">
+                {{ infoSupplier.phone }}
+              </a>
             </VCol>
             <VCol cols="6">
               <strong>Contact Info</strong> {{ infoSupplier.contact_info }}
             </VCol>
             <VCol cols="6">
-              <strong>Email:</strong> {{ infoSupplier.email }}
+              <strong>Email:</strong> <a :href="`mailto:${infoSupplier.email}`" target="_blank">
+                {{ infoSupplier.email }}
+              </a>
             </VCol>
             <VCol cols="6">
               <strong>Address:</strong> {{ infoSupplier.address }}
@@ -77,7 +104,11 @@
               <strong>Supplier Type:</strong> {{ infoSupplier.supplier_type }}
             </VCol>
             <VCol cols="4">
-              <strong>Website:</strong> {{ infoSupplier.website }}
+              <strong>Website:</strong> <a 
+              :href="infoSupplier.website.startsWith('http') ? infoSupplier.website : `https://${infoSupplier.website}`" 
+              target="_blank">
+              {{ infoSupplier.website }}
+            </a>
             </VCol>
             <VCol cols="4">
               <strong>Tax ID:</strong> {{ infoSupplier.tax_id }}
@@ -95,7 +126,6 @@
         </VCardActions>
       </VCard>
     </VDialog>
-
 
     <!-- Edit Modal -->
     <VDialog v-model="editModal" max-width="600px">
@@ -153,13 +183,14 @@
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();
 const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const suppliers = ref([]);
+const searchQuery = ref('');
 const currentPage = ref(1);
 const totalPages = ref(1);
 
@@ -178,6 +209,21 @@ const editSupplier = ref({
 const infoSupplier = ref({});
 const deleteSupplierData = ref(null);
 
+// Computed property to filter suppliers based on the search query
+const filteredSuppliers = computed(() => {
+  if (!searchQuery.value) return suppliers.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return suppliers.value.filter(
+    (supplier) =>
+      supplier.name.toLowerCase().includes(query) ||
+      supplier.contact_person.toLowerCase().includes(query) ||
+      supplier.phone.toLowerCase().includes(query) ||
+      supplier.email.toLowerCase().includes(query) ||
+      supplier.address.toLowerCase().includes(query)
+  );
+});
+
 // Fetch suppliers from API
 const fetchSuppliers = async (page = 1) => {
   const token = localStorage.getItem('authToken');
@@ -189,26 +235,15 @@ const fetchSuppliers = async (page = 1) => {
   currentPage.value = response.data.current_page;
 };
 
-// Open Modals
-const openInfoModal = (supplier) => {
-  infoSupplier.value = supplier;
-  infoModal.value = true;
-};
-const openEditModal = (supplier) => {
-  editSupplier.value = { ...supplier };
-  editModal.value = true;
-};
-const openDeleteModal = (supplier) => {
-  deleteSupplierData.value = supplier;
-  deleteModal.value = true;
-};
-
-// Close Modals
+// Modal controls
+const openInfoModal = (supplier) => (infoSupplier.value = supplier, infoModal.value = true);
+const openEditModal = (supplier) => (editSupplier.value = { ...supplier }, editModal.value = true);
+const openDeleteModal = (supplier) => (deleteSupplierData.value = supplier, deleteModal.value = true);
 const closeInfoModal = () => (infoModal.value = false);
 const closeEditModal = () => (editModal.value = false);
 const closeDeleteModal = () => (deleteModal.value = false);
 
-// Update Supplier
+// Update supplier data
 const updateSupplier = async () => {
   const token = localStorage.getItem('authToken');
   await axios.put(`${BASE_URL}/suppliers/${editSupplier.value.id}`, editSupplier.value, {
@@ -219,7 +254,7 @@ const updateSupplier = async () => {
   closeEditModal();
 };
 
-// Delete Supplier
+// Delete supplier
 const deleteSupplier = async () => {
   const token = localStorage.getItem('authToken');
   await axios.delete(`${BASE_URL}/suppliers/${deleteSupplierData.value.id}`, {
@@ -230,14 +265,11 @@ const deleteSupplier = async () => {
   closeDeleteModal();
 };
 
-// Handle Pagination
 const onPageChange = (page) => {
   currentPage.value = page;
   fetchSuppliers(page);
 };
 
 // Fetch data on mount
-onMounted(() => {
-  fetchSuppliers();
-});
+onMounted(() => fetchSuppliers());
 </script>
