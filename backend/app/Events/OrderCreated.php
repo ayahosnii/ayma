@@ -21,6 +21,6 @@ class OrderCreated implements ShouldBroadcastNow
 
     public function broadcastWith()
     {
-        return ['message' => "Order #{$this->order->id} created!"];
+        return ['message' => "Order #{$this->order->id} created!", 'stock' => 22];
     }
 }
