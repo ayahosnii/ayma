@@ -1,51 +1,46 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import Echo from 'laravel-echo';
-import { io } from 'socket.io-client';
-import NavItems from '@/layouts/components/NavItems.vue'
-import logo from '@images/logo.svg?raw'
-import Pusher from 'pusher-js';
-import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
-import Footer from '@/layouts/components/Footer.vue'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { io } from 'socket.io-client';  // Import Socket.io client
+import NavItems from '@/layouts/components/NavItems.vue';
+import logo from '@images/logo.svg?raw';
+import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue';
+import Footer from '@/layouts/components/Footer.vue';
+import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue';
+import UserProfile from '@/layouts/components/UserProfile.vue';
 
 // Notification state
 const notificationCount = ref(0);  // Count of unread notifications
 const dropdownVisible = ref(false); // Whether the notification dropdown is visible
 const notifications = ref([]); // Array to hold notification data
 
-// Echo setup (only runs on the client)
-let echo;
-onMounted(() => {
-  // Ensure this is running only in the browser
-  window.Pusher = Pusher;
-  if (typeof window !== 'undefined') {
-    const echo = new Echo({
-      broadcaster: 'pusher',           // Use 'pusher' as the broadcaster
-      key: '7f5e1b0e76d7af039f74',     // Replace with your Pusher app key
-      cluster: 'mt1',                   // Replace with your Pusher app cluster
-      wsHost: 'localhost', // Use localhost or your actual hostname
-      wsPort: 6001,                     // The WebSocket port (make sure WebSocket server is running)
-      forceTLS: false,                 // Disable TLS for local development
-      encrypted: false,                // Don't use encryption for local development
-      disableStats: true,              // Disable statistics (optional)
-      enableStats: false,              // Disable statistics (optional)
-      enabledTransports: ['ws', 'wss']
-    });
+// Setup Socket.io connection
+const socket = io('http://localhost:6001');
 
+socket.on('laravel_database_orders', (data) => {
+  console.log('Notification received:', data.message); // Logs the message
+});
 
-    echo.channel('order-channel')
-      .listen('OrderUpdated', (event) => {
-        console.log(event); // Handle the event data
-      });
+// Handle incoming messages
+socket.on('connect', () => {
+  console.log('Socket connected:', socket.id);
+});
 
-  }
+socket.on('message', (data) => {
+  console.log('Received message:', data);
+  notifications.value.push(data); // Add incoming notification to the array
+  notificationCount.value += 1; // Increment notification count
+});
+
+socket.on('disconnect', () => {
+  console.log('Socket disconnected');
 });
 
 // Toggle visibility of the notification dropdown
 const toggleDropdown = () => {
   dropdownVisible.value = !dropdownVisible.value;
+  if (dropdownVisible.value) {
+    notificationCount.value = 0; // Reset notification count when dropdown is opened
+  }
 };
 
 // Close the dropdown when clicked outside
@@ -63,8 +58,12 @@ onMounted(() => {
     });
   }
 });
-</script>
 
+// Cleanup on component unmount
+onBeforeUnmount(() => {
+  socket.off('message'); // Remove the event listener when the component is destroyed
+});
+</script>
 
 <template>
   <VerticalNavLayout>
@@ -72,23 +71,15 @@ onMounted(() => {
     <template #navbar="{ toggleVerticalOverlayNavActive }">
       <div class="d-flex h-100 align-center">
         <!-- 👉 Vertical nav toggle in overlay mode -->
-        <IconBtn
-          class="ms-n3 d-lg-none"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
+        <IconBtn class="ms-n3 d-lg-none" @click="toggleVerticalOverlayNavActive(true)">
           <VIcon icon="ri-menu-line" />
         </IconBtn>
 
         <!-- 👉 Search -->
-        <div
-          class="d-flex align-center cursor-pointer"
-          style="user-select: none;"
-        >
-          <!-- 👉 Search Trigger button -->
+        <div class="d-flex align-center cursor-pointer" style="user-select: none;">
           <IconBtn>
             <VIcon icon="ri-search-line" />
           </IconBtn>
-
           <span class="d-none d-md-flex align-center text-disabled">
             <span class="me-3">Search</span>
             <span class="meta-key">&#8984;K</span>
@@ -108,11 +99,7 @@ onMounted(() => {
           </IconBtn>
 
           <!-- Notification Dropdown -->
-          <div
-            v-show="dropdownVisible"
-            class="notification-dropdown dropdown-menu"
-            @click.stop
-          >
+          <div v-show="dropdownVisible" class="notification-dropdown dropdown-menu" @click.stop>
             <div v-if="notifications.length === 0" class="no-notifications">
               No notifications
             </div>
@@ -133,19 +120,13 @@ onMounted(() => {
     </template>
 
     <template #vertical-nav-header="{ toggleIsOverlayNavActive }">
-      <NuxtLink
-        to="/"
-        class="app-logo app-title-wrapper"
-      >
+      <NuxtLink to="/" class="app-logo app-title-wrapper">
         <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
           AYMA POS System
         </h1>
       </NuxtLink>
 
-      <IconBtn
-        class="d-block d-lg-none"
-        @click="toggleIsOverlayNavActive(false)"
-      >
+      <IconBtn class="d-block d-lg-none" @click="toggleIsOverlayNavActive(false)">
         <VIcon icon="ri-close-line" />
       </IconBtn>
     </template>

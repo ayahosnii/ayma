@@ -2,23 +2,25 @@
 
 namespace App\Events;
 
-use App\Models\Order;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 
-class OrderCreated
+class OrderCreated implements ShouldBroadcastNow
 {
-    use Dispatchable, SerializesModels;
-
     public $order;
 
-    /**
-     * Create a new event instance.
-     *
-     * @param Order $order
-     */
-    public function __construct(Order $order)
+    public function __construct($order)
     {
         $this->order = $order;
+    }
+
+    public function broadcastOn()
+    {
+        return new Channel('orders'); // Channel name
+    }
+
+    public function broadcastWith()
+    {
+        return ['message' => "Order #{$this->order->id} created!"];
     }
 }

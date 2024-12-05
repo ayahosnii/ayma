@@ -11,10 +11,12 @@ use App\ChainOfResponsibility\Refund\PartialRefundHandler;
 use App\ChainOfResponsibility\Refund\ProductIssueRefundHandler;
 use App\ChainOfResponsibility\Refund\ReturnEligibilityHandler;
 use App\ChainOfResponsibility\Refund\UnjustifiedRefundHandler;
+use App\Events\OrderCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
 use App\Models\Order;
 use App\Models\Product;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Junges\Kafka\Facades\Kafka;
 
@@ -51,6 +53,7 @@ class OrderController extends Controller
 
         // Update the stock of products
         $this->updateProductStock($request->products);
+        broadcast(new OrderCreated($order));
 
         // Kafka Producer: Send order data to Kafka topic (optional)
 //        Kafka::publishOn('orders-topic')

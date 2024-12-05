@@ -28,7 +28,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         OrderCreated::class => [
             UpdateInventory::class,
-            GenerateInvoice::class,
+            //GenerateInvoice::class,
         ],
     ];
 

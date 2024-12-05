@@ -21,7 +21,7 @@
         "mongodb/mongodb": "^1.20",
         "nwidart/laravel-modules": "^8.0",
         "predis/predis": "^2.3",
-        "pusher/pusher-php-server": "~3.0",
+        "pusher/pusher-php-server": "^7.2",
         "rebing/graphql-laravel": "*",
         "spatie/laravel-permission": "^6.9"
     },

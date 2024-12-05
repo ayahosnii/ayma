@@ -1,5 +1,8 @@
 <?php
 
+use App\Events\MyEvent;
+use App\Models\Order;
+use BeyondCode\LaravelWebSockets\Facades\WebSocketsRouter;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,3 +19,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/trigger', function () {
+    $message = "Hello, this is a test broadcast!";
+    event(new MyEvent($message));
+    return "Event has been sent!";
+});
+
+Route::get('/test-broadcast', function () {
+    $order = Order::first();
+    broadcast(new \App\Events\OrderCreated($order));
+    return 'Broadcast sent!';
+});
+
