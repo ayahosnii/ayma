@@ -11,58 +11,58 @@ import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
 import UserProfile from '@/layouts/components/UserProfile.vue'
 
 // Notification state
-// const notificationCount = ref(0);  // Count of unread notifications
-// const dropdownVisible = ref(false); // Whether the notification dropdown is visible
-// const notifications = ref([]); // Array to hold notification data
-//
-// // Echo setup (only runs on the client)
-// let echo;
-// onMounted(() => {
-//   // Ensure this is running only in the browser
-//   window.Pusher = Pusher;
-//   if (typeof window !== 'undefined') {
-//     const echo = new Echo({
-//       broadcaster: 'pusher',           // Use 'pusher' as the broadcaster
-//       key: '7f5e1b0e76d7af039f74',     // Replace with your Pusher app key
-//       cluster: 'mt1',                   // Replace with your Pusher app cluster
-//       wsHost: 'localhost', // Use localhost or your actual hostname
-//       wsPort: 6001,                     // The WebSocket port (make sure WebSocket server is running)
-//       forceTLS: false,                 // Disable TLS for local development
-//       encrypted: false,                // Don't use encryption for local development
-//       disableStats: true,              // Disable statistics (optional)
-//       enableStats: false,              // Disable statistics (optional)
-//       enabledTransports: ['ws', 'wss']
-//     });
-//
-//
-//     echo.channel('order-channel')
-//       .listen('OrderUpdated', (event) => {
-//         console.log(event); // Handle the event data
-//       });
-//
-//   }
-// });
-//
-// // Toggle visibility of the notification dropdown
-// const toggleDropdown = () => {
-//   dropdownVisible.value = !dropdownVisible.value;
-// };
-//
-// // Close the dropdown when clicked outside
-// const closeDropdown = () => {
-//   dropdownVisible.value = false;
-// };
-//
-// // Listen for clicks outside to close the dropdown
-// onMounted(() => {
-//   if (typeof window !== 'undefined') {
-//     window.addEventListener('click', (e) => {
-//       if (!e.target.closest('.notification-dropdown') && !e.target.closest('.notification-icon')) {
-//         closeDropdown();
-//       }
-//     });
-//   }
-// });
+const notificationCount = ref(0);  // Count of unread notifications
+const dropdownVisible = ref(false); // Whether the notification dropdown is visible
+const notifications = ref([]); // Array to hold notification data
+
+// Echo setup (only runs on the client)
+let echo;
+onMounted(() => {
+  // Ensure this is running only in the browser
+  window.Pusher = Pusher;
+  if (typeof window !== 'undefined') {
+    const echo = new Echo({
+      broadcaster: 'pusher',           // Use 'pusher' as the broadcaster
+      key: '7f5e1b0e76d7af039f74',     // Replace with your Pusher app key
+      cluster: 'mt1',                   // Replace with your Pusher app cluster
+      wsHost: 'localhost', // Use localhost or your actual hostname
+      wsPort: 6001,                     // The WebSocket port (make sure WebSocket server is running)
+      forceTLS: false,                 // Disable TLS for local development
+      encrypted: false,                // Don't use encryption for local development
+      disableStats: true,              // Disable statistics (optional)
+      enableStats: false,              // Disable statistics (optional)
+      enabledTransports: ['ws', 'wss']
+    });
+
+
+    echo.channel('order-channel')
+      .listen('OrderUpdated', (event) => {
+        console.log(event); // Handle the event data
+      });
+
+  }
+});
+
+// Toggle visibility of the notification dropdown
+const toggleDropdown = () => {
+  dropdownVisible.value = !dropdownVisible.value;
+};
+
+// Close the dropdown when clicked outside
+const closeDropdown = () => {
+  dropdownVisible.value = false;
+};
+
+// Listen for clicks outside to close the dropdown
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    window.addEventListener('click', (e) => {
+      if (!e.target.closest('.notification-dropdown') && !e.target.closest('.notification-icon')) {
+        closeDropdown();
+      }
+    });
+  }
+});
 </script>
 
 
@@ -98,34 +98,34 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         <VSpacer />
 
         <!-- 👉 Notification Icon with Dropdown -->
-<!--        <div class="notification-icon" @click="toggleDropdown">-->
-<!--          <IconBtn class="me-2">-->
-<!--            <VIcon icon="ri-notification-line" />-->
-<!--            &lt;!&ndash; Notification badge &ndash;&gt;-->
-<!--            <span v-if="notificationCount > 0" class="notification-badge">-->
-<!--              {{ notificationCount }}-->
-<!--            </span>-->
-<!--          </IconBtn>-->
+        <div class="notification-icon" @click="toggleDropdown">
+          <IconBtn class="me-2">
+            <VIcon icon="ri-notification-line" />
+            <!-- Notification badge -->
+            <span v-if="notificationCount > 0" class="notification-badge">
+              {{ notificationCount }}
+            </span>
+          </IconBtn>
 
-<!--          &lt;!&ndash; Notification Dropdown &ndash;&gt;-->
-<!--          <div-->
-<!--            v-show="dropdownVisible"-->
-<!--            class="notification-dropdown dropdown-menu"-->
-<!--            @click.stop-->
-<!--          >-->
-<!--            <div v-if="notifications.length === 0" class="no-notifications">-->
-<!--              No notifications-->
-<!--            </div>-->
-<!--            <ul v-else>-->
-<!--              <li v-for="(notification, index) in notifications" :key="index" class="dropdown-item">-->
-<!--                <div>-->
-<!--                  <strong>{{ notification.product_name }}</strong>-->
-<!--                  <p>Stock remaining: {{ notification.stock }}</p>-->
-<!--                </div>-->
-<!--              </li>-->
-<!--            </ul>-->
-<!--          </div>-->
-<!--        </div>-->
+          <!-- Notification Dropdown -->
+          <div
+            v-show="dropdownVisible"
+            class="notification-dropdown dropdown-menu"
+            @click.stop
+          >
+            <div v-if="notifications.length === 0" class="no-notifications">
+              No notifications
+            </div>
+            <ul v-else>
+              <li v-for="(notification, index) in notifications" :key="index" class="dropdown-item">
+                <div>
+                  <strong>{{ notification.product_name }}</strong>
+                  <p>Stock remaining: {{ notification.stock }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <NavbarThemeSwitcher class="me-2" />
         <UserProfile />
