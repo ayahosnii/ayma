@@ -22,7 +22,8 @@ socket.on('laravel_database_orders', (data) => {
   // Ensure notifications and count are updated reactively
   notifications.value.push({
     product_name: data.message || "Unknown Product",
-    stock: data.stock || "Unknown Stock"
+    user_name: data.user_name || "Unknown User", // Add the user name
+    total_amount: data.total_amount || "Unknown Stock"
   });
   notificationCount.value = notifications.value.length; // Update the count
 });
@@ -84,7 +85,7 @@ onBeforeUnmount(() => {
         <VSpacer />
 
         <!-- Pass notifications and count as props to the Notification component -->
-        <Notification :notifications="notifications" :notificationCount="notificationCount" />
+        <Notification class="me-2" :notifications="notifications" :notificationCount="notificationCount" />
 
         <NavbarThemeSwitcher class="me-2" />
         <UserProfile />

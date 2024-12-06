@@ -1,22 +1,24 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
+import order from '@images/avatars/order.png';
 
 defineProps({
   notifications: Array,
   notificationCount: Number,
 });
+
+// Computed property to format the notification count
+const displayCount = computed(() => (notificationCount > 9 ? '9+' : notificationCount));
 </script>
 
 <template>
-  <VBadge
-    dot
-    location="bottom right"
-    offset-x="3"
-    offset-y="3"
-    color="success"
-    bordered
-  >
-    {{notificationCount }}
+  <div class="notification-wrapper">
+    <div class="notification-badge">
+      <!-- Display the count inside a circle -->
+      <div class="circle">
+        {{ notificationCount > 9 ? '9+' : notificationCount }}
+      </div>
+    </div>
+
     <VAvatar
       color="primary"
       variant="tonal"
@@ -41,11 +43,12 @@ defineProps({
             <VListItem v-for="(notification, index) in notifications" :key="index" link>
               <VRow align="center" class="d-flex" no-gutters>
                 <VCol cols="md-3">
-                  <VImg :src="avatar1" max-width="50px" max-height="50px" />
+                  <VImg :src="order" max-width="50px" max-height="50px" />
                 </VCol>
-                <VCol cols="md-7">
+                <VCol cols="md-9">
                   <VListItemTitle>{{ notification.product_name }}</VListItemTitle>
-                  <p>Stock remaining: {{ notification.stock }}</p>
+                  <p>Total Amount: ${{ notification.total_amount }} <br>
+                    Customer: {{ notification.user_name }}</p>
                 </VCol>
               </VRow>
             </VListItem>
@@ -54,5 +57,32 @@ defineProps({
       </VMenu>
       <!-- !SECTION -->
     </VAvatar>
-  </VBadge>
+  </div>
 </template>
+
+<style scoped>
+.notification-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.notification-badge {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  transform: translate(-150%, 110%);
+}
+
+.circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: rgb(230,96,96); /* Error color */
+  block-size: 20px; /* Match width for perfect circle */
+  color: white;
+  font-size: 10px; /* Ensure text fits */
+  font-weight: bold;
+  inline-size: 20px; /* Adjust size as needed */
+}
+</style>
