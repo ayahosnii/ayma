@@ -3,6 +3,7 @@
 namespace App\Services\Dashboard;
 
 use App\Repositories\Dashboard\Contracts\ProductRepositoryInterface;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardService
 {
@@ -16,6 +17,7 @@ class DashboardService
     public function getDashboardData(): array
     {
         return [
+            'userName' => Auth::user()->name,
             'totalStats' => $this->productRepository->getTotalStats(),
             'topProducts' => $this->productRepository->getTopSellingProducts(),
             'salesByCountry' => $this->productRepository->getSalesByCountry(),

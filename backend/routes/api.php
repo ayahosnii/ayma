@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\MongoControllers\ProductsMongoController;
 use App\Http\Controllers\SupplierController;
@@ -38,6 +39,13 @@ Route::get('/get-products', [ProductController::class, "getProducts"]);
 Route::group(['namespace' => 'Api', 'prefix' => 'v1'], function () {
     Route::post('/login', [AuthController::class, 'login']);
 });
+Route::post('/logout', function (Request $request) {
+    // Revoke the authenticated user's token
+    $request->user()->token()->revoke();
+
+    return response()->json(['message' => 'Logged out successfully'], 200);
+})->middleware('auth:api');
+
 Route::post('/register', [AuthController::class, 'register']);
 
 Route::middleware('auth:api')->group(function () {
@@ -85,6 +93,7 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/count-inventoryrecords', [InventoryController::class, 'countInvetoryRecords']); //Inventory Records Count
     /******************************************* End   Inventory *******************************************/
     Route::post('refund', [RefundController::class, 'processRefund']); //Levels
+    Route::post('users', [UserController::class, 'store']);
 
     Route::get('/customers', [CustomerController::class, 'index']); //Stories Count
 

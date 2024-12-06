@@ -1,5 +1,11 @@
 <script setup>
 import trophy from '@images/avatars/avatar-12.png'
+defineProps({
+  userName: {
+    type: String,
+  }
+});
+
 </script>
 
 <template>
@@ -7,7 +13,7 @@ import trophy from '@images/avatars/avatar-12.png'
     <VCardText>
       <div class="mb-2">
         <h5 class="text-h5">
-          Welcome Back John! <span class="text-high-emphasis">🎉</span>
+          Welcome Back {{ userName }}! <span class="text-high-emphasis">🎉</span>
         </h5>
       </div>
     </VCardText>

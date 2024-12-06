@@ -5,7 +5,6 @@
 </template>
 
 <script setup>
-// Since Vue 3 and Nuxt 3 support <script setup>, you can accept the prop like this:
 const props = defineProps({
   loading: {
     type: Boolean,
@@ -21,7 +20,7 @@ const props = defineProps({
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(0, 0, 0, 50%);
+  background-color: rgba(255, 255, 255, 0.5);
   block-size: 100vh;
   inline-size: 100vw;
   inset-block-start: 0;
@@ -33,7 +32,7 @@ const props = defineProps({
   border-radius: 50%;
   animation: spin 2s linear infinite;
   block-size: 40px;
-  border-block-start: 6px solid #3498db;
+  border-block-start: 6px solid #ffd600;
   inline-size: 40px;
 }
 

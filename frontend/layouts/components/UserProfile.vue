@@ -1,5 +1,35 @@
 <script setup>
 import avatar1 from '@images/avatars/avatar-1.png'
+import { useRouter } from 'vue-router'
+import { BASE_URL } from '@/config/apiConfig';
+
+const router = useRouter()
+
+// Logout function
+const handleLogout = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/logout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      // Clear the auth token from localStorage
+      localStorage.removeItem('authToken');
+
+      // Redirect to the login page
+      router.push('/login');
+    } else {
+      console.error('Logout failed:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
+};
+
 </script>
 
 <template>
@@ -110,7 +140,7 @@ import avatar1 from '@images/avatars/avatar-1.png'
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="handleLogout">
             <template #prepend>
               <VIcon
                 class="me-2"

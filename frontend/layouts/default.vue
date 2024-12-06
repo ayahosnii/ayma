@@ -1,56 +1,45 @@
 <script setup>
 import DefaultLayoutWithVerticalNav from './components/DefaultLayoutWithVerticalNav.vue'
 import Loading from '../components/Loading.vue'
-import { useState, nextTick, onMounted, ref } from '#imports'
+import { ref, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
-const loading = useState('loading', () => true) // Start with loading being true
-const isLoggedIn = ref(true) // Initialize with false
-
+const loading = ref(true) // Start with loading being true
+const isLoggedIn = ref(false) // Initialize with false
 const router = useRouter()
 
-// Check for login status only on the client side
+// Check for login status on mount
 onMounted(() => {
-  if (!localStorage.getItem('authToken')) {
-    isLoggedIn.value = false
-  }else {
-    isLoggedIn.value = true
+  const authToken = localStorage.getItem('authToken')
+  isLoggedIn.value = !!authToken // Convert to boolean
+  if (!isLoggedIn.value) {
+    router.push('/login') // Redirect to login if not authenticated
   }
+  loading.value = false // Stop loading once check is complete
 })
 
-// Trigger loading state during navigation
+// Show loading during navigation
 router.beforeEach((to, from, next) => {
-  // Only set loading to true if user is not logged in
-  if (!isLoggedIn.value) {
-    loading.value = true
-  }
+  loading.value = true // Trigger loading state
   next()
 })
 
 router.afterEach(async () => {
-  await nextTick() // Wait for next DOM update before setting loading to false
-  loading.value = false
-})
-
-// Ensure loading is shown on the initial mount, but only if not logged in
-onMounted(async () => {
-  if (!isLoggedIn.value) {
-    await nextTick()
-    loading.value = false
-  }
+  await nextTick() // Wait for DOM updates
+  loading.value = false // Turn off loading
 })
 </script>
 
 <template>
   <div>
-    <!-- Display loading screen while loading is true and the user is not logged in -->
-    <Loading v-if="!isLoggedIn && loading" :loading="loading" />
+    <!-- Show loading screen if in loading state -->
+    <Loading v-if="loading" />
 
-    <!-- Render the layout only when loading is false or the user is logged in -->
-    <div v-if="!loading || isLoggedIn">
-      <DefaultLayoutWithVerticalNav>
+    <!-- Render layout only when user is logged in and not loading -->
+    <div v-else>
+      <DefaultLayoutWithVerticalNav v-if="isLoggedIn">
         <slot />
-        </DefaultLayoutWithVerticalNav>
+      </DefaultLayoutWithVerticalNav>
     </div>
   </div>
 </template>

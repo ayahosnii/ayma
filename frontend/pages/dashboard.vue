@@ -1,17 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AnalyticsAward from '@/views/dashboard/AnalyticsAward.vue'
-import AnalyticsBarCharts from '@/views/dashboard/AnalyticsBarCharts.vue'
 import AnalyticsDepositWithdraw from '@/views/dashboard/AnalyticsDepositWithdraw.vue'
 import AnalyticsSalesByCountries from '@/views/dashboard/AnalyticsSalesByCountries.vue'
 import AnalyticsTotalEarning from '@/views/dashboard/AnalyticsTotalEarning.vue'
-import AnalyticsTotalProfitLineCharts from '@/views/dashboard/AnalyticsTotalProfitLineCharts.vue'
-import AnalyticsTransactions from '@/views/dashboard/AnalyticsTransactions.vue'
 import AnalyticsUserTable from '@/views/dashboard/AnalyticsUserTable.vue'
 import AnalyticsWeeklyOverview from '@/views/dashboard/AnalyticsWeeklyOverview.vue'
 import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertical.vue'
-import productImagePlaceholder from '@images/ecommerce/2.png';
+import productImagePlaceholder from '@images/ecommerce/2.png'
 
 const router = useRouter();
 const totalSales = ref({});
@@ -22,6 +19,7 @@ const loading = ref(true);
 const topProducts = ref([]);
 const productHighlights = ref([]);
 const salesByCountry = ref([]);
+const userName = ref('');
 
 onMounted(async () => {
   setTimeout(() => {
@@ -49,6 +47,7 @@ onMounted(async () => {
 
     if (data.status === 'success') {
       const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
+      userName.value = data.data.userName
       const sales_country = data.data.salesByCountry;
       salesByCountry.value = sales_country
 
@@ -135,7 +134,7 @@ onMounted(async () => {
 <template>
   <VRow class="match-height">
     <VCol cols="12" md="12">
-      <AnalyticsAward />
+      <AnalyticsAward :userName="userName" />
     </VCol>
 
     <VCol cols="12" md="12">
