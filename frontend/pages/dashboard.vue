@@ -49,7 +49,8 @@ onMounted(async () => {
 
     if (data.status === 'success') {
       const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
-      salesByCountry.value = data.data.salesByCountry ?? [];
+      const sales_country = data.data.salesByCountry;
+      salesByCountry.value = sales_country
 
       const topProducts = data.data.topProducts;
 
@@ -120,6 +121,7 @@ onMounted(async () => {
         subtitle: 'Growth in customer base',
         tooltip: 'New customers acquired in the current year and their percentage growth compared to last year.',
       };
+
     } else {
       console.error("API returned an error:", data);
     }
