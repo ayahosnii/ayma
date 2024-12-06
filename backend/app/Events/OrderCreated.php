@@ -21,6 +21,13 @@ class OrderCreated implements ShouldBroadcastNow
 
     public function broadcastWith()
     {
-        return ['message' => "Order #{$this->order->id} created!", 'stock' => 22];
+
+        $userName = $this->order->user->name ?? 'Unknown User'; // Fallback if no user exists
+
+        return [
+            'message' => "Order #{$this->order->order_number} Created!",
+            'total_amount' => $this->order->total_amount,
+            'user_name' => $userName,
+        ];
     }
 }
