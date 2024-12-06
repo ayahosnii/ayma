@@ -21,12 +21,13 @@ const newCustomers = ref({});
 const loading = ref(true);
 const topProducts = ref([]);
 const productHighlights = ref([]);
-
+const salesByCountry = ref([]);
 
 onMounted(async () => {
   setTimeout(() => {
     loading.value = false;  // Simulate loading data and stop after 3 seconds
   }, 3000);
+  
   const accessToken = localStorage.getItem('authToken');
   if (!accessToken) {
     // Redirect to login if accessToken is missing
@@ -41,12 +42,30 @@ onMounted(async () => {
       },
     });
 
-
     const data = await response.json();
 
+    // Log the response to check the structure
+    console.log("API Response:", data);
+
     if (data.status === 'success') {
-      const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
+      const { total_sales, salesByCountry, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
+
+      // Check if salesByCountry is properly received and structured
+      if (salesByCountry && Array.isArray(salesByCountry)) {
+        // Properly map the salesByCountry data
+        salesByCountry.value = salesByCountry.map((item) => ({
+          shipping_country: item.shipping_country,
+          sales: item.sales,
+          percentage: item.percentage,
+        }));
+      } else {
+        // Log an error or fallback if salesByCountry is not in the expected format
+        console.error('salesByCountry is not in the expected format:', salesByCountry);
+      }
+      console.log('Sales By Country:', salesByCountry);
+
       const topProducts = data.data.topProducts;
+
       productHighlights.value = topProducts.map(product => {
         const stockAvailability = Math.floor(product.stock); // Simulate stock availability
         const unitsSold = product.units_sold;
@@ -67,6 +86,7 @@ onMounted(async () => {
         };
       });
 
+      // Set other values like totalSales, totalProfit, orders, etc.
       totalSales.value = {
         title: 'Total Sales',
         color: 'secondary',
@@ -90,18 +110,18 @@ onMounted(async () => {
         period: '2024',
         tooltip: 'Total profit for the current year, including profit margin trends.',
       };
-      orders.value = {
-      title: 'Orders',
-      color: 'primary',
-      icon: 'ri-shopping-cart-line',
-      stats: orderCount.value,  // Correctly assigning orderCount.value
-      statsUnit: 'orders',
-      change: orderCount.change !== null ? orderCount.change.toFixed(2) : 'N/A', // Ensure proper formatting
-      subtitle: 'Compared to last month',
-      period: 'Last 30 days',
-      tooltip: 'Total number of orders placed in the last 30 days with comparison to the previous period.',
-      };
 
+      orders.value = {
+        title: 'Orders',
+        color: 'primary',
+        icon: 'ri-shopping-cart-line',
+        stats: orderCount.value,  // Correctly assigning orderCount.value
+        statsUnit: 'orders',
+        change: orderCount.change !== null ? orderCount.change.toFixed(2) : 'N/A', // Ensure proper formatting
+        subtitle: 'Compared to last month',
+        period: 'Last 30 days',
+        tooltip: 'Total number of orders placed in the last 30 days with comparison to the previous period.',
+      };
 
       newCustomers.value = {
         title: 'New Customers',
@@ -113,16 +133,14 @@ onMounted(async () => {
         subtitle: 'Growth in customer base',
         tooltip: 'New customers acquired in the current year and their percentage growth compared to last year.',
       };
-
-      
-
+    } else {
+      console.error("API returned an error:", data);
     }
   } catch (error) {
     console.error('Error fetching dashboard data:', error);
   }
-
-  
 });
+
 </script>
 
 <template>
@@ -154,7 +172,7 @@ onMounted(async () => {
       <AnalyticsTotalEarning :topProducts="productHighlights" />
     </VCol>
     <VCol cols="12" md="6">
-      <AnalyticsSalesByCountries />
+       <AnalyticsSalesByCountries :salesByCountry="salesByCountry" />
     </VCol>
 
     <VCol cols="12">
