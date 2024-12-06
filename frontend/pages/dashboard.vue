@@ -49,7 +49,7 @@ onMounted(async () => {
 
     if (data.status === 'success') {
       const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
-      salesByCountry.value = data.data.salesByCountry;
+      salesByCountry.value = data.data.salesByCountry ?? [];
 
       const topProducts = data.data.topProducts;
 
