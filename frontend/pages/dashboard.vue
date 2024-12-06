@@ -48,21 +48,8 @@ onMounted(async () => {
     console.log("API Response:", data);
 
     if (data.status === 'success') {
-      const { total_sales, salesByCountry, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
-
-      // Check if salesByCountry is properly received and structured
-      if (salesByCountry && Array.isArray(salesByCountry)) {
-        // Properly map the salesByCountry data
-        salesByCountry.value = salesByCountry.map((item) => ({
-          shipping_country: item.shipping_country,
-          sales: item.sales,
-          percentage: item.percentage,
-        }));
-      } else {
-        // Log an error or fallback if salesByCountry is not in the expected format
-        console.error('salesByCountry is not in the expected format:', salesByCountry);
-      }
-      console.log('Sales By Country:', salesByCountry);
+      const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
+      salesByCountry.value = data.data.salesByCountry;
 
       const topProducts = data.data.topProducts;
 
