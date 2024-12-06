@@ -15,12 +15,11 @@ const displayCount = computed(() => (notificationCount > 9 ? '9+' : notification
     <div class="notification-badge">
       <!-- Display the count inside a circle -->
       <div class="circle">
-        {{ notificationCount > 9 ? '9+' : notificationCount }}
+        {{ notificationCount }}
       </div>
     </div>
 
     <VAvatar
-      color="primary"
       variant="tonal"
     >
       <VIcon icon="ri-notification-line" />
@@ -68,12 +67,14 @@ const displayCount = computed(() => (notificationCount > 9 ? '9+' : notification
 
 .notification-badge {
   position: absolute;
+  z-index: 1;
   inset-block-start: 0;
   inset-inline-end: 0;
   transform: translate(-150%, 110%);
 }
 
 .circle {
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
