@@ -29,7 +29,6 @@ const accountData = {
     salary: '',
   },
   CustomerData: {
-    loyalty_points: 0,
     preferred_payment_method: '',
     last_purchase_date: '',
     customer_preferences: ''
@@ -97,7 +96,6 @@ const saveAccountDetails = async () => {
       formData.append('department', accountDataLocal.value.employerData.department)
       formData.append('salary', accountDataLocal.value.employerData.salary)
     } else if (accountDataLocal.value.role === 'Customer') {
-      formData.append('loyalty_points', accountDataLocal.value.CustomerData.loyalty_points)
       formData.append('preferred_payment_method', accountDataLocal.value.CustomerData.preferred_payment_method)
       formData.append('last_purchase_date', accountDataLocal.value.CustomerData.last_purchase_date)
       formData.append('customer_preferences', accountDataLocal.value.CustomerData.customer_preferences)
@@ -198,9 +196,6 @@ const saveAccountDetails = async () => {
 
         <!-- Conditional Client Fields -->
         <v-row v-if="accountDataLocal.role === 'Customer'">
-          <v-col cols="12" md="6">
-            <v-text-field label="Loyalty Points" v-model="accountDataLocal.CustomerData.loyalty_points" type="number" />
-          </v-col>
           <v-col cols="12" md="6">
             <v-text-field label="Preferred Payment Method" v-model="accountDataLocal.CustomerData.preferred_payment_method" />
           </v-col>
