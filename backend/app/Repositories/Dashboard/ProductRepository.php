@@ -106,4 +106,5 @@ class ProductRepository implements ProductRepositoryInterface
         return User::where('created_at', '>=', Carbon::now()->subDays($days))
             ->count();
     }
+
 }
