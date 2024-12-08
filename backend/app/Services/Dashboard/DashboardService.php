@@ -16,11 +16,14 @@ class DashboardService
 
     public function getDashboardData(): array
     {
+
         return [
             'userName' => Auth::user()->name,
             'totalStats' => $this->productRepository->getTotalStats(),
             'topProducts' => $this->productRepository->getTopSellingProducts(),
             'salesByCountry' => $this->productRepository->getSalesByCountry(),
+            // 'userData' => $this->productRepository->getUserData(),
+
         ];
     }
 }

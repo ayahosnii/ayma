@@ -107,4 +107,13 @@ class ProductRepository implements ProductRepositoryInterface
             ->count();
     }
 
+    // public function getUserData(int $limit = 10)
+    // {
+    //     // Fetch basic user data from the database
+    //     return User::select('id', 'username', 'role', 'status')
+    //         ->orderBy('created_at', 'desc') // Order by the most recent users
+    //         ->limit($limit) // You can change the limit if needed
+    //         ->get();
+    // }
+
 }
