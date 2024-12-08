@@ -20,6 +20,7 @@ const topProducts = ref([]);
 const productHighlights = ref([]);
 const salesByCountry = ref([]);
 const userName = ref('');
+const userData = ref([]); 
 
 onMounted(async () => {
   setTimeout(() => {
@@ -56,6 +57,14 @@ onMounted(async () => {
       } else {
         console.error('Sales by Country is not an array:', data.data.salesByCountry);
       }
+
+      if (Array.isArray(data.data.userData)) {
+        userData.value = data.data.userData;
+        console.log("User Data:", userData.value);
+      } else {
+        console.error('User Data is not an array:', data.data.userData);
+      }
+      console.log("User Data:", userData.value);
 
       const topProducts = data.data.topProducts;
 
@@ -171,7 +180,7 @@ onMounted(async () => {
     </VCol>
 
     <VCol cols="12">
-      <AnalyticsUserTable />
+      <AnalyticsUserTable :userData="userData" />
     </VCol>
 
     <VCol cols="12" md="6">
