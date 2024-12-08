@@ -48,8 +48,8 @@ onMounted(async () => {
     if (data.status === 'success') {
       const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
       userName.value = data.data.userName
-      const sales_country = data.data.salesByCountry;
-      salesByCountry.value = sales_country
+      // const sales_country = data.data.salesByCountry;
+      // salesByCountry.value = sales_country
 
       const topProducts = data.data.topProducts;
 

@@ -51,10 +51,10 @@ class UserController extends Controller
             $user->assignRole($request->role);
 
             // Check the role and create the corresponding customer or employee record
-            if ($request->role === 'customer') {
+            if ($request->role === 'Customer') {
                 \App\Models\Customer::create([
                     'user_id' => $user->id,
-                    'loyalty_points' => 0,  // default loyalty points for new customer
+                    'loyalty_points' => 0,
                     'preferred_payment_method' => $request->preferred_payment_method ?? null,
                     'last_purchase_date' => $request->last_purchase_date ?? null,
                     'customer_preferences' => $request->customer_preferences ?? null,
