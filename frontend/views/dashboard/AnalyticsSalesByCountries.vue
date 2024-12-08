@@ -2,7 +2,8 @@
 defineProps({
   salesByCountry: {
     type: Array,
-    required: true
+    required: true,
+    default: () => [] // Provide a default empty array
   }
 });
 </script>
@@ -28,7 +29,7 @@ defineProps({
         >
           <template #prepend>
             <VAvatar
-              :color="'primary'"  
+              color="primary"  
               variant="tonal"
               size="40"
             >
@@ -37,34 +38,34 @@ defineProps({
           </template>
 
           <VListItemTitle class="mb-1 d-flex align-center">
-            <h6 class="text-h6">
+            <h6 class="text-h6 me-2">
               ${{ parseFloat(data.sales).toFixed(2) }} <!-- Format sales amount as currency -->
             </h6>
             <VIcon
               size="24"
-              :color="data.percentage.charAt(0) === '+' ? 'success' : 'error'" 
+              :color="data.percentage > 0 ? 'success' : 'error'" 
               class="mx-1"
             >
-              {{ data.percentage.charAt(0) === '+' ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line' }}
+              {{ data.percentage > 0 ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line' }}
             </VIcon>
             <div
-              :class="`${data.percentage.charAt(0) === '+' ? 'text-success' : 'text-error'}`"
+              :class="data.percentage > 0 ? 'text-success' : 'text-error'"
               class="text-body-1"
             >
-              {{ data.percentage }} <!-- Display percentage change -->
+              {{ data.percentage.toFixed(2) }}% <!-- Display percentage change with 2 decimals -->
             </div>
           </VListItemTitle>
 
-          <VListItemSubtitle class="text-body-1 me-2">
+          <VListItemSubtitle class="text-body-1">
             {{ data.shipping_country }} <!-- Display country name -->
           </VListItemSubtitle>
 
           <template #append>
-            <div>
+            <div class="text-end">
               <h6 class="text-h6 mb-1">
-                {{ data.sales }} <!-- Display sales number -->
+                ${{ parseFloat(data.sales).toFixed(2) }} <!-- Format and display sales -->
               </h6>
-              <div class="text-body-2 text-disabled text-end">
+              <div class="text-body-2 text-muted">
                 Sales
               </div>
             </div>
@@ -78,5 +79,13 @@ defineProps({
 <style lang="scss" scoped>
 .card-list {
   --v-card-list-gap: 0.875rem;
+}
+
+.text-success {
+  color: var(--v-success-base);
+}
+
+.text-error {
+  color: var(--v-error-base);
 }
 </style>

@@ -1,6 +1,4 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import AnalyticsAward from '@/views/dashboard/AnalyticsAward.vue'
 import AnalyticsDepositWithdraw from '@/views/dashboard/AnalyticsDepositWithdraw.vue'
 import AnalyticsSalesByCountries from '@/views/dashboard/AnalyticsSalesByCountries.vue'
@@ -9,6 +7,8 @@ import AnalyticsUserTable from '@/views/dashboard/AnalyticsUserTable.vue'
 import AnalyticsWeeklyOverview from '@/views/dashboard/AnalyticsWeeklyOverview.vue'
 import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertical.vue'
 import productImagePlaceholder from '@images/ecommerce/2.png'
+import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const router = useRouter();
 const totalSales = ref({});
@@ -47,9 +47,15 @@ onMounted(async () => {
 
     if (data.status === 'success') {
       const { total_sales, total_profit, orders: orderCount, new_customers: newCustomerCount } = data.data.totalStats;
-      userName.value = data.data.userName
-      // const sales_country = data.data.salesByCountry;
-      // salesByCountry.value = sales_country
+      userName.value = data.data.userName;
+      
+      // Check if salesByCountry is available and in the correct format
+      if (Array.isArray(data.data.salesByCountry)) {
+        salesByCountry.value = data.data.salesByCountry;
+        console.log("Sales by Country Data:", salesByCountry.value);
+      } else {
+        console.error('Sales by Country is not an array:', data.data.salesByCountry);
+      }
 
       const topProducts = data.data.topProducts;
 
@@ -160,7 +166,8 @@ onMounted(async () => {
       <AnalyticsTotalEarning :topProducts="productHighlights" />
     </VCol>
     <VCol cols="12" md="6">
-       <AnalyticsSalesByCountries :salesByCountry="salesByCountry" />
+      <AnalyticsSalesByCountries :salesByCountry="salesByCountry" />
+
     </VCol>
 
     <VCol cols="12">
