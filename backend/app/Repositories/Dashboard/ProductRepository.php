@@ -20,7 +20,8 @@ class ProductRepository implements ProductRepositoryInterface
                 'products.name',
                 'sales_metrics.units_sold',
                 'sales_metrics.revenue',
-                'products.stock' // Add stock_quantity (or the relevant column for stock)
+                'products.stock', // Add stock_quantity (or the relevant column for stock)
+                // 'products.image' // Add image_quantity
             )
             ->orderByDesc('sales_metrics.units_sold') // Order by units sold, or use revenue if preferred
             ->limit($limit)
