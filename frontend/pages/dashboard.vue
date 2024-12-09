@@ -78,7 +78,7 @@ onMounted(async () => {
           : 0;
 
         return {
-          image: productImagePlaceholder, // Use a placeholder or actual product image if available
+          image: product.image || productImagePlaceholder, // Use a placeholder or actual product image if available
           name: product.name,
           unitsSold: unitsSold,
           revenue: `$${parseFloat(product.revenue).toFixed(2)}`, // Format the revenue

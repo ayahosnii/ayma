@@ -52,7 +52,7 @@ defineProps({
               :class="data.percentage > 0 ? 'text-success' : 'text-error'"
               class="text-body-1"
             >
-              {{ data.percentage.toFixed(2) }}% <!-- Display percentage change with 2 decimals -->
+              {{ data.percentage }}% <!-- Display percentage change with 2 decimals -->
             </div>
           </VListItemTitle>
 
