@@ -29,9 +29,6 @@ const accountData = {
     salary: '',
   },
   CustomerData: {
-    preferred_payment_method: '',
-    last_purchase_date: '',
-    customer_preferences: ''
   }
 }
 
@@ -95,10 +92,6 @@ const saveAccountDetails = async () => {
       formData.append('job_title', accountDataLocal.value.employerData.job_title)
       formData.append('department', accountDataLocal.value.employerData.department)
       formData.append('salary', accountDataLocal.value.employerData.salary)
-    } else if (accountDataLocal.value.role === 'Customer') {
-      formData.append('preferred_payment_method', accountDataLocal.value.CustomerData.preferred_payment_method)
-      formData.append('last_purchase_date', accountDataLocal.value.CustomerData.last_purchase_date)
-      formData.append('customer_preferences', accountDataLocal.value.CustomerData.customer_preferences)
     }
 
     const token = localStorage.getItem('authToken')
@@ -113,12 +106,27 @@ const saveAccountDetails = async () => {
     if (response.status === 201) {
       toast.success('Account details saved successfully!')
       resetForm()
+    } else {
+      toast.error(response.data.message || 'Failed to save account details')
     }
   } catch (error) {
-    console.error('Error saving account details', error)
-    toast.error('Error saving account details')
+    console.error('Error saving account details:', error)
+
+    // Check if the error is from the server
+    if (error.response) {
+      // Specific error from the server
+      const errorMessage = error.response.data.message || 'An unexpected error occurred'
+      toast.error(errorMessage)
+    } else if (error.request) {
+      // Network error or no response from the server
+      toast.error('Network error: Unable to reach the server')
+    } else {
+      // Any other errors
+      toast.error('An unexpected error occurred')
+    }
   }
 }
+
 </script>
 
 <template>
@@ -194,18 +202,6 @@ const saveAccountDetails = async () => {
           </v-col>
         </v-row>
 
-        <!-- Conditional Client Fields -->
-        <v-row v-if="accountDataLocal.role === 'Customer'">
-          <v-col cols="12" md="6">
-            <v-text-field label="Preferred Payment Method" v-model="accountDataLocal.CustomerData.preferred_payment_method" />
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field label="Last Purchase Date" v-model="accountDataLocal.CustomerData.last_purchase_date" type="date" />
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-text-field label="Customer Preferences" v-model="accountDataLocal.CustomerData.customer_preferences" />
-          </v-col>
-        </v-row>
       </v-card-text>
 
       <v-card-actions>

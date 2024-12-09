@@ -55,9 +55,6 @@ class UserController extends Controller
                 \App\Models\Customer::create([
                     'user_id' => $user->id,
                     'loyalty_points' => 0,
-                    'preferred_payment_method' => $request->preferred_payment_method ?? null,
-                    'last_purchase_date' => $request->last_purchase_date ?? null,
-                    'customer_preferences' => $request->customer_preferences ?? null,
                 ]);
             } elseif ($request->role === 'employee') {
                 \App\Models\Employee::create([

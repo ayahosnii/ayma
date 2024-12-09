@@ -10,7 +10,7 @@ class CustomerController extends Controller
 {
     public function index()
     {
-        $users = User::get();
+        $users = User::role("Customer")->get();
         return response()->json($users);
     }
 }
