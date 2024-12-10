@@ -1,5 +1,4 @@
 <template>
-
   <div class="delivery-status">
     <!-- Header Section -->
     <div class="header">
@@ -51,7 +50,7 @@
       <!-- Details Section -->
       <div v-if="delivery.showDetails" class="details-section">
         <div class="table-header">TPS - {{ delivery.trackingCode }}</div>
-        <table>
+        <table class="details-table">
           <thead>
           <tr>
             <th>Date & Time</th>
@@ -70,7 +69,7 @@
       </div>
 
       <!-- Toggle Button -->
-      <button @click="toggleDetails(index)">
+      <button class="toggle-button" @click="toggleDetails(index)">
         {{ delivery.showDetails ? "Collapse" : "More details" }}
       </button>
     </div>
@@ -103,6 +102,7 @@ const deliveries = reactive([
     ],
   },
 ]);
+
 const toggleDetails = (index) => {
   deliveries[index].showDetails = !deliveries[index].showDetails;
 };
@@ -186,8 +186,8 @@ const toggleDetails = (index) => {
 }
 
 .circle {
-  width: 40px;
-  height: 40px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   background: #f1c232;
   display: flex;
@@ -250,42 +250,42 @@ const toggleDetails = (index) => {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.table-header {
-  font-weight: bold;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-table {
+.details-table {
   width: 100%;
   border-collapse: collapse;
+  background: #fff;
+  border: 1px solid #ddd;
 }
 
-th {
-  background-color: #f0f0f0;
+.details-table th,
+.details-table td {
   text-align: left;
   padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.details-table th {
+  background-color: #f0f0f0;
   color: #555;
 }
 
-td {
-  padding: 10px;
-  border: 1px solid #e0e0e0;
+.details-table td {
   font-size: 14px;
 }
 
-button {
+/* Toggle Button */
+.toggle-button {
   margin-top: 16px;
   background-color: #007bff;
   color: white;
   border: none;
   padding: 10px 16px;
-  border-radius: 6px;
+  border-radius: 20px; /* Rounded for the pill shape */
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
+.toggle-button:hover {
   background-color: #0056b3;
 }
 </style>
