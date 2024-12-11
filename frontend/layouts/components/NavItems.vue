@@ -197,6 +197,17 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Tracking',
+      badgeContent: 0,
+      badgeClass: 'bg-secondary-darken-1',
+      icon: 'ri-gps-fill',
+      to: '/deliveries/list',
+      // badgeContent: 'New',
+      // badgeClass: 'bg-light-primary text-primary',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Sales Analysis',
       badgeContent: 0,
       badgeClass: 'bg-secondary-darken-1',
