@@ -34,9 +34,25 @@ class DeliveryController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
-    {
-        //
-    }
+{
+    $validated = $request->validate([
+        'order_id' => 'required|exists:orders,id',
+        'tracking_code' => 'required|unique:deliveries,tracking_code',
+        'delivery_partner' => 'required|string|max:255',
+    ]);
+
+    $delivery = Delivery::create([
+        'order_id' => $validated['order_id'],
+        'tracking_code' => $validated['tracking_code'],
+        'delivery_partner' => $validated['delivery_partner'],
+        'timeline' => [
+            ['step' => 'Order Placed', 'timestamp' => now()],
+        ],
+    ]);
+
+    return response()->json($delivery, 201);
+}
+
 
     /**
      * Display the specified resource.

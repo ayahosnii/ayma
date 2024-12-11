@@ -8,4 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Delivery extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'timeline' => 'array', // For the JSON `timeline` field
+    ];
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
 }

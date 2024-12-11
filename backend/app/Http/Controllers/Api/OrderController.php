@@ -31,39 +31,62 @@ class OrderController extends Controller
 
     // Store a newly created resource in storage.
     public function store(CreateOrderRequest $request)
-    {
-        // Create the handlers
-        $createUser = new CreateUserHandler();
-        $createOrder = new CreateOrderHandler();
-        $processItems = new ProcessOrderItemsHandler();
-        $calculateTotal = new CalculateTotalHandler();
+{
+    // Create the handlers
+    $createUser = new CreateUserHandler();
+    $createOrder = new CreateOrderHandler();
+    $processItems = new ProcessOrderItemsHandler();
+    $calculateTotal = new CalculateTotalHandler();
 
-        // Chain the handlers together: Create User -> Create Order -> Process Items -> Calculate Total
-        $createUser->setNext($createOrder)
-            ->setNext($processItems)
-            ->setNext($calculateTotal);
+    // Chain the handlers together: Create User -> Create Order -> Process Items -> Calculate Total
+    $createUser->setNext($createOrder)
+        ->setNext($processItems)
+        ->setNext($calculateTotal);
 
-        // Start the chain with the request
-        $order = $createUser->handle($request);
+    // Start the chain with the request
+    $order = $createUser->handle($request);
 
-        // Return the order with items
-        if ($order instanceof \Illuminate\Http\JsonResponse) {
-            return $order;  // In case any handler returns an error response
-        }
-
-        // Update the stock of products
-        $this->updateProductStock($request->products);
-        broadcast(new OrderCreated($order));
-
-        // Kafka Producer: Send order data to Kafka topic (optional)
-//        Kafka::publishOn('orders-topic')
-//            ->withHeaders(['event' => 'order.created'])
-//            ->withBodyKey('order_id', $order->id)
-//            ->withBodyKey('total_amount', $order->total_amount)
-//            ->send();
-
-        return response()->json($order->load('orderItems'), 201);
+    // Return the order with items
+    if ($order instanceof \Illuminate\Http\JsonResponse) {
+        return $order;  // In case any handler returns an error response
     }
+
+    // Update the stock of products
+    $this->updateProductStock($request->products);
+
+    // Create a delivery for the new order
+    $this->createDelivery($order);
+
+    broadcast(new OrderCreated($order));
+
+    // Kafka Producer: Send order data to Kafka topic (optional)
+    // Kafka::publishOn('orders-topic')
+    //     ->withHeaders(['event' => 'order.created'])
+    //     ->withBodyKey('order_id', $order->id)
+    //     ->withBodyKey('total_amount', $order->total_amount)
+    //     ->send();
+
+    return response()->json($order->load('orderItems'), 201);
+}
+
+/**
+ * Create a delivery for the given order.
+ *
+ * @param  \App\Models\Order  $order
+ * @return void
+ */
+    protected function createDelivery(Order $order)
+    {
+        \App\Models\Delivery::create([
+            'order_id' => $order->id,
+            'tracking_code' => uniqid('track_'), // Generate a unique tracking code
+            'delivery_partner' => 'Default Partner', // Replace with actual partner logic
+            'timeline' => [
+                ['step' => 'Order Placed', 'timestamp' => now()],
+            ],
+        ]);
+    }
+
 
     // Function to update the product stock
     protected function updateProductStock($products)
