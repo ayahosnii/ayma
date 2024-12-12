@@ -5,6 +5,7 @@ namespace Tests\Feature\Dashboard\Services;
 use App\Repositories\Dashboard\Contracts\ProductRepositoryInterface;
 use App\Services\Dashboard\DashboardService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Mockery;
 use Tests\TestCase;
 
@@ -77,6 +78,55 @@ class DashboardServiceTest extends TestCase
         $this->assertEquals('US', $dashboardData['salesByCountry'][0]['shipping_country']);
         $this->assertEquals(2000, $dashboardData['salesByCountry'][0]['sales']);
         $this->assertEquals(50, $dashboardData['salesByCountry'][0]['percentage']);
+    }
+
+    public function testGetTotalStats()
+    {
+        // Mock the methods used in the getTotalStats method
+        $mockService = $this->getMockBuilder(DashboardService::class)
+            ->onlyMethods(['getTotalSalesFromOrders', 'getNewCustomers', 'calculateChange'])
+            ->getMock();
+
+        // Mock the values returned by the methods
+        $mockService->method('getTotalSalesFromOrders')->willReturn(1000);
+        $mockService->method('getNewCustomers')->willReturn(50);
+        $mockService->method('calculateChange')->willReturn(10);
+
+        // Mock database queries
+        DB::shouldReceive('table')
+            ->with('products')
+            ->andReturnSelf();
+        DB::shouldReceive('sum')->with(DB::raw('price'))->andReturn(500);
+
+        DB::shouldReceive('table')
+            ->with('orders')
+            ->andReturnSelf();
+        DB::shouldReceive('count')->andReturn(200);
+
+        DB::shouldReceive('table')
+            ->with('products')
+            ->andReturnSelf();
+        DB::shouldReceive('where')->andReturnSelf();
+        DB::shouldReceive('sum')->with(DB::raw('price'))->andReturn(400);
+
+        DB::shouldReceive('table')
+            ->with('orders')
+            ->andReturnSelf();
+        DB::shouldReceive('where')->andReturnSelf();
+        DB::shouldReceive('count')->andReturn(180);
+
+        // Call the method you want to test
+        $result = $mockService->getTotalStats();
+
+        // Assertions to verify the returned values
+        $this->assertEquals(1000, $result['total_sales']['value']);
+        $this->assertEquals(10, $result['total_sales']['change']);
+        $this->assertEquals(500, $result['total_profit']['value']);
+        $this->assertEquals(10, $result['total_profit']['change']);
+        $this->assertEquals(200, $result['orders']['value']);
+        $this->assertEquals(10, $result['orders']['change']);
+        $this->assertEquals(50, $result['new_customers']['value']);
+        $this->assertEquals(10, $result['new_customers']['change']);
     }
 
     public function tearDown(): void

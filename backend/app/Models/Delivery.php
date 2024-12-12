@@ -9,6 +9,19 @@ class Delivery extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'order_id',
+        'tracking_code',
+        'status',
+        'delivery_partner',
+        'current_step',
+        'timeline',
+    ];
     protected $casts = [
         'timeline' => 'array', // For the JSON `timeline` field
     ];

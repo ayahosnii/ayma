@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Delivery;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redis;
 
 class DeliveryController extends Controller
 {
@@ -97,5 +98,29 @@ class DeliveryController extends Controller
     public function destroy(Delivery $delivery)
     {
         //
+    }
+
+    public function updateLocation(Request $request, $deliveryId)
+    {
+        $validated = $request->validate([
+            'latitude' => 'required|numeric|between:-90,90',
+            'longitude' => 'required|numeric|between:-180,180',
+        ]);
+
+        $delivery = Delivery::findOrFail($deliveryId);
+        $delivery->update([
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'last_updated_at' => now(),
+        ]);
+
+        // Publish to Redis
+        Redis::publish("delivery-tracking.{$deliveryId}", json_encode([
+            'latitude' => $validated['latitude'],
+            'longitude' => $validated['longitude'],
+            'last_updated_at' => now(),
+        ]));
+
+        return response()->json(['message' => 'Location updated successfully']);
     }
 }
