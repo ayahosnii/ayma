@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\DeliveryController;
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\MongoControllers\ProductsMongoController;
@@ -82,6 +82,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('/order_items', OrderItemController::class); //Order items
     Route::get('/count-orders', [OrderController::class, 'countOrders']); //Order Count
     Route::resource('/deliveries', DeliveryController::class); //Deliveries
+    Route::get('/count-deliveries', [DeliveryController::class, 'countDeliveries']); //Deliveries count
 
     /******************************************* Start Inventory *******************************************/
     Route::prefix('inventory')->group(function () {
