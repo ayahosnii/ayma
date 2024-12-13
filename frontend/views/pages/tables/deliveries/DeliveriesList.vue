@@ -143,8 +143,11 @@ const infoDelivery = ref({});
 const deleteDeliveryData = ref(null);
 
 const fetchDeliveries = async (page = 1) => {
-  const response = await axios.get(`${BASE_URL}/deliveries?page=${page}`);
-  deliveries.value = response.data.data;
+  const token = localStorage.getItem('authToken');
+   const response = await axios.get(`${BASE_URL}/deliveries?page=${page}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  deliveries.value = response.data;
   totalPages.value = response.data.last_page;
   currentPage.value = response.data.current_page;
 };

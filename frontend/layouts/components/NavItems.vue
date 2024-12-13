@@ -15,6 +15,7 @@ const productsmongoCount = ref();
 const ordersCount = ref();
 const suppliersCount = ref(); 
 const inventoryrecordsCount = ref(); 
+const deliveriesCount = ref(); 
 
 
 const fetchCounts = async () => {
@@ -74,6 +75,15 @@ const fetchCounts = async () => {
     });
 
     inventoryrecordsCount.value = inventoryrecordsResponse.data.countInvetoryRecords;
+
+    //Deliveries Count
+    const deliveriesResponse = await axios.get(`${BASE_URL}/count-deliveries`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    deliveriesCount.value = deliveriesResponse.data.countDeliveries;
 
   } catch (error) {
     console.error('Error fetching counts:', error);
@@ -198,7 +208,7 @@ onMounted(() => {
   <VerticalNavLink
     :item="{
       title: 'Tracking',
-      badgeContent: 0,
+      badgeContent: deliveriesCount,
       badgeClass: 'bg-secondary-darken-1',
       icon: 'ri-gps-fill',
       to: '/deliveries/list',
