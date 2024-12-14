@@ -16,7 +16,8 @@ class DeliveryController extends Controller
      */
     public function index()
     {
-        //
+        $deliveries = Delivery::with('order')->get(); // Fetch all tracks
+        return response()->json($deliveries);
     }
 
     /**
@@ -144,5 +145,11 @@ class DeliveryController extends Controller
         broadcast(new DeliveryTracking($deliveryId, $validated));
 
         return response()->json(['message' => 'Location updated successfully']);
+    }
+
+    public function countDeliveries()
+    {
+        $countDeliveries = Delivery::count();
+        return response()->json(['countDeliveries' => $countDeliveries]);
     }
 }
