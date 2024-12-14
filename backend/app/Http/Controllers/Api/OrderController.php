@@ -79,11 +79,27 @@ class OrderController extends Controller
     {
         \App\Models\Delivery::create([
             'order_id' => $order->id,
+            'current_step' => 1,
             'tracking_code' => uniqid('track_'), // Generate a unique tracking code
             'delivery_partner' => 'Default Partner', // Replace with actual partner logic
-            'timeline' => [
-                ['step' => 'Order Placed', 'timestamp' => now()],
-            ],
+            'timeline' => [  // Encode the timeline as JSON
+                [
+                    'date' => 'Mon, 19 Dec',
+                    'status' => 'Order Confirmed',
+                ],
+                [
+                    'date' => 'Mon, 19 Dec',
+                    'status' => 'Processing',
+                ],
+                [
+                    'date' => 'Tue, 20 Dec',
+                    'status' => 'Shipped',
+                ],
+                [
+                    'date' => 'Thu, 22 Dec',
+                    'status' => 'Delivered',
+                ]
+            ]
         ]);
     }
 

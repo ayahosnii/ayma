@@ -16,7 +16,7 @@ class DeliveryController extends Controller
      */
     public function index()
     {
-        $deliveries = Delivery::with('order')->get(); // Fetch all tracks
+        $deliveries = Delivery::with('order')->get();
         return response()->json($deliveries);
     }
 
@@ -48,9 +48,24 @@ class DeliveryController extends Controller
         'order_id' => $validated['order_id'],
         'tracking_code' => $validated['tracking_code'],
         'delivery_partner' => $validated['delivery_partner'],
-        'timeline' => [
-            ['step' => 'Order Placed', 'timestamp' => now()],
-        ],
+        'timeline' => [  // Encode the timeline as JSON
+            [
+                'date' => 'Mon, 19 Dec',
+                'status' => 'Order Confirmed',
+            ],
+            [
+                'date' => 'Mon, 19 Dec',
+                'status' => 'Processing',
+            ],
+            [
+                'date' => 'Tue, 20 Dec',
+                'status' => 'Shipped',
+            ],
+            [
+                'date' => 'Thu, 22 Dec',
+                'status' => 'Delivered',
+            ]
+        ]
     ]);
 
     return response()->json($delivery, 201);
@@ -63,21 +78,18 @@ class DeliveryController extends Controller
      * @param  \App\Models\Delivery  $delivery
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($orderId)
     {
-
-        $delivery = Delivery::find($id);
+        // Find the delivery by order_id instead of id
+        $delivery = Delivery::where('order_id', $orderId)->first();
 
         if ($delivery) {
-            return response()->json([
-                'latitude' => $delivery->latitude,
-                'longitude' => $delivery->longitude,
-                'last_updated_at' => $delivery->last_updated_at,
-            ]);
+            return response()->json($delivery);
         }
 
         return response()->json(['message' => 'Delivery not found'], 404);
     }
+
 
     /**
      * Show the form for editing the specified resource.
