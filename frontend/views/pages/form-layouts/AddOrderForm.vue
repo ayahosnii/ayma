@@ -20,6 +20,8 @@ const useSelectForUserId = ref(true);
 const order_number = ref('');
 const total_amount = ref(0);
 const shipping_address = ref('');
+const latitude = ref('');
+const longitude = ref('');
 const shipping_city = ref('');
 const shipping_state = ref('');
 const shipping_postal_code = ref('');
@@ -39,9 +41,21 @@ const isNewUser = ref(false);
 // Router instance
 const router = useRouter();
 
+// Google Maps and marker variables
+let map;
+let marker;
+
 // Fetch products and users when the component mounts
 onMounted(async () => {
   const token = localStorage.getItem('authToken');
+
+  const script = document.createElement('script');
+  script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyDvGW3_JWixICYtxI-5rjM_gamP9xhvYzQ`;
+  script.async = true;
+  script.defer = true;
+
+  script.onload = initMap;
+  document.head.appendChild(script);
 
   try {
     // Fetch products
@@ -79,6 +93,38 @@ const fetchUsers = async () => {
     console.error('Error fetching users:', error);
   }
 };
+
+// Watch for changes in the shipping address
+// Watch for changes in country, state, and city
+watch([shipping_country, shipping_state, shipping_city], async () => {
+  if (shipping_country.value && shipping_state.value && shipping_city.value) {
+    try {
+      // Get latitude and longitude based on the selected country, state, and city
+      const response = await axios.get(
+        `https://nominatim.openstreetmap.org/search?country=${shipping_country.value}&state=${shipping_state.value}&city=${shipping_city.value}&format=json&limit=1`
+      );
+
+      if (response.data && response.data[0]) {
+        latitude.value = response.data[0].lat;
+        longitude.value = response.data[0].lon;
+
+        // Update map center and marker position
+        if (map && marker) {
+          map.setCenter({ lat: parseFloat(latitude.value), lng: parseFloat(longitude.value) });
+          marker.setPosition({ lat: parseFloat(latitude.value), lng: parseFloat(longitude.value) });
+        }
+      } else {
+        $toast.error('Address not found.');
+        latitude.value = '';
+        longitude.value = '';
+      }
+    } catch (error) {
+      $toast.error('Error fetching coordinates: ' + error.message);
+      console.error(error);
+    }
+  }
+}, { immediate: true }); // Run immediately to handle initial setup
+
 
 // Watch the toggle and fetch users if necessary
 watch(useSelectForUserId, (newValue) => {
@@ -144,10 +190,12 @@ const handleSubmit = async () => {
       status: status.value,
       user_id: createdUserId,
       order_number: order_number.value,
-      total_amount: total_amount.value,
+      total_amount: 0,
       shipping_address: shipping_address.value,
       shipping_city: shipping_city.value,
       shipping_state: shipping_state.value,
+      latitude: latitude.value,
+      longitude: longitude.value,
       shipping_postal_code: shipping_postal_code.value,
       shipping_country: shipping_country.value,
       shipping_phone: shipping_phone.value,
@@ -203,6 +251,8 @@ const resetForm = () => {
   shipping_address.value = '';
   shipping_city.value = '';
   shipping_state.value = '';
+  latitude.value = '';
+  longitude.value = '';
   shipping_postal_code.value = '';
   shipping_country.value = '';
   shipping_phone.value = '';
@@ -214,6 +264,84 @@ const resetForm = () => {
   newUserName.value = '';
   newUserPassword.value = '';
   isNewUser.value = false;
+};
+
+// Watch for changes in country, state, and city
+watch([shipping_country, shipping_state, shipping_city], async () => {
+  if (shipping_country.value && shipping_state.value && shipping_city.value) {
+    updateMapCenter(shipping_country.value, shipping_state.value, shipping_city.value);
+  }
+});
+
+// Function to update map center and move marker
+const updateMapCenter = async (country, state, city) => {
+  try {
+    const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${city},${state},${country}`);
+    if (response.data && response.data[0]) {
+      const { lat, lon } = response.data[0];
+      latitude.value = lat;
+      longitude.value = lon;
+
+      // Update map center and marker
+      if (map.value) {
+        map.value.setCenter({ lat: parseFloat(lat), lng: parseFloat(lon) });
+      }
+
+      if (marker.value) {
+        marker.value.setPosition({ lat: parseFloat(lat), lng: parseFloat(lon) });
+      } else {
+        marker.value = new google.maps.Marker({
+          position: { lat: parseFloat(lat), lng: parseFloat(lon) },
+          map: map.value,
+        });
+      }
+    } else {
+      $toast.error('Location not found.');
+    }
+  } catch (error) {
+    $toast.error('Error fetching location coordinates: ' + error.message);
+    console.error('Error fetching location coordinates:', error);
+  }
+};
+
+// Initialize Google Map
+const initMap = () => {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 33.8938, lng: 35.5018 },
+    zoom: 12,
+  });
+
+  marker = new google.maps.Marker({
+    position: { lat: 33.8938, lng: 35.5018 },
+    map,
+  });
+
+  map.addListener('click', (event) => {
+    const { lat, lng } = event.latLng.toJSON();
+    latitude.value = lat;
+    longitude.value = lng;
+
+    if (marker) {
+      marker.setMap(null); // Remove the old marker
+    }
+
+    marker = new google.maps.Marker({
+      position: { lat, lng },
+      map,
+    });
+    fetchAddress(lat, lng);
+  });
+};
+const fetchAddress = async (lat, lng) => {
+  try {
+    const response = await axios.get(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+    );
+    shipping_address.value = response.data.address?.road || 'Address not found';
+  } catch (error) {
+    $toast.error('Error fetching address');
+    console.error(error);
+  }
 };
 </script>
 
@@ -323,7 +451,7 @@ const resetForm = () => {
       </VCol>
 
       <!-- Total Amount -->
-      <VCol cols="12" md="4">
+      <VCol cols="12" md="4" style="display: none">
         <VTextField
           v-model="total_amount"
           label="Total Amount"
@@ -332,6 +460,38 @@ const resetForm = () => {
           required
         />
       </VCol>
+        <!-- Country Select -->
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="shipping_country"
+            label="Country"
+            item-title="name"
+            item-value="name"
+            @change="updateStates"
+          />
+        </VCol>
+
+        <!-- State Select -->
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="shipping_state"
+            label="State"
+            item-title="name"
+            item-value="name"
+            @change="updateCities"
+          />
+        </VCol>
+
+        <!-- City Select -->
+        <VCol cols="12" md="4">
+          <VTextField
+            v-model="shipping_city"
+            label="City"
+            item-title="name"
+            item-value="name"
+          />
+        </VCol>
+
 
       <!-- Shipping Address -->
       <VCol cols="12" md="4">
@@ -343,24 +503,14 @@ const resetForm = () => {
         />
       </VCol>
 
-      <!-- Shipping City -->
-      <VCol cols="12" md="4">
-        <VTextField
-          v-model="shipping_city"
-          label="Shipping City"
-          placeholder="Enter shipping city"
-          required
-        />
+      <VCol cols="6" md="3">
+        <VTextField v-model="latitude" label="Latitude" readonly />
       </VCol>
-
-      <!-- Shipping State -->
-      <VCol cols="12" md="4">
-        <VTextField
-          v-model="shipping_state"
-          label="Shipping State"
-          placeholder="Enter shipping state"
-          required
-        />
+      <VCol cols="6" md="3">
+        <VTextField v-model="longitude" label="Longitude" readonly />
+      </VCol>
+      <VCol cols="12">
+        <div id="map" style="width: 100%; height: 400px; margin-top: 20px;"></div>
       </VCol>
 
       <!-- Shipping Postal Code -->
@@ -373,15 +523,6 @@ const resetForm = () => {
         />
       </VCol>
 
-      <!-- Shipping Country -->
-      <VCol cols="12" md="4">
-        <VTextField
-          v-model="shipping_country"
-          label="Shipping Country"
-          placeholder="Enter shipping country"
-          required
-        />
-      </VCol>
 
       <!-- Shipping Phone -->
       <VCol cols="12" md="4">

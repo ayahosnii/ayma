@@ -28,6 +28,8 @@ class Order extends Model
         'payment_method',
         'transaction_id',
         'order_date',
+        'latitude',
+        'longitude',
     ];
 
     // Define the relationships
