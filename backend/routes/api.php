@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
+use App\Http\Controllers\Api\ShippingCompanyController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\UserController;
@@ -95,6 +96,9 @@ Route::middleware('auth:api')->group(function () {
     });
         Route::get('/count-inventoryrecords', [InventoryController::class, 'countInvetoryRecords']); //Inventory Records Count
     /******************************************* End   Inventory *******************************************/
+    /******************************************* Start Shipping Company *******************************************/
+    Route::resource('shipping-companies', ShippingCompanyController::class);
+    /******************************************* End   Shipping Company *******************************************/
     Route::post('refund', [RefundController::class, 'processRefund']); //Levels
     Route::post('users', [UserController::class, 'store']);
 
