@@ -26,6 +26,7 @@ const accountData = {
   currency: 'USD',
   status: 'active',
   role: 'Customer', // Default role
+  shippingCompany: '',
   employerData: {
     hire_date: '',
     job_title: '',
@@ -49,6 +50,40 @@ const languages = ref([
   'Italian', 'Korean', 'Dutch', 'Turkish', 'Vietnamese', 'Polish', 'Thai', 'Swedish', 'Greek', 'Czech',
   'Romanian', 'Hungarian', 'Danish', 'Finnish', 'Norwegian', 'Hebrew', 'Indonesian', 'Malay', 'Swahili', 'Bengali'
 ])
+
+const shippingCompanies = ref([]);
+
+const fetchShippingCompanies = async () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.get(`${BASE_URL}/shipping-companies`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (response.status === 200) {
+      shippingCompanies.value = response.data.map(company => ({
+        name: company.name,
+        id: company.id,
+      }));
+    } else {
+      toast.error('Failed to fetch shipping companies.');
+    }
+  } catch (error) {
+    console.error('Error fetching shipping companies:', error);
+    toast.error('Error fetching shipping companies.');
+  }
+};
+
+// Watch for role selection and fetch the list if "Delivery" is chosen
+watch(() => accountDataLocal.value.role, (newRole) => {
+  if (newRole === 'Delivery') {
+    fetchShippingCompanies();
+  } else {
+    shippingCompanies.value = []; // Clear the list when the role changes
+  }
+});
+
 
 const loadCountries = () => {
   countries.value = Country.getAllCountries().map(country => ({
@@ -139,6 +174,10 @@ const saveAccountDetails = async () => {
       formData.append('job_title', accountDataLocal.value.employerData.job_title)
       formData.append('department', accountDataLocal.value.employerData.department)
       formData.append('salary', accountDataLocal.value.employerData.salary)
+    }
+
+    if (accountDataLocal.value.role === 'Delivery') {
+      formData.append('shipping_company', accountDataLocal.value.shippingCompany);
     }
 
     const token = localStorage.getItem('authToken')
@@ -253,7 +292,7 @@ onMounted(() => {
             <v-select label="Currency" v-model="accountDataLocal.currency" :items="currencies" placeholder="USD - US Dollar"/>
           </v-col>
           <v-col cols="12" md="6">
-            <v-select label="Role" v-model="accountDataLocal.role" :items="['Customer', 'employer']" />
+            <v-select label="Role" v-model="accountDataLocal.role" :items="['Customer', 'Delivery', 'employer']" />
           </v-col>
         </v-row>
 
@@ -272,6 +311,13 @@ onMounted(() => {
             <v-text-field label="Salary" v-model="accountDataLocal.employerData.salary" type="number" />
           </v-col>
         </v-row>
+        <v-col cols="12" md="6" v-if="accountDataLocal.role === 'Delivery'">
+          <v-select
+            label="Select Shipping Company"
+            v-model="accountDataLocal.shippingCompany"
+            :items="shippingCompanies.map(company => ({ text: company.name, value: company.id }))"
+          />
+        </v-col>
 
       </v-card-text>
 

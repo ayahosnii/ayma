@@ -41,7 +41,7 @@ class StoreUserRequest extends FormRequest
             'role' => [
                 'required',
                 'string',
-                Rule::in(['employee', 'Customer']), // Add 'customer' to the allowed roles
+                Rule::in(['employee', 'Customer', 'Delivery']), // Add 'customer' to the allowed roles
             ],
             'password' => 'required|string|min:8|regex:/[a-z]/|regex:/[A-Z]/|regex:/[0-9]/|regex:/[@$!%*?&]/', // Password validation
         ];

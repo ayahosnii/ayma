@@ -23,4 +23,10 @@ class ShippingCompany extends Model
         'zip_code',
         'country'
     ];
+
+    public function deliveryShippingCompany()
+    {
+        return $this->hasOne(DeliveryShippingCompany::class);
+    }
+
 }

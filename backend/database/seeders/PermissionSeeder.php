@@ -80,6 +80,11 @@ class PermissionSeeder extends Seeder
             ['guard_name' => 'api']
         );
 
+        $deliveryRole = Role::firstOrCreate(
+            ['name' => 'Delivery'],
+            ['guard_name' => 'api']
+        );
+
         // Super Admin: Full permissions
         $superAdminRole->givePermissionTo(Permission::all());
 
@@ -120,6 +125,10 @@ class PermissionSeeder extends Seeder
 
         // Customer: Can view orders and manage their own account
         $customerRole->givePermissionTo([
+            'view-orders',
+        ]);
+        // Customer: Can view orders and manage their own account
+        $deliveryRole->givePermissionTo([
             'view-orders',
         ]);
     }

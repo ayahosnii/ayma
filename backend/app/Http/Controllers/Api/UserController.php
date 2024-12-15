@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\DeliveryShippingCompany;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -63,6 +64,11 @@ class UserController extends Controller
                     'job_title' => $request->job_title ?? null,
                     'department' => $request->department ?? null,
                     'salary' => $request->salary ?? null,
+                ]);
+            }elseif ($request->role === 'Delivery') {
+                DeliveryShippingCompany::create([
+                    'user_id' => $user->id,
+                    'shipping_company_id' => $request->shipping_company,
                 ]);
             }
 
