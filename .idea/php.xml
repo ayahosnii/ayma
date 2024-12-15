@@ -168,6 +168,21 @@
       <path value="$PROJECT_DIR$/backend/vendor/thecodingmachine/safe" />
       <path value="$PROJECT_DIR$/backend/vendor/mongodb/mongodb" />
       <path value="$PROJECT_DIR$/backend/vendor/jenssegers/mongodb" />
+      <path value="$PROJECT_DIR$/backend/vendor/ratchet/rfc6455" />
+      <path value="$PROJECT_DIR$/backend/vendor/cboden/ratchet" />
+      <path value="$PROJECT_DIR$/backend/vendor/evenement/evenement" />
+      <path value="$PROJECT_DIR$/backend/vendor/pusher/pusher-php-server" />
+      <path value="$PROJECT_DIR$/backend/vendor/fig/http-message-util" />
+      <path value="$PROJECT_DIR$/backend/vendor/facade/ignition-contracts" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/dns" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/event-loop" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/cache" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/socket" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/stream" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/http" />
+      <path value="$PROJECT_DIR$/backend/vendor/react/promise" />
+      <path value="$PROJECT_DIR$/backend/vendor/paragonie/sodium_compat" />
+      <path value="$PROJECT_DIR$/backend/vendor/beyondcode/laravel-websockets" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="8.0">

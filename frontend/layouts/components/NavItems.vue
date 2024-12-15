@@ -186,6 +186,16 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+    title: 'Shipping Companies',
+    badgeContent: suppliersCount,
+    icon: 'ri-package-fill',
+    to: '/shipping-companies/list',
+    badgeClass: 'bg-secondary-darken-1',
+  }"
+  />
+
+  <VerticalNavLink
+    :item="{
       title: 'Orders',
       badgeContent: ordersCount,
       icon:'ri-shopping-cart-2-fill',

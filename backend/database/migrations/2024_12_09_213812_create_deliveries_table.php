@@ -14,7 +14,7 @@ class CreateDeliveriesTable extends Migration
             $table->string('tracking_code')->unique();
             $table->enum('status', ['Pending', 'In Transit', 'Delivered', 'Cancelled'])->default('In Transit'); // Enum for status
             $table->string('delivery_partner');
-            $table->integer('current_step')->default(0);
+            $table->integer('current_step')->default(1);
             $table->json('timeline')->nullable();
             $table->timestamps(); // Created at and updated at
         });

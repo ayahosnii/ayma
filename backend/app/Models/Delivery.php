@@ -21,6 +21,9 @@ class Delivery extends Model
         'delivery_partner',
         'current_step',
         'timeline',
+        'latitude',
+        'longitude',
+        'last_updated_at',
     ];
     protected $casts = [
         'timeline' => 'array', // For the JSON `timeline` field

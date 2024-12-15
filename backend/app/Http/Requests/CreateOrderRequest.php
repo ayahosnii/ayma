@@ -43,6 +43,8 @@ class CreateOrderRequest extends FormRequest
             'payment_method' => 'nullable|in:credit_card,paypal,bank_transfer,cash_on_delivery',
             'transaction_id' => 'nullable|string',
             'order_date' => 'required|date',
+            'latitude' => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ];
 
         // Add or modify rules based on whether the request is for updating an existing record
