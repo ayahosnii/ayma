@@ -1,12 +1,13 @@
 <script setup>
-import { useRoute } from 'vue-router'
-import AddUser from '@/views/pages/users/AddUser.vue'
-const route = useRoute()
-
+import AddUserForm from '@/views/pages/form-layouts/AddUserForm.vue';
 </script>
 
 <template>
   <div>
-    <AddUser />
+    <VCard title="Add User">
+      <VCardText>
+        <AddUserForm />
+      </VCardText>
+    </VCard>
   </div>
 </template>

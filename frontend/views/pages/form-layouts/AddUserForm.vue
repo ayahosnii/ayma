@@ -1,10 +1,14 @@
 <script setup>
-import { ref } from 'vue'
-import avatar1 from '@images/avatars/avatar-1.png'
-import axios from 'axios'
-import { BASE_URL } from '@/config/apiConfig'
-import Vue3Toastify, { toast } from 'vue3-toastify'
-import 'vue3-toastify/dist/index.css'
+import { BASE_URL } from '@/config/apiConfig';
+import avatar1 from '@images/avatars/avatar-1.png';
+import axios from 'axios';
+import countriesAndTimezones from 'countries-and-timezones'; // Import the package
+import { Country, State } from 'country-state-city';
+import currencyCodes from 'currency-codes';
+
+import { ref } from 'vue';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 const accountData = {
   avatarImg: avatar1,
@@ -35,6 +39,49 @@ const accountData = {
 const refInputEl = ref()
 const accountDataLocal = ref(structuredClone(accountData))
 const isAccountDeactivated = ref(false)
+const currencies = ref([])
+const countries = ref([])
+const states = ref([])
+const selectedCountryCode = ref('')
+const phoneCode = ref('')
+const languages = ref([
+  'English', 'Spanish', 'French', 'German', 'Chinese', 'Hindi', 'Arabic', 'Portuguese', 'Russian', 'Japanese',
+  'Italian', 'Korean', 'Dutch', 'Turkish', 'Vietnamese', 'Polish', 'Thai', 'Swedish', 'Greek', 'Czech',
+  'Romanian', 'Hungarian', 'Danish', 'Finnish', 'Norwegian', 'Hebrew', 'Indonesian', 'Malay', 'Swahili', 'Bengali'
+])
+
+const loadCountries = () => {
+  countries.value = Country.getAllCountries().map(country => ({
+    name: country.name,
+    code: country.isoCode,
+    phoneCode: country.phonecode,
+  }))
+}
+
+// const loadLanguages = () => {
+//   const list = new LanguagesList();
+//   languages.value = Object.values(list.getAll());
+//   console.log(languages.value);  // Check if the languages are loaded correctly
+// };
+
+const updateStates = (countryCode) => {
+  states.value = State.getStatesOfCountry(countryCode).map(state => ({
+    name: state.name,
+    code: state.isoCode,
+  }))
+}
+
+const updatePhoneCode = (countryCode) => {
+  const selectedCountry = countries.value.find(country => country.code === countryCode);
+  phoneCode.value = selectedCountry ? `+${selectedCountry.phoneCode}` : '';
+};
+
+watch(() => accountDataLocal.value.country, (newCountry) => {
+  // Update country code based on country selection
+  selectedCountryCode.value = countries.value.find(c => c.name === newCountry)?.code || '';
+  updateStates(selectedCountryCode.value);
+  updatePhoneCode(selectedCountryCode.value);  // This is the key part to ensure phone code is updated
+});
 
 const resetForm = () => {
   accountDataLocal.value = structuredClone(accountData)
@@ -57,16 +104,16 @@ const resetAvatar = () => {
   accountDataLocal.value.avatarImg = accountData.avatarImg
 }
 
-const timezones = [
-  '(GMT-11:00) International Date Line West', '(GMT-11:00) Midway Island', '(GMT-10:00) Hawaii',
-  '(GMT-09:00) Alaska', '(GMT-08:00) Pacific Time (US & Canada)', '(GMT-07:00) Mountain Time (US & Canada)',
-  '(GMT-06:00) Central Time (US & Canada)', '(GMT-05:00) Eastern Time (US & Canada)', '(GMT-04:00) Atlantic Time (Canada)',
-  '(GMT-03:00) Brasilia', '(GMT-02:00) Mid-Atlantic', '(GMT+00:00) Casablanca', '(GMT+00:00) Dublin'
-]
+// Generate the list of time zones dynamically
+const timezones = Object.values(countriesAndTimezones.getAllTimezones()).map(tz => `${tz.name} (GMT${tz.utcOffsetStr})`)
 
-const currencies = [
-  'USD', 'EUR', 'GBP', 'AUD', 'BRL', 'CAD', 'CNY', 'CZK', 'DKK', 'HKD', 'HUF', 'INR'
-]
+
+// Fetch currencies dynamically using `currency-codes` package
+const loadCurrencies = () => {
+  currencies.value = currencyCodes.data.map(
+    currency => `${currency.code} - ${currency.currency}`
+  )
+}
 
 const saveAccountDetails = async () => {
   try {
@@ -127,6 +174,15 @@ const saveAccountDetails = async () => {
   }
 }
 
+onMounted(() => {
+  // loadLanguages()
+  loadCurrencies()
+  loadCountries()
+  updatePhoneCode(accountDataLocal.value.country); 
+  
+  
+})
+
 </script>
 
 <template>
@@ -155,7 +211,11 @@ const saveAccountDetails = async () => {
             <v-text-field label="Password" v-model="accountDataLocal.password" placeholder="Enter Password" type="password" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field label="Phone Number" v-model="accountDataLocal.phone" placeholder="+1 (917) 543-9876" />
+            <v-select 
+              label="Country" 
+              v-model="accountDataLocal.country" 
+              :items="countries.map(c => c.name)" 
+            />
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field label="Address Line One" v-model="accountDataLocal.addressLineOne" />
@@ -164,22 +224,33 @@ const saveAccountDetails = async () => {
             <v-text-field label="Address Line Two" v-model="accountDataLocal.addressLineTwo" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-text-field label="State" v-model="accountDataLocal.state" />
+            <v-select 
+              label="State" 
+              v-model="accountDataLocal.state" 
+              :items="states.map(s => s.name)" 
+            />
           </v-col>
           <v-col cols="12" md="6">
             <v-text-field label="Zip" v-model="accountDataLocal.zip" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-select label="Country" v-model="accountDataLocal.country" :items="['USA', 'Canada', 'UK', 'Australia']" />
+            <v-text-field 
+              label="Phone Number" 
+              v-model="accountDataLocal.phone" 
+              :prepend-inner="phoneCode" 
+              placeholder="Enter phone number" 
+              type="tel" 
+              @input="validatePhoneInput"
+            />
           </v-col>
           <v-col cols="12" md="6">
-            <v-select label="Language" v-model="accountDataLocal.language" :items="['English', 'Spanish', 'French', 'German']" />
+            <v-select label="Language" v-model="accountDataLocal.language" :items="languages" />
           </v-col>
           <v-col cols="12" md="6">
-            <v-select label="Timezone" v-model="accountDataLocal.timezone" :items="timezones" />
+            <v-select label="Timezone" v-model="accountDataLocal.timezone" :items="timezones" placeholder="Asia/Beirut (GMT+02:00)"/>
           </v-col>
           <v-col cols="12" md="6">
-            <v-select label="Currency" v-model="accountDataLocal.currency" :items="currencies" />
+            <v-select label="Currency" v-model="accountDataLocal.currency" :items="currencies" placeholder="USD - US Dollar"/>
           </v-col>
           <v-col cols="12" md="6">
             <v-select label="Role" v-model="accountDataLocal.role" :items="['Customer', 'employer']" />
