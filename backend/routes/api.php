@@ -84,6 +84,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/count-orders', [OrderController::class, 'countOrders']); //Order Count
     Route::resource('/deliveries', DeliveryController::class); //Deliveries
     Route::get('/count-deliveries', [DeliveryController::class, 'countDeliveries']); //Deliveries count
+    Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
 
     /******************************************* Start Inventory *******************************************/
     Route::prefix('inventory')->group(function () {

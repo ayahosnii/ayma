@@ -250,4 +250,24 @@ class OrderController extends Controller
 
         return $response;
     }
+
+    // Method to update the status of an order
+    public function updateStatus(Request $request, $id)
+{
+    // Validate the incoming data to make sure the status is one of the valid values
+    $validated = $request->validate([
+        'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
+    ]);
+
+    // Find the order by ID (or fail if not found)
+    $order = Order::findOrFail($id);
+
+    // Update the status
+    $order->status = $validated['status'];
+    $order->save();  // Save the changes to the database
+
+    // Return a response indicating success
+    return response()->json(['message' => 'Order status updated successfully!'], 200);
+}
+
 }
