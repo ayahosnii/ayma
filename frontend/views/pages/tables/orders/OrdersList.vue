@@ -43,7 +43,11 @@
 
       <tbody>
         <tr v-for="order in filteredOrders" :key="order.id">
-          <td class="text-center">{{ order.order_number }}</td>
+          <td class="text-center">
+            <router-link :to="`/orders/tracking-order/${order.id}`" title="Tracking delivery">
+              {{ order.order_number }}
+            </router-link>
+          </td>
           <td class="text-center">{{ order.user.name }}</td>
           <td class="text-center">${{ order.total_amount }}</td>
           <td class="text-center">
