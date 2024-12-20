@@ -5,6 +5,16 @@
           <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" href="/orders/add">
             <i class="ri-add-circle-line"></i> Add Order
           </VBtn>
+          <VTextField
+            v-model="searchQuery"
+            label="Search Orders"
+            class="ml-4"
+            hide-details
+            clearable
+            dense
+            style="max-inline-size: 300px;"
+            placeholder="Search by number or name..."
+          />
         </div>
     
         <!-- New Status Filter -->
@@ -36,7 +46,18 @@
           <td class="text-center">{{ order.order_number }}</td>
           <td class="text-center">{{ order.user.name }}</td>
           <td class="text-center">${{ order.total_amount }}</td>
-          <td class="text-center">{{ order.status }}</td>
+          <td class="text-center">
+            <VSelect
+              v-model="order.status"
+              :items="statuses"
+              item-title="label"
+              item-value="value"
+              @change="updateOrderStatus(order)"
+              dense
+              hide-details
+              clearable
+            />
+          </td>
           <td class="text-center">
             <VBtn size="small" title="Info" color="info" @click="openInfoModal(order)">
               <i class="ri-information-line"></i>
@@ -338,6 +359,30 @@ const editOrder = ref({
 
 const infoOrder = ref({});
 const deleteOrderData = ref(null);
+const searchQuery = ref('');
+
+
+// Computed property to filter orders based on the search query and selected status
+const filteredOrders = computed(() => {
+  let filtered = orders.value;
+
+  // Apply search query filter
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase();
+    filtered = filtered.filter(
+      (order) =>
+        order.order_number.toLowerCase().includes(query) ||  // Search by order number
+        order.user.name.toLowerCase().includes(query)         // Search by customer name
+    );
+  }
+
+  // Apply status filter
+  if (selectedStatus.value) {
+    filtered = filtered.filter((order) => order.status === selectedStatus.value);
+  }
+
+  return filtered;
+});
 
 
 // Define the available statuses for filtering
@@ -353,11 +398,30 @@ const statuses = [
 const selectedStatus = ref(null);
 
 // Computed property to filter orders based on selected status
-const filteredOrders = computed(() => {
-  return orders.value.filter(order => {
-    return selectedStatus.value ? order.status === selectedStatus.value : true;
-  });
-});
+// const filteredOrders = computed(() => {
+//   return orders.value.filter(order => {
+//     return selectedStatus.value ? order.status === selectedStatus.value : true;
+//   });
+// });
+
+// Handle status update in the table and send the change to the API
+const updateOrderStatus = async (order) => {
+  const token = localStorage.getItem('authToken');
+  try {
+    // Send the updated status to the backend
+    await axios.put(`${BASE_URL}/orders/${order.id}/status`, 
+      { status: order.status }, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+    $toast.success('Order status updated successfully!');
+    fetchOrders(); // Re-fetch the orders to ensure data is up-to-date
+  } catch (error) {
+    $toast.error('Error updating order status: ' + error.response.data.message);
+  }
+};
+
 
 // Fetch orders from the API
 const fetchOrders = async (page = 1) => {
