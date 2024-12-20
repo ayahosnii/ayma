@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="map" style="height: 400px; width: 100%;"></div>
-    <table class="table">
+    <VTable>
       <thead>
       <tr>
         <th>Date / Status</th>
@@ -23,13 +23,13 @@
           <td>{{ item.productName }}</td>
           <td>{{ item.deliveryPartner }}</td>
           <td>
-            <button @click="toggleDetails(index)">
-              {{ item.showDetails ? 'Less details' : 'More details' }}
-            </button>
+            <VBtn size="small" title="Edit" color="warning" >
+              <i class="ri-edit-fill"></i>
+            </VBtn>&nbsp;
           </td>
         </tr>
         <!-- Details Row -->
-        <tr v-if="item.showDetails" class="details-row">
+        <tr class="details-row">
           <td colspan="4">
             <div class="delivery-status">
               <!-- Header Section -->
@@ -70,7 +70,7 @@
               <div class="details-section">
                 <div class="table-header">
                 </div>
-                <table class="details-table">
+                <VTable>
                   <thead>
                   <tr>
                     <th>Date & Time</th>
@@ -85,14 +85,14 @@
                     <td>{{ detail.status }}</td>
                   </tr>
                   </tbody>
-                </table>
+                  </VTable>
               </div>
             </div>
           </td>
         </tr>
       </template>
       </tbody>
-    </table>
+      </VTable>
   </div>
 </template>
 
@@ -255,7 +255,6 @@ onMounted(async () => {
 
 /* Details Row Enhancements */
 .details-row td {
-  background-color: #fafbfc;
   color: #555;
   padding: 20px;
 }

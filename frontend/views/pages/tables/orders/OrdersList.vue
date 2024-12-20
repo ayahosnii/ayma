@@ -52,7 +52,7 @@
               :items="statuses"
               item-title="label"
               item-value="value"
-              @update:modelValue="(newStatus)=>updateOrderStatus(order.id,newStatus)"
+              @update:modelValue="(newStatus) => updateOrderStatus(order.id, newStatus)"              
               dense
               hide-details
               clearable
@@ -403,14 +403,14 @@ const selectedStatus = ref(null);
 //     return selectedStatus.value ? order.status === selectedStatus.value : true;
 //   });
 // });
-
 // Handle status update in the table and send the change to the API
 const updateOrderStatus = async (orderId, newStatus) => {
   const token = localStorage.getItem('authToken');
   try {
     // Send the updated status to the backend
-    await axios.put(`${BASE_URL}/orders/${orderId}/status`, 
-      { status: newStatus }, 
+    await axios.put(`${BASE_URL}/orders/${orderId}/status`,
+      { status: newStatus },
+
       {
         headers: { Authorization: `Bearer ${token}` }
       }
