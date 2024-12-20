@@ -1,10 +1,27 @@
 <template>
   <div>
-    <VTable>
-      <thead>
-        <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" href="/orders/add">
-          <i class="ri-add-circle-line"></i> Add Order
-        </VBtn>
+    
+        <div class="d-flex align-items-center justify-between gap-2 mb-4">
+          <VBtn class="mb-4 ml-4" size="small" title="Add" type="Add" color="secondary" href="/orders/add">
+            <i class="ri-add-circle-line"></i> Add Order
+          </VBtn>
+        </div>
+    
+        <!-- New Status Filter -->
+        <VRow class="mb-4">
+        <VCol cols="12" md="4" class="mx-4">
+          <VSelect
+            v-model="selectedStatus"
+            :items="statuses"
+            label="Filter by Status"
+            item-title="label"
+            item-value="value"
+            clearable
+          />
+        </VCol>
+        </VRow>
+        <VTable>
+          <thead>
         <tr>
           <th class="text-uppercase text-center">Order Number</th>
           <th class="text-uppercase text-center">Customer</th>
@@ -15,7 +32,7 @@
       </thead>
 
       <tbody>
-        <tr v-for="order in orders" :key="order.id">
+        <tr v-for="order in filteredOrders" :key="order.id">
           <td class="text-center">{{ order.order_number }}</td>
           <td class="text-center">{{ order.user.name }}</td>
           <td class="text-center">${{ order.total_amount }}</td>
@@ -27,7 +44,7 @@
             <VBtn size="small" title="Edit" color="warning" @click="openEditModal(order)">
               <i class="ri-edit-fill"></i>
             </VBtn>&nbsp;
-            <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(order)">
+            <VBtn size="small" title="Delete" color="error" @click="openDeleteModal(order.id)">
               <i class="ri-delete-bin-line"></i>
             </VBtn>
           </td>
@@ -288,7 +305,7 @@
 
 <script setup>
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useToast } from 'vue-toast-notification';
 
 const $toast = useToast();
@@ -321,6 +338,26 @@ const editOrder = ref({
 
 const infoOrder = ref({});
 const deleteOrderData = ref(null);
+
+
+// Define the available statuses for filtering
+const statuses = [
+  { label: 'Pending', value: 'pending' },
+  { label: 'Processing', value: 'processing' },
+  { label: 'Shipped', value: 'shipped' },
+  { label: 'Delivered', value: 'delivered' },
+  { label: 'Cancelled', value: 'cancelled' },
+];
+
+// New property for status filter
+const selectedStatus = ref(null);
+
+// Computed property to filter orders based on selected status
+const filteredOrders = computed(() => {
+  return orders.value.filter(order => {
+    return selectedStatus.value ? order.status === selectedStatus.value : true;
+  });
+});
 
 // Fetch orders from the API
 const fetchOrders = async (page = 1) => {
@@ -402,36 +439,23 @@ const removeItem = (index) => {
 const updateOrder = async () => {
   const token = localStorage.getItem('authToken');
   try {
-    await axios.put(`${BASE_URL}/orders/${editOrder.value.id}`, {
-      ...editOrder.value,
-      // Ensure that the updated order_items are sent to the server
-      order_items: editOrder.value.order_items
-    }, {
+    await axios.put(`${BASE_URL}/orders/${editOrder.value.id}`, editOrder.value, {
       headers: { Authorization: `Bearer ${token}` },
     });
     $toast.success('Order updated successfully!');
     closeEditModal();
-    fetchOrders(); // Optionally refresh the orders list
+    fetchOrders();
   } catch (error) {
     $toast.error('Error updating order: ' + error.response.data.message);
   }
 };
 
-
-// Pagination handling
-const onPageChange = (page) => {
-  currentPage.value = page;
-  fetchOrders(page);
+// On page change handler
+const onPageChange = (newPage) => {
+  fetchOrders(newPage);
 };
 
 onMounted(() => {
   fetchOrders();
 });
-
-const statuses = ref([
-  { label: 'Pending', value: 'pending' },
-  { label: 'Processing', value: 'processing' },
-  { label: 'Completed', value: 'completed' },
-  { label: 'Cancelled', value: 'cancelled' },
-]);
 </script>

@@ -188,7 +188,7 @@ onMounted(() => {
     :item="{
     title: 'Shipping Companies',
     badgeContent: suppliersCount,
-    icon: 'ri-package-fill',
+    icon: 'ri-building-fill',
     to: '/shipping-companies/list',
     badgeClass: 'bg-secondary-darken-1',
   }"

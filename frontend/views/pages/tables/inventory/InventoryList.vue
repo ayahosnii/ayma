@@ -179,6 +179,7 @@ const deleteModal = ref(false);
 const modalTitle = ref('Add Inventory Update');
 const deleteInventoryId = ref(null);
 
+
 const filteredInventory = computed(() => {
   if (!selectedSupplier.value) return inventory.value;
   return inventory.value.filter(item => item.supplier.id === selectedSupplier.value);
