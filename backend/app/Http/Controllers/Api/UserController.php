@@ -15,10 +15,20 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        $suppliers = User::paginate($perPage);
+        $role = $request->input('role'); // Get the role from the request
 
-        return response()->json($suppliers);
+        $query = User::query();
+
+        // If a role is provided, filter by the role
+        if ($role) {
+            $query->role($role); // `role` is a scope provided by Spatie
+        }
+
+        $users = $query->paginate($perPage);
+
+        return response()->json($users);
     }
+
     /**
      * Store the user data, including avatar image.
      *

@@ -15,6 +15,15 @@
         style="max-inline-size: 300px;"
         placeholder="Search by name, phone, email, etc."
       />
+
+      <VSelect
+        v-model="filterRoles"
+        :items="roles"
+        item-title="name"
+        item-value="name"
+        label="Filter"
+        clearable
+      />
     </div>
 
     <!-- Table to Display Users -->
@@ -48,7 +57,12 @@
       </tbody>
     </VTable>
 
-    <VPagination v-model="currentPage" :length="totalPages" @page-change="onPageChange" />
+
+    <VPagination
+      v-model="currentPage"
+      :length="totalPages"
+      @update:modelValue="(newStatus) => onPageChange(newStatus)"
+    />
 
     <!-- Info Modal -->
     <VDialog v-model="infoModal" max-width="600px">
@@ -145,7 +159,9 @@ const $toast = useToast();
 const BASE_URL = 'http://127.0.0.1:8000/api';
 
 const users = ref([]);
+const roles = ref([]);
 const searchQuery = ref('');
+const filterRoles = ref('');
 const currentPage = ref(1);
 const totalPages = ref(1);
 
@@ -181,11 +197,28 @@ const filteredUsers = computed(() => {
 });
 
 // Fetch shipping users from API
-const fetchUsers = async (page = 1) => {
+const fetchRoles = async () => {
   const token = localStorage.getItem('authToken');
-  const response = await axios.get(`${BASE_URL}/users?page=${page}`, {
+  const response = await axios.get(`${BASE_URL}/roles`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+  roles.value = response.data;
+};
+
+const onPageChange = (page) => {
+  currentPage.value = page; // Update the current page
+  fetchUsers(filterRoles.value, page); // Pass the role and selected page
+};
+const fetchUsers = async (role = '', page = 1) => {
+  const token = localStorage.getItem('authToken');
+  const response = await axios.get(`${BASE_URL}/users`, {
+    params: {
+      role,
+      page,
+    },
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
   users.value = response.data.data;
   totalPages.value = response.data.last_page;
   currentPage.value = response.data.current_page;
@@ -229,8 +262,16 @@ const deleteUser = async () => {
 };
 
 // Fetch users when component is mounted
-onMounted(() => fetchUsers());
+onMounted(() => {
+  fetchRoles()
+  fetchUsers()
+});
+watch(
+  filterRoles,
+  (newRole) => {
+    fetchUsers(newRole); // Pass the selected role ID to fetch users
+  }
+);
 
-// Handle pagination page change
-const onPageChange = (page) => fetchUsers(page);
+
 </script>
