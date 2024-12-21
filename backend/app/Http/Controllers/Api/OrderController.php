@@ -11,6 +11,7 @@ use App\ChainOfResponsibility\Refund\PartialRefundHandler;
 use App\ChainOfResponsibility\Refund\ProductIssueRefundHandler;
 use App\ChainOfResponsibility\Refund\ReturnEligibilityHandler;
 use App\ChainOfResponsibility\Refund\UnjustifiedRefundHandler;
+use App\Enums\OrderStatus;
 use App\Events\OrderCreated;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateOrderRequest;
@@ -54,8 +55,6 @@ class OrderController extends Controller
     // Update the stock of products
     $this->updateProductStock($request->products);
 
-    // Create a delivery for the new order
-    $this->createDelivery($order);
 
     broadcast(new OrderCreated($order));
 
@@ -68,41 +67,6 @@ class OrderController extends Controller
 
     return response()->json($order->load('orderItems'), 201);
 }
-
-/**
- * Create a delivery for the given order.
- *
- * @param  \App\Models\Order  $order
- * @return void
- */
-    protected function createDelivery(Order $order)
-    {
-        \App\Models\Delivery::create([
-            'order_id' => $order->id,
-            'current_step' => 1,
-            'tracking_code' => uniqid('track_'), // Generate a unique tracking code
-            'delivery_partner' => 'Default Partner', // Replace with actual partner logic
-            'timeline' => [  // Encode the timeline as JSON
-                [
-                    'date' => 'Mon, 19 Dec',
-                    'status' => 'Order Confirmed',
-                ],
-                [
-                    'date' => 'Mon, 19 Dec',
-                    'status' => 'Processing',
-                ],
-                [
-                    'date' => 'Tue, 20 Dec',
-                    'status' => 'Shipped',
-                ],
-                [
-                    'date' => 'Thu, 22 Dec',
-                    'status' => 'Delivered',
-                ]
-            ]
-        ]);
-    }
-
 
     // Function to update the product stock
     protected function updateProductStock($products)

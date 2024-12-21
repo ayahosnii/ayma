@@ -16,11 +16,27 @@ class CreateOrderHandler extends AbstractOrderProcessHandler
             throw new \Exception('User ID is not set.');
         }
 
+        // Generate a unique transaction ID
+        $transactionId = $this->generateTransactionId();
+
+        // Add the transaction ID to the order data
+        $orderData['transaction_id'] = $transactionId;
+
         // Create the order with the provided data
         $order = Order::create($orderData);
-        echo "Order created.\n";
 
         // Continue to the next handler in the chain
         return parent::handle($request, $order);
+    }
+
+
+    /**
+     * Generate a unique transaction ID.
+     *
+     * @return string
+     */
+    protected function generateTransactionId()
+    {
+        return strtoupper(uniqid('TXN_'));
     }
 }

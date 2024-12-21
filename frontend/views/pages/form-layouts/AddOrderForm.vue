@@ -3,6 +3,7 @@ import axios from 'axios';
 import { onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useToast } from 'vue-toast-notification';
+import { Country, State } from 'country-state-city'
 
 // Toast notification
 const $toast = useToast();
@@ -26,11 +27,14 @@ const shipping_city = ref('');
 const shipping_state = ref('');
 const shipping_postal_code = ref('');
 const shipping_country = ref('');
+const selectedCountryCode = ref('')
 const shipping_phone = ref('');
 const payment_status = ref('');
 const payment_method = ref('');
-const transaction_id = ref('');
 const order_date = ref('');
+const countries = ref([])
+const states = ref([])
+
 
 // New User Inputs
 const newUserEmail = ref('');
@@ -56,7 +60,6 @@ onMounted(async () => {
 
   script.onload = initMap;
   document.head.appendChild(script);
-
   try {
     // Fetch products
     const productResponse = await axios.get('http://127.0.0.1:8000/api/products', {
@@ -93,6 +96,36 @@ const fetchUsers = async () => {
     console.error('Error fetching users:', error);
   }
 };
+const loadCountries = () => {
+  countries.value = Country.getAllCountries().map(country => ({
+    name: country.name,
+    code: country.isoCode,
+  }));
+};
+
+// Fetch the states of the selected country
+const updateStates = (countryCode) => {
+  if (countryCode) {
+    states.value = State.getStatesOfCountry(countryCode).map(state => ({
+      name: state.name,
+      code: state.isoCode,
+    }));
+  } else {
+    states.value = [];
+  }
+};
+
+// Watch for changes in country
+watch(() => shipping_country.value, (newCountry) => {
+  // Update the states when country is changed
+  const countryCode = countries.value.find(c => c.name === newCountry)?.code || '';
+  updateStates(countryCode);
+});
+
+// Fetch countries when component is mounted
+onMounted(() => {
+  loadCountries();
+});
 
 // Watch for changes in the shipping address
 // Watch for changes in country, state, and city
@@ -201,7 +234,6 @@ const handleSubmit = async () => {
       shipping_phone: shipping_phone.value,
       payment_status: payment_status.value,
       payment_method: payment_method.value,
-      transaction_id: transaction_id.value,
       order_date: order_date.value,
     };
 
@@ -258,7 +290,6 @@ const resetForm = () => {
   shipping_phone.value = '';
   payment_status.value = '';
   payment_method.value = '';
-  transaction_id.value = '';
   order_date.value = '';
   newUserEmail.value = '';
   newUserName.value = '';
@@ -271,6 +302,11 @@ watch([shipping_country, shipping_state, shipping_city], async () => {
   if (shipping_country.value && shipping_state.value && shipping_city.value) {
     updateMapCenter(shipping_country.value, shipping_state.value, shipping_city.value);
   }
+});
+watch(() => shipping_country, (newCountry) => {
+  // Update country code based on country selection
+  selectedCountryCode.value = countries.value.find(c => c.name === newCountry)?.code || '';
+  updateStates(selectedCountryCode.value);
 });
 
 // Function to update map center and move marker
@@ -462,22 +498,20 @@ const fetchAddress = async (lat, lng) => {
       </VCol>
         <!-- Country Select -->
         <VCol cols="12" md="4">
-          <VTextField
+          <v-select
             v-model="shipping_country"
             label="Country"
-            item-title="name"
-            item-value="name"
+            :items="countries.map(c => c.name)"
             @change="updateStates"
           />
         </VCol>
 
         <!-- State Select -->
         <VCol cols="12" md="4">
-          <VTextField
+          <v-select
             v-model="shipping_state"
             label="State"
-            item-title="name"
-            item-value="name"
+            :items="states.map(s => s.name)"
             @change="updateCities"
           />
         </VCol>
@@ -550,16 +584,6 @@ const fetchAddress = async (lat, lng) => {
           v-model="payment_method"
           label="Payment Method"
           :items="['credit_card', 'paypal', 'bank_transfer', 'cash_on_delivery']"
-          required
-        />
-      </VCol>
-
-      <!-- Transaction ID -->
-      <VCol cols="12" md="4">
-        <VTextField
-          v-model="transaction_id"
-          label="Transaction ID"
-          placeholder="Enter transaction ID"
           required
         />
       </VCol>

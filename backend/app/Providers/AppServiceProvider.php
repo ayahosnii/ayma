@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
+use App\Observers\OrderObserver;
 use App\Repositories\Dashboard\Contracts\ProductRepositoryInterface;
 use App\Repositories\Dashboard\ProductRepository;
 use App\Services\KafkaConsumerService;
@@ -29,6 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Order::observe(OrderObserver::class);
     }
 }
