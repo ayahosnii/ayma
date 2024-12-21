@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\OrderItemController;
 use App\Http\Controllers\Api\RefundController;
+use App\Http\Controllers\Api\RolesController;
 use App\Http\Controllers\Api\ShippingCompanyController;
 use App\Http\Controllers\Api\SizeController;
 use App\Http\Controllers\Api\ProductController;
@@ -79,6 +80,7 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/count-suppliers', [SupplierController::class, 'countSuppliers']);
     /******************************************* End   Suppliers *******************************************/
     /******************************************* Start Suppliers *******************************************/
+    Route::get('/roles', [RolesController::class, 'index']);
     Route::get('/users', [UserController::class, 'index']);
     Route::post('users', [UserController::class, 'store']);
     Route::get('/users/{id}', [UserController::class, 'show']);

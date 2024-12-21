@@ -239,6 +239,17 @@ onMounted(() => {
   />
   <VerticalNavLink
     :item="{
+      title: 'Roles',
+      badgeContent: deliveriesCount,
+      badgeClass: 'bg-secondary-darken-1',
+      icon: 'ri-user-fill',
+      to: '/roles/list',
+      // badgeContent: 'New',
+      // badgeClass: 'bg-light-primary text-primary',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
       title: 'Sales Analysis',
       badgeContent: 0,
       badgeClass: 'bg-secondary-darken-1',
