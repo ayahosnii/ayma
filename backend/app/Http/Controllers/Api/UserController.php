@@ -6,11 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\DeliveryShippingCompany;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
+    public function index(Request $request)
+    {
+        $perPage = $request->input('per_page', 10);
+        $suppliers = User::paginate($perPage);
+
+        return response()->json($suppliers);
+    }
     /**
      * Store the user data, including avatar image.
      *

@@ -78,6 +78,14 @@ Route::middleware('auth:api')->group(function () {
     Route::delete('/suppliers/{id}', [SupplierController::class, 'destroy']);
     Route::get('/count-suppliers', [SupplierController::class, 'countSuppliers']);
     /******************************************* End   Suppliers *******************************************/
+    /******************************************* Start Suppliers *******************************************/
+    Route::get('/users', [UserController::class, 'index']);
+    Route::post('users', [UserController::class, 'store']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+    Route::put('/users/{id}', [UserController::class, 'update']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
+    Route::get('/count-users', [UserController::class, 'countUsers']);
+    /******************************************* End   Suppliers *******************************************/
 
     Route::resource('/orders', OrderController::class); //Orders
     Route::resource('/order_items', OrderItemController::class); //Order items
@@ -101,7 +109,6 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('shipping-companies', ShippingCompanyController::class);
     /******************************************* End   Shipping Company *******************************************/
     Route::post('refund', [RefundController::class, 'processRefund']); //Levels
-    Route::post('users', [UserController::class, 'store']);
 
     Route::get('/customers', [CustomerController::class, 'index']); //Stories Count
 
