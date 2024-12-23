@@ -21,7 +21,7 @@ class ProfileController extends Controller
         }
 
         return response()->json([
-            'avatarImg' => $user->avatar ?? asset('images/default-avatar.png'),
+            'avatarImg' => $user->avatar ?? asset('images/avatars/avatar-1.png'),
             'name' => $user->name,
             'lastName' => $user->last_name,
             'email' => $user->email,
