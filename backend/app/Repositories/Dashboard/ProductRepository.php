@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Dashboard;
 
+use App\Http\Resources\SalesMetricResource;
 use App\Models\Product;
 use App\Models\SalesMetric;
 use App\Models\User;
@@ -11,21 +12,15 @@ use Illuminate\Support\Facades\DB;
 
 class ProductRepository implements ProductRepositoryInterface
 {
-    public function getTopSellingProducts(int $limit = 10)
+    public function getTopSellingProducts(int $limit = 3)
     {
-        // Query the sales_metrics table to get the top-selling products
-        return SalesMetric::join('products', 'sales_metrics.product_id', '=', 'products.id')
-            ->select(
-                'products.id',
-                'products.name',
-                'sales_metrics.units_sold',
-                'sales_metrics.revenue',
-                'products.stock', // Add stock_quantity (or the relevant column for stock)
-                // 'products.image' // Add image_quantity
-            )
-            ->orderByDesc('sales_metrics.units_sold') // Order by units sold, or use revenue if preferred
+        $salesMetrics = SalesMetric::with(['product.primaryImage'])
+            ->orderByDesc('sales_metrics.units_sold')
             ->limit($limit)
             ->get();
+
+        // Return the resources wrapped in the response
+        return SalesMetricResource::collection($salesMetrics);
     }
 
     public function getSalesByCountry(): array

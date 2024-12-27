@@ -78,7 +78,7 @@ onMounted(async () => {
           : 0;
 
         return {
-          image: product.image || productImagePlaceholder, // Use a placeholder or actual product image if available
+          image: 'http://127.0.0.1:8000/storage/' + product.primary_image || productImagePlaceholder, // Use a placeholder or actual product image if available
           name: product.name,
           unitsSold: unitsSold,
           revenue: `$${parseFloat(product.revenue).toFixed(2)}`, // Format the revenue
