@@ -23,7 +23,7 @@ class ProductRepository implements ProductRepositoryInterface
         return SalesMetricResource::collection($salesMetrics);
     }
 
-    public function getSalesByCountry(): array
+    public function getSalesByCountry(int $limit = 3): array
     {
         $totalSales = $this->getTotalSalesFromOrders();
 
@@ -37,6 +37,7 @@ class ProductRepository implements ProductRepositoryInterface
             ->where('payment_status', 'paid') // Only consider paid orders
             ->groupBy('shipping_country')
             ->orderByDesc('sales')
+            ->limit($limit)
             ->get()
             ->toArray();
     }
@@ -103,13 +104,17 @@ class ProductRepository implements ProductRepositoryInterface
             ->count();
     }
 
-    // public function getUserData(int $limit = 10)
-    // {
-    //     // Fetch basic user data from the database
-    //     return User::select('id', 'username', 'role', 'status')
-    //         ->orderBy('created_at', 'desc') // Order by the most recent users
-    //         ->limit($limit) // You can change the limit if needed
-    //         ->get();
-    // }
-
+    public function getUserData(int $limit = 10)
+    {
+        return User::with('roles') // Eager load the roles relationship
+        ->select('name') // Select the necessary columns
+        ->orderBy('created_at', 'desc') // Order by creation date
+        ->limit($limit) // Limit the number of users returned
+        ->get()
+            ->map(function ($user) {
+                // Include the role names in the result
+                $user->roles = $user->roles->pluck('name'); // Get all roles assigned to the user
+                return $user;
+            });
+    }
 }
