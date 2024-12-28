@@ -107,7 +107,7 @@ class ProductRepository implements ProductRepositoryInterface
     public function getUserData(int $limit = 10)
     {
         return User::with('roles') // Eager load the roles relationship
-        ->select('name') // Select the necessary columns
+        ->select('name', 'email', 'status', 'avatar') // Select the necessary columns
         ->orderBy('created_at', 'desc') // Order by creation date
         ->limit($limit) // Limit the number of users returned
         ->get()
