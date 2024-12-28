@@ -35,7 +35,7 @@ class DashboardController extends Controller
 
         // Query the orders from the database, grouped by month
         $ordersData = Order::whereYear('created_at', $currentYear)
-            ->selectRaw('MONTH(created_at) as month, COUNT(*) as order_count')
+            ->selectRaw('MONTH(order_date) as month, COUNT(*) as order_count')
             ->groupBy('month')
             ->orderBy('month')
             ->get();
