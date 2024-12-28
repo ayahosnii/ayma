@@ -9,6 +9,7 @@ import CardStatisticsVertical from '@core/components/cards/CardStatisticsVertica
 import productImagePlaceholder from '@images/ecommerce/2.png'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import AnalyticsOrderTable from '@/views/dashboard/AnalyticsOrderTable.vue'
 
 const router = useRouter();
 const totalSales = ref({});
@@ -64,7 +65,6 @@ onMounted(async () => {
       } else {
         console.error('User Data is not an array:', data.data.userData);
       }
-      console.log("User Data:", userData.value);
 
       const topProducts = data.data.topProducts;
 
@@ -188,7 +188,7 @@ onMounted(async () => {
     </VCol>
 
     <VCol cols="12" md="6">
-      <AnalyticsDepositWithdraw />
+      <AnalyticsOrderTable :userData="userData" />
     </VCol>
   </VRow>
 </template>

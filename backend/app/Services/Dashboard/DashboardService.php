@@ -22,7 +22,7 @@ class DashboardService
             'totalStats' => $this->productRepository->getTotalStats(),
             'topProducts' => $this->productRepository->getTopSellingProducts(),
             'salesByCountry' => $this->productRepository->getSalesByCountry(),
-            // 'userData' => $this->productRepository->getUserData(),
+            'userData' => $this->productRepository->getUserData(),
 
         ];
     }

@@ -53,7 +53,7 @@ const resolveUserRoleVariant = role => {
       color: 'primary',
       icon: 'ri-vip-crown-line',
     }
-  
+
   return {
     color: 'success',
     icon: 'ri-user-line',
@@ -68,7 +68,7 @@ const resolveUserStatusVariant = stat => {
     return 'success'
   if (statLowerCase === 'inactive')
     return 'secondary'
-  
+
   return 'primary'
 }
 </script>
