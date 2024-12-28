@@ -1,4 +1,5 @@
 <script setup>
+
 defineProps({
   salesByCountry: {
     type: Array,

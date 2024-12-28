@@ -427,8 +427,10 @@ button.collapse-btn {
 }
 
 .slide-image {
-  block-size: 90px;
-  inline-size: 90px;
+  overflow: hidden;   /* Ensures content outside the circle is hidden */
+  border-radius: 50%; /* This makes the image round */
+  block-size: 80px;
+  inline-size: 80px;
   object-fit: cover;
 }
 </style>

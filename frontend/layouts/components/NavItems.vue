@@ -242,7 +242,7 @@ onMounted(() => {
       title: 'Roles',
       badgeContent: deliveriesCount,
       badgeClass: 'bg-secondary-darken-1',
-      icon: 'ri-user-fill',
+      icon: 'ri-user-settings-fill',
       to: '/roles/list',
       // badgeContent: 'New',
       // badgeClass: 'bg-light-primary text-primary',
