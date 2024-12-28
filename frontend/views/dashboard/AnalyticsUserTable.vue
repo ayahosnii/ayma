@@ -60,17 +60,17 @@ const headers = [
 //   }
 // }
 
-// const resolveUserStatusVariant = stat => {
-//   const statLowerCase = stat.toLowerCase()
-//   if (statLowerCase === 'pending')
-//     return 'warning'
-//   if (statLowerCase === 'active')
-//     return 'success'
-//   if (statLowerCase === 'inactive')
-//     return 'secondary'
-//
-//   return 'primary'
-// }
+const resolveUserStatusVariant = stat => {
+  const statLowerCase = stat.toLowerCase()
+  if (statLowerCase === 'pending')
+    return 'warning'
+  if (statLowerCase === 'active')
+    return 'success'
+  if (statLowerCase === 'inactive')
+    return 'secondary'
+
+  return 'primary'
+}
 </script>
 
 <template>
@@ -84,16 +84,18 @@ const headers = [
       <!-- User -->
       <template #item.username="{ item }">
         <div class="d-flex align-center gap-x-4">
-<!--          <VAvatar-->
-<!--            size="34"-->
-<!--            :variant="!item.avatar ? 'tonal' : undefined"-->
-<!--            :color="!item.avatar ? resolveUserRoleVariant(item.role).color : undefined"-->
-<!--          >-->
-<!--            <VImg-->
-<!--              v-if="item.avatar"-->
-<!--              :src="item.avatar"-->
-<!--            />-->
-<!--          </VAvatar>-->
+<!--          :color="!item.avatar ? resolveUserRoleVariant(item.role) : undefined"-->
+
+          <VAvatar
+            size="34"
+            :variant="!item.avatar ? 'tonal' : undefined"
+            :color="resolveUserStatusVariant(item.status)"
+          >
+            <VImg
+              v-if="item.avatar"
+              :src="item.avatar"
+            />
+          </VAvatar>
 
           <div class="d-flex flex-column">
             <h6 class="text-h6 font-weight-medium user-list-name">
@@ -118,15 +120,15 @@ const headers = [
 <!--        </div>-->
 <!--      </template>-->
       <!-- Status -->
-<!--      <template #item.status="{ item }">-->
-<!--        <VChip-->
-<!--          :color="resolveUserStatusVariant(item.status)"-->
-<!--          size="small"-->
-<!--          class="text-capitalize"-->
-<!--        >-->
-<!--          {{ item.status }}-->
-<!--        </VChip>-->
-<!--      </template>-->
+      <template #item.status="{ item }">
+        <VChip
+          :color="resolveUserStatusVariant(item.status)"
+          size="small"
+          class="text-capitalize"
+        >
+          {{ item.status }}
+        </VChip>
+      </template>
 
       <template #bottom />
     </VDataTable>
