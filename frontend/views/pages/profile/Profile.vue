@@ -1,8 +1,8 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
 import { BASE_URL } from '@/config/apiConfig';
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import avatar1 from '@images/avatars/avatar-1.png';
+import axios from 'axios';
+import { onMounted, ref } from 'vue';
 
 //const accountDataLocal = ref(null)
 const fetchProfileData = async () => {
@@ -12,7 +12,7 @@ const fetchProfileData = async () => {
     const response = await axios.get(`${BASE_URL}/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
-      },
+      }
     });
 
     accountDataLocal.value = response.data
@@ -118,6 +118,14 @@ const currencies = [
   'HUF',
   'INR',
 ]
+
+const editDialog = ref(false);
+
+const saveProfile = () => {
+  console.log('Profile data saved:', accountDataLocal.value);
+  editDialog.value = false;
+};
+
 onMounted(() => {
   fetchProfileData() // Fetch profile data when component mounts
 })
@@ -138,6 +146,13 @@ onMounted(() => {
 
 
         </VCardText>
+
+          <!-- Edit Button -->
+      <VCardActions>
+        <VSpacer />
+        <VBtn color="primary" @click="editDialog = true">Edit Profile</VBtn>
+      </VCardActions>
+
 
         <VDivider />
 
@@ -278,4 +293,141 @@ onMounted(() => {
       </VCard>
     </VCol>
   </VRow>
+
+  <VDialog v-model="editDialog" max-width="600">
+    <VCard>
+      <VCardTitle>Edit Profile</VCardTitle>
+
+      <VCardText>
+        <VForm ref="editForm" @submit.prevent="saveProfile">
+          <VRow>
+            <!-- Name and Last Name -->
+            <VCol cols="12" md="6">
+              <VTextField
+                label="First Name"
+                v-model="accountDataLocal.name"
+                outlined
+                dense
+                required
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Last Name"
+                v-model="accountDataLocal.lastName"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <!-- Email and Organization -->
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Email"
+                v-model="accountDataLocal.email"
+                outlined
+                dense
+                required
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Organization"
+                v-model="accountDataLocal.org"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <!-- Phone and Address -->
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Phone"
+                v-model="accountDataLocal.phone"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Address"
+                v-model="accountDataLocal.address"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <!-- State and Zip Code -->
+            <VCol cols="12" md="6">
+              <VTextField
+                label="State"
+                v-model="accountDataLocal.state"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Zip Code"
+                v-model="accountDataLocal.zip"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <!-- Country and Language -->
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Country"
+                v-model="accountDataLocal.country"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VTextField
+                label="Language"
+                v-model="accountDataLocal.language"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <!-- Timezone and Currency -->
+            <VCol cols="12" md="6">
+              <VSelect
+                :items="timezones"
+                label="Timezone"
+                v-model="accountDataLocal.timezone"
+                outlined
+                dense
+              />
+            </VCol>
+
+            <VCol cols="12" md="6">
+              <VSelect
+                :items="currencies"
+                label="Currency"
+                v-model="accountDataLocal.currency"
+                outlined
+                dense
+              />
+            </VCol>
+          </VRow>
+        </VForm>
+      </VCardText>
+
+      <VCardActions>
+        <VSpacer />
+        <VBtn text @click="editDialog = false">Cancel</VBtn>
+        <VBtn color="primary" @click="saveProfile">Save</VBtn>
+      </VCardActions>
+    </VCard>
+  </VDialog>
+
 </template>
