@@ -36,4 +36,33 @@ class ProfileController extends Controller
             'currency' => $user->currency ?? 'USD',
         ]);
     }
+
+    public function updateProfile(Request $request)
+    {
+        $userId = $request->user()->id;
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'email' => 'required|email|max:255',
+            'organization' => 'nullable|string|max:255',
+            'phone_number' => 'nullable|string|max:15',
+            'address' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:255',
+            'zip_code' => 'nullable|string|max:10',
+            'country' => 'nullable|string|max:255',
+            'language' => 'nullable|string|max:50',
+            'timezone' => 'nullable|string|max:50',
+            'currency' => 'nullable|string|max:10',
+        ]);
+
+        $user->update($data);
+
+        return response()->json(['message' => 'Profile updated successfully', 'user' => $user]);
+    }
 }
