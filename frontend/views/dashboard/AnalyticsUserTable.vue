@@ -107,18 +107,18 @@ const resolveUserStatusVariant = stat => {
         </div>
       </template>
       <!-- Role -->
-<!--      <template #item.role="{ item }">-->
-<!--        <div class="d-flex gap-4">-->
-<!--          <VIcon-->
-<!--            :icon="resolveUserRoleVariant(item.role).icon"-->
-<!--            :color="resolveUserRoleVariant(item.role).color"-->
-<!--            size="22"-->
-<!--          />-->
-<!--          <div class="text-capitalize text-high-emphasis">-->
-<!--            {{ item.role }}-->
-<!--          </div>-->
-<!--        </div>-->
-<!--      </template>-->
+     <!-- <template #item.role="{ item }">
+       <div class="d-flex gap-4">
+         <VIcon
+           :icon="resolveUserRoleVariant(item.role).icon"
+           :color="resolveUserRoleVariant(item.role).color"
+           size="22"
+         />
+         <div class="text-capitalize text-high-emphasis">
+           {{ item.role }}
+         </div>
+       </div>
+     </template> -->
       <!-- Status -->
       <template #item.status="{ item }">
         <VChip

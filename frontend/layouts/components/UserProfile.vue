@@ -1,7 +1,7 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
-import { useRouter } from 'vue-router'
 import { BASE_URL } from '@/config/apiConfig';
+import avatar1 from '@images/avatars/avatar-1.png';
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 
@@ -28,6 +28,11 @@ const handleLogout = async () => {
   } catch (error) {
     console.error('Error during logout:', error);
   }
+};
+
+// Navigate to profile function
+const navigateToProfile = () => {
+  router.push('/profile/{id}'); // Adjust the route as per your application's profile route
 };
 
 </script>
@@ -85,7 +90,7 @@ const handleLogout = async () => {
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <VListItem  link @click="navigateToProfile">
             <template #prepend>
               <VIcon
                 class="me-2"
