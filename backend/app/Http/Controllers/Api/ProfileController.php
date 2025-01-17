@@ -8,7 +8,7 @@ use App\Models\User;
 
 class ProfileController extends Controller
 {
-    public function getProfile(Request $request)
+    public function index(Request $request)
     {
         // Replace this with authenticated user logic if authentication is used
         $userId = $request->user()->id; // Assuming the user is authenticated
@@ -21,6 +21,7 @@ class ProfileController extends Controller
         }
 
         return response()->json([
+            'id' => $userId,
             'avatarImg' => $user->avatar ?? asset('images/avatars/avatar-1.png'),
             'name' => $user->name,
             'lastName' => $user->last_name,
@@ -37,7 +38,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    public function updateProfile(Request $request)
+    public function update(Request $request)
     {
         $userId = $request->user()->id;
         $user = User::find($userId);

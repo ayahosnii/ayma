@@ -122,9 +122,28 @@ const currencies = [
 const editDialog = ref(false);
 
 const saveProfile = () => {
-  console.log('Profile data saved:', accountDataLocal.value);
-  editDialog.value = false;
+  const profileId = accountDataLocal.value.id; // Ensure this is part of your profile data
+  console.log(accountDataLocal.value)
+  updateProfile(profileId);
 };
+
+const updateProfile = async (profileId) => {
+  const token = localStorage.getItem('authToken');
+
+  try {
+    const response = await axios.put(`${BASE_URL}/profile/${profileId}`, accountDataLocal.value, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log('Profile updated successfully:', response.data);
+    editDialog.value = false; // Close the dialog after successful update
+  } catch (error) {
+    console.error('Failed to update profile:', error);
+  }
+};
+
 
 onMounted(() => {
   fetchProfileData() // Fetch profile data when component mounts

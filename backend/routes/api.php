@@ -55,7 +55,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::middleware('auth:api')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/order-statistics', [DashboardController::class, 'getOrdersData']);
-    Route::get('/profile', [ProfileController::class, 'getProfile']);
+    //Route::get('/profile', [ProfileController::class, 'getProfile']);
     Route::resource('/profile', ProfileController::class);
 
 
